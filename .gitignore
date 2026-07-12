@@ -1,0 +1,21 @@
+# macOS metadata
+._*
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Local Claude Code settings
+.claude/
+
+# Large data — NOT for GitHub.
+# Videos (~180 GB) are distributed separately; features are regenerable from
+# the videos via bsl_preprocessing_clean.ipynb.
+chunks/
+features_mediapipe/
+features_mediapipe_v2/
+features_packed_v2*.npy
+processed_manifest.csv
+vocab.json
+*.tmp

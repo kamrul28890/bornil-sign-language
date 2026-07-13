@@ -1,0 +1,27 @@
+{
+  "name": "signerindep-v1",
+  "seed": 42,
+  "manifest_rows": 17988,
+  "fracs": [
+    0.8,
+    0.1,
+    0.1
+  ],
+  "stats": {
+    "train": {
+      "clips": 14500,
+      "chunks": 29,
+      "unique_texts": 14446
+    },
+    "val": {
+      "clips": 1988,
+      "chunks": 4,
+      "unique_texts": 1987
+    },
+    "test": {
+      "clips": 1500,
+      "chunks": 3,
+      "unique_texts": 1500
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "unseen-sentence-v1",
+  "seed": 42,
+  "manifest_rows": 17988,
+  "fracs": [
+    0.8,
+    0.1,
+    0.1
+  ],
+  "stats": {
+    "train": {
+      "clips": 14390,
+      "chunks": 36,
+      "unique_texts": 14330
+    },
+    "val": {
+      "clips": 1799,
+      "chunks": 36,
+      "unique_texts": 1799
+    },
+    "test": {
+      "clips": 1799,
+      "chunks": 36,
+      "unique_texts": 1799
+    }
+  }
+}

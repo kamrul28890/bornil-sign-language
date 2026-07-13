@@ -83,3 +83,38 @@ class SignTransformer(nn.Module):
             memory_key_padding_mask=src_key_padding_mask,
         )
         return self.out(h)
+
+    def encode(self, src: torch.Tensor, src_key_padding_mask: torch.Tensor = None) -> torch.Tensor:
+        """Run the encoder over a clip -> memory (B, S, d_model)."""
+        s = self.pos(self.input_proj(src) * math.sqrt(self.d_model))
+        return self.transformer.encoder(s, src_key_padding_mask=src_key_padding_mask)
+
+    @torch.no_grad()
+    def generate(self, src: torch.Tensor, bos_id: int, eos_id: int,
+                 max_len: int = 128, src_key_padding_mask: torch.Tensor = None):
+        """Greedy autoregressive decode. Returns a list (len B) of id lists,
+        each the generated tokens after BOS, including the terminal EOS."""
+        self.eval()
+        memory = self.encode(src, src_key_padding_mask)
+        b = src.size(0)
+        ys = torch.full((b, 1), bos_id, dtype=torch.long, device=src.device)
+        finished = [False] * b
+        outputs = [[] for _ in range(b)]
+        for _ in range(max_len):
+            t = self.pos(self.tok_embed(ys) * math.sqrt(self.d_model))
+            h = self.transformer.decoder(
+                t, memory,
+                tgt_mask=causal_mask(ys.size(1)).to(src.device),
+                memory_key_padding_mask=src_key_padding_mask,
+            )
+            nxt = self.out(h[:, -1]).argmax(-1)            # (B,)
+            ys = torch.cat([ys, nxt[:, None]], dim=1)
+            for i in range(b):
+                if not finished[i]:
+                    tok = int(nxt[i])
+                    outputs[i].append(tok)
+                    if tok == eos_id:
+                        finished[i] = True
+            if all(finished):
+                break
+        return outputs

@@ -1,0 +1,18 @@
+# Bornil — known-good pinned dependencies (dev machine: Windows, Python 3.10).
+# numpy MUST stay <2 so pandas 2.0.3's compiled ABI matches (FAIL: numpy 2.x
+# breaks pandas with "numpy.dtype size changed"). mediapipe 0.10.14 is the last
+# version compatible with numpy 1.26 and matches the teammate's extraction env.
+# On this Windows box, import torch BEFORE pandas (see bornil/runtime.py, FAIL-002).
+
+numpy==1.26.4
+pandas==2.0.3
+mediapipe==0.10.14
+opencv-contrib-python==4.11.0.86
+sentencepiece
+sacrebleu==2.6.0
+pyyaml
+pytest
+
+# torch: install the CPU (or CUDA) build separately, e.g.
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+# tested with torch 2.11.0+cpu

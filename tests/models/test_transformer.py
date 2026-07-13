@@ -64,6 +64,36 @@ def test_overfit_tiny():
     assert torch.equal(pred, tgt_out), f"pred {pred.tolist()} != {tgt_out.tolist()}"
 
 
+def test_generate_reproduces_overfit_target():
+    """After overfitting one example, greedy generate should emit its target."""
+    vocab, pad, bos, eos = 20, 0, 2, 3
+    model = _tiny_model(vocab)
+    torch.manual_seed(2)
+    src = torch.randn(1, 12, 218)
+    y = torch.tensor([[bos, 5, 7, 9, eos]])
+    tgt_in, tgt_out = y[:, :-1], y[:, 1:]
+    opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+    loss_fn = torch.nn.CrossEntropyLoss(ignore_index=pad)
+    model.train()
+    for _ in range(300):
+        opt.zero_grad()
+        loss = loss_fn(model(src, tgt_in).reshape(-1, vocab), tgt_out.reshape(-1))
+        loss.backward()
+        opt.step()
+    model.eval()
+    out = model.generate(src, bos_id=bos, eos_id=eos, max_len=10)
+    # generated sequence (without BOS) should match the target content ... EOS
+    assert out[0][:4] == [5, 7, 9, eos]
+
+
+def test_generate_stops_at_max_len():
+    model = _tiny_model()
+    src = torch.randn(2, 8, 218)
+    out = model.generate(src, bos_id=2, eos_id=3, max_len=5)
+    assert len(out) == 2
+    assert all(len(seq) <= 5 for seq in out)
+
+
 def test_padding_mask_from_lengths():
     model = _tiny_model()
     mask = model.src_padding_mask(torch.tensor([3, 5]), seq_len=5)

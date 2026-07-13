@@ -1,0 +1,38 @@
+# 5% trial run — end-to-end vertical slice runnable on the local PC.
+# Selects ~5% of clips (stratified by chunk), extracts keypoints, packs them,
+# and trains the Transformer SLT baseline. Proves the full pipeline before
+# committing cloud compute to the full 17,988-clip dataset.
+
+trial:
+  name: trial_5pct
+  frac: 0.05
+  seed: 42
+  out_dir: trial_5pct
+
+data:
+  manifest: video_data.csv
+  tokenizer: bsl_sp.model
+  max_frames: 128
+  normalize: true
+  upper_body: true          # 218-dim input
+
+split:
+  kind: random-v1           # random split on the sample (signerindep needs >1 chunk)
+  fracs: [0.8, 0.1, 0.1]
+
+model:
+  d_model: 256
+  nhead: 8
+  num_encoder_layers: 4
+  num_decoder_layers: 4
+  dim_feedforward: 1024
+  dropout: 0.1
+
+train:
+  epochs: 40
+  batch_size: 16
+  lr: 0.0003
+  weight_decay: 0.0001
+  clip_grad: 1.0
+  max_decode_len: 128
+  device: auto              # cuda if available else cpu

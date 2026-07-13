@@ -19,3 +19,14 @@ features_packed_v2*.npy
 processed_manifest.csv
 vocab.json
 *.tmp
+
+# Trial run artifacts (regenerable): keep manifests + metrics, drop heavy files
+trial_smoke/
+trial_*/features/
+trial_*/packed.npy
+trial_*/lengths.npy
+trial_*/runs/*/best.pt
+trial_*/*.log
+
+# Test / tooling caches
+.pytest_cache/

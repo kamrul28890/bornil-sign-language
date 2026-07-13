@@ -15,6 +15,13 @@
 
 ---
 
+## 2026-07-13 — 5% trial pipeline: end-to-end vertical slice runs locally
+- **What:** Greedy `generate()` on SignTransformer; `bornil/train/loop.py` (train_epoch + evaluate w/ locked metrics); trial scripts `make_sample`/`extract_sample`/`pack_sample`/`train_sample` + `configs/trial_5pct.yaml`; `bornil/mp_guard.py` (tensorflow-block so mediapipe imports); `requirements.txt` pinned; `.gitignore` for trial artifacts.
+- **Why:** Prove the whole pipeline (sample→extract→pack→train→decode→score→log) on this PC before committing cloud compute to the full 17,988 clips (user request: 5% trial).
+- **Impact:** **8-clip smoke passed end-to-end** — MediaPipe extraction (128,258) at ~6.7 s/clip, packing, training, greedy decode, metric scoring, run folder (config+hash, metrics.json, predictions.csv) + EXPERIMENTS row all working. Full suite **59 passing**. (Smoke BLEU=0 expected: 6 training clips.) Extraction rate ⇒ full 5% (~900 clips) ≈ 1.5–2 h.
+- **Fix:** mediapipe/tensorflow DLL crash resolved — see FAIL-003.
+- **Commit:** (this commit)
+
 ## 2026-07-13 — Model layer: tokenizer + SignDataset + Transformer baseline (WS-A/WS-C)
 - **What:** Installed CPU torch 2.11 + sentencepiece. `bornil/data/tokenizer.py` (SentencePiece wrapper, BOS/EOS + special-strip; tested on real `bsl_sp.model`). `bornil/data/dataset.py` (`SignDataset` over packed features + `make_collate_fn`; tested on synthetic memmap). `bornil/models/transformer.py` (`SignTransformer` encoder-decoder SLT baseline, sinusoidal PE, causal + padding masks). `conftest.py` + `bornil/runtime.py` enforce torch-before-pandas import order.
 - **Why:** First runnable SLT baseline (plan WS-C T0.2) and the data contract feeding it.

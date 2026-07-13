@@ -10,7 +10,10 @@ Windows); the full-dataset run uses run_extraction.py's parallel path.
 """
 import argparse
 import os
+import sys
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import bornil.mp_guard  # noqa: F401  # block broken-DLL tensorflow before mediapipe
 
@@ -54,11 +57,12 @@ def main():
                 except Exception as e:
                     fail += 1
                     print(f"  FAIL {r.recording}: {e!r}", flush=True)
-        if i % 10 == 0 or i == n:
+        if i % 5 == 0 or i == n:
             el = time.time() - t0
             rate = i / el if el else 0
             eta = (n - i) / rate / 60 if rate else 0
-            print(f"  {i}/{n} | {rate:.2f} clip/s | ETA {eta:.1f} min | "
+            pct = 100.0 * i / n
+            print(f"  [{pct:5.1f}%] {i}/{n} | {rate:.2f} clip/s | ETA {eta:.1f} min | "
                   f"ok={ok} skip={skip} miss={miss} fail={fail}", flush=True)
 
     print(f"DONE in {(time.time()-t0)/60:.1f} min | "

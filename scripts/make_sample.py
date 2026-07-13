@@ -10,6 +10,9 @@ Writes `<out_dir>/sample_manifest.csv` with a normalized `clean_text` column.
 """
 import argparse
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
 

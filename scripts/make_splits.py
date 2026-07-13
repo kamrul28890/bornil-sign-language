@@ -9,7 +9,11 @@ deterministic (fixed seeds), so the split files are a released, citeable artifac
 """
 import argparse
 import json
+import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
 

@@ -7,11 +7,15 @@ run folder (config+hash, metrics, predictions) plus an EXPERIMENTS.md row.
     python scripts/train_sample.py --config configs/trial_5pct.yaml
     python scripts/train_sample.py --config configs/trial_5pct.yaml --epochs 3   # smoke
 """
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import bornil.runtime  # noqa: F401  # import torch before pandas (FAIL-002)
 
 import argparse
 import json
-import os
 import time
 from datetime import date
 

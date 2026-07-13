@@ -7,6 +7,9 @@ partial extraction). Mirrors pack_features.py for the full set.
 """
 import argparse
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 import pandas as pd

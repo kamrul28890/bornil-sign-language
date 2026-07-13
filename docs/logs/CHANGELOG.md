@@ -15,6 +15,13 @@
 
 ---
 
+## 2026-07-13 — Model layer: tokenizer + SignDataset + Transformer baseline (WS-A/WS-C)
+- **What:** Installed CPU torch 2.11 + sentencepiece. `bornil/data/tokenizer.py` (SentencePiece wrapper, BOS/EOS + special-strip; tested on real `bsl_sp.model`). `bornil/data/dataset.py` (`SignDataset` over packed features + `make_collate_fn`; tested on synthetic memmap). `bornil/models/transformer.py` (`SignTransformer` encoder-decoder SLT baseline, sinusoidal PE, causal + padding masks). `conftest.py` + `bornil/runtime.py` enforce torch-before-pandas import order.
+- **Why:** First runnable SLT baseline (plan WS-C T0.2) and the data contract feeding it.
+- **Impact:** **Overfit-tiny gate automated and passing** — the Transformer memorizes a synthetic clip→subword batch (loss < 0.05, exact teacher-forced reproduction), proving the arch/masking/loss are correct before any GPU/cloud run. Full suite **55 passing, exit 0**.
+- **Fix:** resolved a Windows segfault (pandas-before-torch DLL conflict) — see FAIL-002.
+- **Commit:** (this commit)
+
 ## 2026-07-13 — Phase 0: config system + keypoint-transform tests + disk triage
 - **What:** `bornil/config.py` (YAML load/save, deep-merge, stable order-independent config hash) with 7 tests. Moved keypoint transforms to `bornil/data/transforms.py` (canonical) with 13 characterization tests locking normalization/selection behavior; `bsl_utils.py` is now a re-export shim so teammate notebooks keep working. Full suite: **42 passing**.
 - **Why:** Config hash tags every future run (plan §4.3); characterization tests let us refactor WS-A + run normalization ablations without silently changing the model input contract.

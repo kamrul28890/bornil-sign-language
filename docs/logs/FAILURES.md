@@ -22,10 +22,18 @@
 
 <!-- Log entries below, newest first -->
 
+### FAIL-002  (2026-07-13)  [P0 / env, Windows]
+- **Expected:** full `pytest tests/` to pass with exit 0 once torch/sentencepiece tests were added.
+- **Observed:** segfault (exit 139) during collection when the full suite loads pandas + torch + sacrebleu + sentencepiece together; each subdir passed alone.
+- **Root cause:** confirmed — `import pandas` **before** `import torch` fails torch's native DLL init (`WinError 1114` loading `c10.dll`); the later combined use then crashes. `import torch` first is clean.
+- **Fix / next step:** `conftest.py` imports torch at pytest startup (before any test module imports pandas); `bornil/runtime.py` provides the same guard for runtime scripts (`import bornil.runtime` first). Rule: **torch before pandas** everywhere both are used. Full suite now 55 passed, exit 0.
+- **Status:** fixed
+- **Links:** conftest.py, bornil/runtime.py
+
 ### FAIL-001  (2026-07-13)  [P0 / infra]
 - **Expected:** file writes to the repo on D: to succeed.
 - **Observed:** `ENOSPC: no space left on device`; D: at 100% (0 bytes free).
 - **Root cause:** confirmed — D: held `chunks/` (172 GB videos, untracked/gitignored) plus **~86 GB of dangling git objects** (`git count-objects`: 7,476 objects / 86.27 GiB loose, in-pack 0; only **72 reachable** from all refs). The dangling blobs (~52 MB each, thousands of them) came from large files `git add`ed but never committed, then unstaged.
 - **Fix / next step:** user freed ~99 GB manually (D: now 79% used) — unblocked. Remaining cleanup to reclaim ~86 GB: `git reflog expire --expire=now --all && git prune --expire=now && git gc` (prune unlinks directly → low temp-space need, safe when near-full). Prevention: ensure `chunks/` and feature dirs stay in `.gitignore` (they are, via merged teammate `.gitignore`); never `git add .` at repo root with videos present.
-- **Status:** open (space unblocked; 86 GB reclaim pending user go-ahead)
+- **Status:** fixed — ran `git reflog expire --expire=now --all && git prune --expire=now && git gc`. `.git` 87 GB → 2.3 MB; D: 99 GB → 185 GB free (61% used). `fsck` clean, history intact, 42 tests pass.
 - **Links:** CHANGELOG 2026-07-13 config/transforms/disk entry

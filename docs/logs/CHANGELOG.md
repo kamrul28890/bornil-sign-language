@@ -15,6 +15,13 @@
 
 ---
 
+## 2026-07-13 — Phase 0: config system + keypoint-transform tests + disk triage
+- **What:** `bornil/config.py` (YAML load/save, deep-merge, stable order-independent config hash) with 7 tests. Moved keypoint transforms to `bornil/data/transforms.py` (canonical) with 13 characterization tests locking normalization/selection behavior; `bsl_utils.py` is now a re-export shim so teammate notebooks keep working. Full suite: **42 passing**.
+- **Why:** Config hash tags every future run (plan §4.3); characterization tests let us refactor WS-A + run normalization ablations without silently changing the model input contract.
+- **Impact:** `bornil.config` + `bornil.data.transforms` ready for the training loop; input-contract behavior is now regression-guarded.
+- **Disk triage:** D: hit 100% full. Root cause: `chunks/` = **172 GB** videos (on-disk here, gitignored) + **~86 GB dangling git objects** (only 72 of 7,476 objects reachable — leftover from large files staged-but-never-committed). User freed ~99 GB manually (now 79% used). **Still recommended:** `git reflog expire --expire=now --all && git prune --expire=now && git gc` to reclaim the ~86 GB (pending user go-ahead). Logged in FAILURES as FAIL-001.
+- **Commit:** (this commit)
+
 ## 2026-07-13 — Phase 0 (WS-B spine): official splits + metric protocol
 - **What:** Created `bornil/` package; `bornil/benchmark/splits.py` (random-v1, signerindep-v1 [chunk-as-session], unseen-sentence-v1 + leakage checks + file I/O) and `bornil/benchmark/metrics.py` (SacreBLEU BLEU-1..4 @ `intl` tokenizer, chrF/chrF++, ROUGE-L, bootstrap CI, NFC-normalized; optional BanglaBERT BERTScore). `scripts/make_splits.py`, 22 passing tests, `pyproject.toml`.
 - **Why:** WS-B is the spine everything else scores against (plan §6). Split correctness = no leakage.

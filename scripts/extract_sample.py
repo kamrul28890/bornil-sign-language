@@ -15,6 +15,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import bornil.quiet     # noqa: F401  # silence benign cv2/mediapipe/tf/protobuf noise
 import bornil.mp_guard  # noqa: F401  # block broken-DLL tensorflow before mediapipe
 
 import numpy as np
@@ -24,6 +25,7 @@ from bsl_extract import extract_keypoints_from_video
 
 
 def main():
+    bornil.quiet.install_runtime()
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", default="trial_5pct")
     ap.add_argument("--video-root", default=".", help="root that holds chunks/")
@@ -40,7 +42,10 @@ def main():
     n = len(man)
     ok = skip = miss = fail = 0
     t0 = time.time()
-    for i, r in enumerate(man.itertuples(index=False), 1):
+    stderr_log = os.path.join(args.out_dir, "extract_stderr.log")
+    # Native cv2/mediapipe warnings go to this file (fd 2); progress stays on stdout.
+    with bornil.quiet.redirect_c_stderr(stderr_log):
+      for i, r in enumerate(man.itertuples(index=False), 1):
         dst = os.path.join(feat_dir, r.recording.replace(".webm", ".npy"))
         if os.path.exists(dst):
             skip += 1

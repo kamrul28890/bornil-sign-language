@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-13 — GPU enabled + quieter extraction + --percent/run_trial
+- **What:** Installed CUDA torch (2.6.0+cu124) — training now runs on the RTX 3070 (`device: auto`/`--device cuda`, verified). Added `--percent N` to `make_sample` and a one-command `scripts/run_trial.py` (sample→extract→pack→train). `bornil/quiet.py` silences benign cv2/mediapipe/ffmpeg/protobuf noise and redirects native fd-2 warnings to `<out_dir>/extract_stderr.log` so the console shows only the progress line.
+- **Why:** User wanted GPU training, a percentage argument, and was (understandably) alarmed by the wall of harmless MediaPipe/ffmpeg warnings.
+- **Impact:** `python scripts/run_trial.py --percent 2 --device cuda` runs the whole slice on GPU with a clean console. Those "errors" were all benign warnings (MediaPipe `inference_feedback_manager`, ffmpeg `matroska,webm Unknown-sized element`, TFLite/absl/protobuf notices) — extraction was working (`ok=N fail=0`). Full suite 59 passing on cu124.
+- **Commit:** (this commit)
+
 ## 2026-07-13 — 5% trial pipeline: end-to-end vertical slice runs locally
 - **What:** Greedy `generate()` on SignTransformer; `bornil/train/loop.py` (train_epoch + evaluate w/ locked metrics); trial scripts `make_sample`/`extract_sample`/`pack_sample`/`train_sample` + `configs/trial_5pct.yaml`; `bornil/mp_guard.py` (tensorflow-block so mediapipe imports); `requirements.txt` pinned; `.gitignore` for trial artifacts.
 - **Why:** Prove the whole pipeline (sample→extract→pack→train→decode→score→log) on this PC before committing cloud compute to the full 17,988 clips (user request: 5% trial).

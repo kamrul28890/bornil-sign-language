@@ -31,6 +31,8 @@ def main():
     ap.add_argument("--percent", type=float, default=2.0,
                     help="percentage of the dataset for the trial (e.g. 2)")
     ap.add_argument("--device", default="auto", help="auto|cuda|cpu")
+    ap.add_argument("--workers", type=int, default=None,
+                    help="parallel CPU workers for extraction (default cpu_count-2)")
     ap.add_argument("--epochs", type=int, default=None)
     ap.add_argument("--config", default="configs/trial_base.yaml")
     ap.add_argument("--seed", type=int, default=42)
@@ -46,8 +48,11 @@ def main():
         run("1/4 Sample clips", "make_sample.py",
             ["--percent", str(args.percent), "--out-dir", out, "--seed", str(args.seed)])
     if not args.skip_extract:
-        run("2/4 Extract MediaPipe keypoints (CPU-bound)", "extract_sample.py",
-            ["--out-dir", out])
+        extract_argv = ["--out-dir", out]
+        if args.workers is not None:
+            extract_argv += ["--workers", str(args.workers)]
+        run("2/4 Extract MediaPipe keypoints (CPU-parallel)", "extract_sample.py",
+            extract_argv)
     run("3/4 Pack features", "pack_sample.py", ["--out-dir", out])
 
     train_argv = ["--config", args.config, "--out-dir", out, "--device", args.device]

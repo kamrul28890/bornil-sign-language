@@ -2,11 +2,16 @@
 
 Runs the SAME extraction as the full pipeline (bsl_extract) over the sampled
 clips, reading videos from the local `chunks/`. Resumable: clips whose .npy
-already exists are skipped. Sequential + single-process (simple and robust on
-Windows); the full-dataset run uses run_extraction.py's parallel path.
+already exists are skipped.
 
-    python scripts/extract_sample.py                 # all clips in sample_manifest
-    python scripts/extract_sample.py --limit 8       # first N (smoke)
+MediaPipe Holistic is CPU-only on Windows (the GPU can't help here), so speed
+comes from running many clips in parallel across CPU cores. Use --workers to
+control it (default: cpu_count - 2). --workers 1 forces the simple sequential
+path and mirrors native warnings to <out_dir>/extract_stderr.log.
+
+    python scripts/extract_sample.py --out-dir trial_2pct            # parallel
+    python scripts/extract_sample.py --out-dir trial_2pct --workers 8
+    python scripts/extract_sample.py --out-dir trial_2pct --limit 8  # smoke
 """
 import argparse
 import os
@@ -18,10 +23,52 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bornil.quiet     # noqa: F401  # silence benign cv2/mediapipe/tf/protobuf noise
 import bornil.mp_guard  # noqa: F401  # block broken-DLL tensorflow before mediapipe
 
+import multiprocessing as mp
+
 import numpy as np
 import pandas as pd
 
 from bsl_extract import extract_keypoints_from_video
+
+MAX_FRAMES_DEFAULT = 128
+
+
+def _worker(task):
+    """Extract one clip. Native stderr noise is sent to the null device so the
+    parallel console stays clean; failures are returned as messages instead."""
+    dst, video_path, max_frames = task
+    try:
+        with bornil.quiet.redirect_c_stderr(os.devnull):
+            feats = extract_keypoints_from_video(video_path, max_frames=max_frames)
+        np.save(dst, feats)
+        return ("ok", dst)
+    except Exception as e:
+        return ("fail", f"{os.path.basename(video_path)}: {e!r}")
+
+
+def _build_tasks(man, feat_dir, video_root, max_frames):
+    """Return (tasks_to_do, skip_count, missing_list)."""
+    tasks, skip, missing = [], 0, []
+    for r in man.itertuples(index=False):
+        dst = os.path.join(feat_dir, r.recording.replace(".webm", ".npy"))
+        if os.path.exists(dst):
+            skip += 1
+            continue
+        vp = os.path.join(video_root, r.chunk_path, r.recording)
+        if not os.path.exists(vp):
+            missing.append(vp)
+            continue
+        tasks.append((dst, vp, max_frames))
+    return tasks, skip, missing
+
+
+def _progress(done, total, t0, ok, fail, skip, miss):
+    el = time.time() - t0
+    rate = done / el if el else 0
+    eta = (total - done) / rate / 60 if rate else 0
+    pct = 100.0 * done / total if total else 100.0
+    print(f"  [{pct:5.1f}%] {done}/{total} | {rate:.2f} clip/s | ETA {eta:.1f} min | "
+          f"ok={ok} skip={skip} miss={miss} fail={fail}", flush=True)
 
 
 def main():
@@ -29,8 +76,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", default="trial_5pct")
     ap.add_argument("--video-root", default=".", help="root that holds chunks/")
-    ap.add_argument("--max-frames", type=int, default=128)
+    ap.add_argument("--max-frames", type=int, default=MAX_FRAMES_DEFAULT)
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4) - 2),
+                    help="parallel CPU workers (default cpu_count-2; 1 = sequential)")
     args = ap.parse_args()
 
     man = pd.read_csv(os.path.join(args.out_dir, "sample_manifest.csv"))
@@ -39,36 +88,42 @@ def main():
     feat_dir = os.path.join(args.out_dir, "features")
     os.makedirs(feat_dir, exist_ok=True)
 
-    n = len(man)
-    ok = skip = miss = fail = 0
+    tasks, skip, missing = _build_tasks(man, feat_dir, args.video_root, args.max_frames)
+    for vp in missing:
+        print(f"  MISSING {vp}", flush=True)
+    todo = len(tasks)
+    ok = fail = 0
+    miss = len(missing)
+    workers = min(args.workers, todo) if todo else 1
+    print(f"clips: total={len(man)} already={skip} todo={todo} missing={miss} "
+          f"| workers={workers}", flush=True)
+
     t0 = time.time()
-    stderr_log = os.path.join(args.out_dir, "extract_stderr.log")
-    # Native cv2/mediapipe warnings go to this file (fd 2); progress stays on stdout.
-    with bornil.quiet.redirect_c_stderr(stderr_log):
-      for i, r in enumerate(man.itertuples(index=False), 1):
-        dst = os.path.join(feat_dir, r.recording.replace(".webm", ".npy"))
-        if os.path.exists(dst):
-            skip += 1
-        else:
-            vp = os.path.join(args.video_root, r.chunk_path, r.recording)
-            if not os.path.exists(vp):
-                miss += 1
-                print(f"  MISSING {vp}", flush=True)
-            else:
-                try:
-                    feats = extract_keypoints_from_video(vp, max_frames=args.max_frames)
-                    np.save(dst, feats)
+    if todo == 0:
+        pass
+    elif workers <= 1:
+        # Sequential: keep native noise in a single log file.
+        with bornil.quiet.redirect_c_stderr(os.path.join(args.out_dir, "extract_stderr.log")):
+            for i, task in enumerate(tasks, 1):
+                status, info = _worker(task)
+                if status == "ok":
                     ok += 1
-                except Exception as e:
+                else:
                     fail += 1
-                    print(f"  FAIL {r.recording}: {e!r}", flush=True)
-        if i % 5 == 0 or i == n:
-            el = time.time() - t0
-            rate = i / el if el else 0
-            eta = (n - i) / rate / 60 if rate else 0
-            pct = 100.0 * i / n
-            print(f"  [{pct:5.1f}%] {i}/{n} | {rate:.2f} clip/s | ETA {eta:.1f} min | "
-                  f"ok={ok} skip={skip} miss={miss} fail={fail}", flush=True)
+                    print(f"  FAIL {info}", flush=True)
+                if i % 5 == 0 or i == todo:
+                    _progress(i, todo, t0, ok, fail, skip, miss)
+    else:
+        ctx = mp.get_context("spawn")
+        with ctx.Pool(processes=workers) as pool:
+            for i, (status, info) in enumerate(pool.imap_unordered(_worker, tasks, chunksize=1), 1):
+                if status == "ok":
+                    ok += 1
+                else:
+                    fail += 1
+                    print(f"  FAIL {info}", flush=True)
+                if i % 5 == 0 or i == todo:
+                    _progress(i, todo, t0, ok, fail, skip, miss)
 
     print(f"DONE in {(time.time()-t0)/60:.1f} min | "
           f"ok={ok} skip={skip} miss={miss} fail={fail} -> {feat_dir}", flush=True)

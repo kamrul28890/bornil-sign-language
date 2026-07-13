@@ -30,4 +30,4 @@
 ---
 
 <!-- Log rows below, newest first -->
-<!-- (8-clip smoke row removed — pipeline validation only, not a real result) -->
+<!-- (smoke/GPU-path proof rows removed — pipeline validation only, not real results) -->

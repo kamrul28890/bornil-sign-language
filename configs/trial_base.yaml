@@ -1,0 +1,35 @@
+# Base config for run_trial.py — percent-agnostic model/train params.
+# The trial.out_dir / trial.name are overridden per run by --out-dir/--percent.
+
+trial:
+  name: trial
+  seed: 42
+  out_dir: trial
+
+data:
+  manifest: video_data.csv
+  tokenizer: bsl_sp.model
+  max_frames: 128
+  normalize: true
+  upper_body: true          # 218-dim input
+
+split:
+  kind: random-v1
+  fracs: [0.8, 0.1, 0.1]
+
+model:
+  d_model: 256
+  nhead: 8
+  num_encoder_layers: 4
+  num_decoder_layers: 4
+  dim_feedforward: 1024
+  dropout: 0.1
+
+train:
+  epochs: 40
+  batch_size: 16
+  lr: 0.0003
+  weight_decay: 0.0001
+  clip_grad: 1.0
+  max_decode_len: 128
+  device: auto              # cuda if available else cpu

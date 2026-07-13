@@ -13,6 +13,8 @@ sacrebleu==2.6.0
 pyyaml
 pytest
 
-# torch: install the CPU (or CUDA) build separately, e.g.
-#   pip install torch --index-url https://download.pytorch.org/whl/cpu
-# tested with torch 2.11.0+cpu
+# torch: install a build matching your hardware, separately.
+#   GPU (NVIDIA, recommended): pip install torch --index-url https://download.pytorch.org/whl/cu124
+#   CPU only:                   pip install torch --index-url https://download.pytorch.org/whl/cpu
+# Tested with torch 2.6.0+cu124 (RTX 3070) and 2.11.0+cpu.
+# Verify the GPU is seen:  python -c "import torch; print(torch.cuda.is_available())"

@@ -33,6 +33,19 @@ from bornil.models.transformer import SignTransformer
 from bornil.train.loop import train_epoch, evaluate
 
 
+def resolve_device(pref: str) -> str:
+    """Resolve 'auto'|'cuda'|'cpu' to a real device, warning on CUDA fallback."""
+    if pref == "auto":
+        return "cuda" if torch.cuda.is_available() else "cpu"
+    if pref == "cuda" and not torch.cuda.is_available():
+        print("WARNING: --device cuda requested but torch.cuda.is_available() is False.\n"
+              "         Your torch is likely the CPU build. Install a CUDA build:\n"
+              "         pip install torch --index-url https://download.pytorch.org/whl/cu124\n"
+              "         Falling back to CPU for now.", flush=True)
+        return "cpu"
+    return pref
+
+
 def _subset(manifest, recordings, targets_by_rec):
     rows = manifest[manifest["recording"].isin(set(recordings))]
     pack_idx = rows["pack_idx"].tolist()
@@ -45,6 +58,7 @@ def main():
     ap.add_argument("--config", default="configs/trial_5pct.yaml")
     ap.add_argument("--epochs", type=int, default=None, help="override for smoke runs")
     ap.add_argument("--out-dir", default=None, help="override trial.out_dir (e.g. smoke)")
+    ap.add_argument("--device", default=None, help="auto|cuda|cpu (overrides config)")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -52,10 +66,12 @@ def main():
         cfg["train"]["epochs"] = args.epochs
     if args.out_dir is not None:
         cfg["trial"]["out_dir"] = args.out_dir
+        cfg["trial"]["name"] = os.path.basename(os.path.normpath(args.out_dir))
+    if args.device is not None:
+        cfg["train"]["device"] = args.device
     out_dir = cfg["trial"]["out_dir"]
 
-    dev = cfg["train"]["device"]
-    device = ("cuda" if torch.cuda.is_available() else "cpu") if dev == "auto" else dev
+    device = resolve_device(cfg["train"]["device"])
 
     # --- data ---
     man = pd.read_csv(os.path.join(out_dir, "sample_manifest.csv"))
@@ -76,7 +92,11 @@ def main():
     train_loader = loader(sp["train"], True)
     val_loader = loader(sp["val"], False)
     test_loader = loader(sp["test"], False)
-    print(f"device={device} | clips train/val/test = "
+    dev_desc = device
+    if device == "cuda":
+        p = torch.cuda.get_device_properties(0)
+        dev_desc = f"cuda ({p.name}, {p.total_memory/1e9:.1f} GB)"
+    print(f"device={dev_desc} | clips train/val/test = "
           f"{len(sp['train'])}/{len(sp['val'])}/{len(sp['test'])} | vocab={tok.vocab_size}")
 
     # --- model ---
@@ -130,7 +150,7 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
         f"\n### EXP-{cfg['trial']['name']}-{h}  ({date.today().isoformat()})\n"
         f"- **Model:** SignTransformer d{cfg['model']['d_model']} "
         f"L{cfg['model']['num_encoder_layers']}+{cfg['model']['num_decoder_layers']}   "
-        f"**Phase/Task:** trial-5pct (WS-C T0.2)\n"
+        f"**Phase/Task:** {cfg['trial']['name']} (WS-C T0.2)\n"
         f"- **Data/Split:** {cfg['trial']['name']} {cfg['split']['kind']} "
         f"(train {n_train} / test {n_test})\n"
         f"- **Representation:** kp-{feature_dim(cfg['data']['upper_body'])}   "

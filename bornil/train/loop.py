@@ -57,13 +57,19 @@ def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
 
 @torch.no_grad()
 def evaluate(model, loader, tokenizer, device: str = "cpu", max_len: int = 128,
-             beam_size: int = 1) -> Tuple[Dict[str, float], List[str], List[str]]:
+             beam_size: int = 1, progress: bool = False,
+             desc: str = "decoding") -> Tuple[Dict[str, float], List[str], List[str]]:
     """Decode the loader (greedy if beam_size<=1, else beam search) and score
-    with the locked metric protocol. Returns (metrics, hypotheses, references)."""
+    with the locked metric protocol. Returns (metrics, hypotheses, references).
+    `progress=True` shows a tqdm bar (beam search is slow — worth watching)."""
     model.to(device).eval()
     hyps: List[str] = []
     refs: List[str] = []
-    for x, y, x_lengths, _ in loader:
+    iterator = loader
+    if progress:
+        from tqdm import tqdm
+        iterator = tqdm(loader, desc=desc, unit="batch", leave=False, dynamic_ncols=True)
+    for x, y, x_lengths, _ in iterator:
         x = x.to(device)
         src_kpm = model.src_padding_mask(x_lengths.to(device), x.size(1))
         if beam_size > 1:

@@ -156,7 +156,8 @@ def main():
     if os.path.exists(best_ckpt):
         model.load_state_dict(torch.load(best_ckpt, map_location=device, weights_only=True))
     tm, hyps, refs = evaluate(model, test_loader, tok, device=device,
-                              max_len=cfg["train"]["max_decode_len"], beam_size=beam_size)
+                              max_len=cfg["train"]["max_decode_len"], beam_size=beam_size,
+                              progress=True, desc=f"test decode (beam={beam_size})")
     mins = (time.time() - t0) / 60
     print(f"\nTEST (beam={beam_size}) | " + " ".join(f"{k}={v:.2f}" for k, v in tm.items()))
 

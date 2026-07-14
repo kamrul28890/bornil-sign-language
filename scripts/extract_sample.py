@@ -18,6 +18,13 @@ import os
 import sys
 import time
 
+# Keep each worker single-threaded so N parallel workers don't oversubscribe the
+# cores (MediaPipe/BLAS otherwise each spawn many threads -> 50+ threads on 16
+# cores -> thrashing at 100% CPU with low throughput). Set BEFORE numpy/mediapipe.
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+           "VECLIB_MAXIMUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    os.environ.setdefault(_v, "1")
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import bornil.quiet     # noqa: F401  # silence benign cv2/mediapipe/tf/protobuf noise

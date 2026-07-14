@@ -136,15 +136,20 @@ def main():
     for ep in range(1, epochs + 1):
         tr = train_epoch(model, train_loader, opt, device=device, pad_id=tok.pad_id,
                          clip_grad=cfg["train"]["clip_grad"],
-                         label_smoothing=label_smoothing, scheduler=sched)
+                         label_smoothing=label_smoothing, scheduler=sched,
+                         progress=True, desc=f"epoch {ep}/{epochs}")
+        elapsed = time.time() - t0
+        eta = elapsed / ep * (epochs - ep)
+        line = (f"epoch {ep:3d}/{epochs} | loss {tr:.4f} | lr {opt.param_groups[0]['lr']:.2e} "
+                f"| elapsed {elapsed/60:.1f}m | ETA {eta/60:.1f}m")
         if ep % 5 == 0 or ep == epochs:
             vm, _, _ = evaluate(model, val_loader, tok, device=device,
                                 max_len=cfg["train"]["max_decode_len"])  # greedy for speed
-            print(f"epoch {ep:3d} | train_loss {tr:.4f} | lr {opt.param_groups[0]['lr']:.2e} "
-                  f"| val BLEU-4 {vm['bleu4']:.2f} chrF++ {vm['chrf++']:.2f}", flush=True)
+            line += f" | val BLEU-4 {vm['bleu4']:.2f} chrF++ {vm['chrf++']:.2f}"
             if vm["bleu4"] > best_bleu:
                 best_bleu = vm["bleu4"]
                 torch.save(model.state_dict(), os.path.join(run_dir, "best.pt"))
+        print(line, flush=True)
 
     # --- test eval (best checkpoint, beam search) ---
     best_ckpt = os.path.join(run_dir, "best.pt")

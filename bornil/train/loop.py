@@ -19,16 +19,21 @@ from bornil.benchmark import metrics as M
 
 def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
                 clip_grad: float = 1.0, label_smoothing: float = 0.0,
-                scheduler=None) -> float:
+                scheduler=None, progress: bool = False, desc: str = "") -> float:
     """One teacher-forced epoch. Returns mean per-batch loss.
 
     `label_smoothing` softens the cross-entropy target (helps calibration);
-    `scheduler` (a per-step LR scheduler) is stepped after each optimizer step.
+    `scheduler` (a per-step LR scheduler) is stepped after each optimizer step;
+    `progress=True` shows a tqdm batch bar (auto-hidden when output isn't a TTY).
     """
     model.to(device).train()
     loss_fn = nn.CrossEntropyLoss(ignore_index=pad_id, label_smoothing=label_smoothing)
     total, nb = 0.0, 0
-    for x, y, x_lengths, _ in loader:
+    iterator = loader
+    if progress:
+        from tqdm import tqdm
+        iterator = tqdm(loader, desc=desc, unit="batch", leave=False, dynamic_ncols=True)
+    for x, y, x_lengths, _ in iterator:
         x, y = x.to(device), y.to(device)
         tgt_in, tgt_out = y[:, :-1], y[:, 1:]
         src_kpm = model.src_padding_mask(x_lengths.to(device), x.size(1))
@@ -44,6 +49,9 @@ def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
             scheduler.step()
         total += float(loss.item())
         nb += 1
+        if progress:
+            iterator.set_postfix(loss=f"{loss.item():.3f}",
+                                 lr=f"{optimizer.param_groups[0]['lr']:.1e}")
     return total / max(nb, 1)
 
 

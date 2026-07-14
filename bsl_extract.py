@@ -56,15 +56,12 @@ def keypoints_from_results(results):
 
 def count_frames(video_path):
     # CAP_PROP_FRAME_COUNT and the CSV frame_count are unreliable for .webm
-    # (often off by a few), so count the actually-decodable frames by reading
-    # through once. This keeps the uniform sampling landing on real frames and
-    # covering the true end of the clip.
+    # (often off by a few), so count the actually-decodable frames by walking
+    # through once. Use grab() (demux only, no pixel decode) rather than read()
+    # so counting doesn't pay the full decode cost — it just needs the count.
     cap = cv2.VideoCapture(video_path)
     n = 0
-    while True:
-        ret, _ = cap.read()
-        if not ret:
-            break
+    while cap.grab():
         n += 1
     cap.release()
     return n
@@ -86,15 +83,17 @@ def extract_keypoints_from_video(video_path, max_frames=None):
         frame_idx = 0
 
         while True:
-            ret, frame = cap.read()
-            if not ret:
+            # grab() advances without decoding pixels; only retrieve() (decode)
+            # the frames we actually keep, so non-sampled frames cost ~nothing.
+            if not cap.grab():
                 break
 
-            # Only run the (expensive) pose/hand model on sampled frames.
             if frame_idx in keep:
-                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                results = holistic.process(rgb)
-                all_keypoints.append(keypoints_from_results(results))
+                ret, frame = cap.retrieve()
+                if ret:
+                    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    results = holistic.process(rgb)
+                    all_keypoints.append(keypoints_from_results(results))
 
             frame_idx += 1
 

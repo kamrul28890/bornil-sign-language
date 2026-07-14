@@ -15,6 +15,13 @@
 
 ---
 
+## 2026-07-14 — Milestone: full dataset extracted + first real baseline
+- **What:** Full 100% run completed — all 17,988 clips extracted (512-frame ceiling), packed `(17988,512,258)`, and the SignTransformer baseline trained on GPU (35 min, random-v1 split, train 14390 / test 1799).
+- **Result:** BLEU-4 **0.12**, chrF **10.61**, chrF++ **8.39**, ROUGE-L 0.034 (EXP data_full-4e112ae230b9).
+- **Diagnosis:** outputs are fluent Bengali but not grounded to the signs (819/1799 unique, none empty) — decoder learned the language prior; visual grounding weak. Expected for a vanilla untuned model on 14k open-vocab pairs; not yet a tuned baseline.
+- **Next:** trivial/retrieval floors for context; training improvements (warmup+scheduler, label smoothing, beam search); evaluate on signerindep-v1 + unseen-sentence-v1; then the model suite (WS-C/WS-D).
+- **Commit:** (this commit)
+
 ## 2026-07-13 — GPU enabled + quieter extraction + --percent/run_trial
 - **What:** Installed CUDA torch (2.6.0+cu124) — training now runs on the RTX 3070 (`device: auto`/`--device cuda`, verified). Added `--percent N` to `make_sample` and a one-command `scripts/run_trial.py` (sample→extract→pack→train). `bornil/quiet.py` silences benign cv2/mediapipe/ffmpeg/protobuf noise and redirects native fd-2 warnings to `<out_dir>/extract_stderr.log` so the console shows only the progress line.
 - **Why:** User wanted GPU training, a percentage argument, and was (understandably) alarmed by the wall of harmless MediaPipe/ffmpeg warnings.

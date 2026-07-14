@@ -25,7 +25,14 @@
 
 | Rank | Model | Split | Repr. | BLEU-4 | chrF++ | EXP-id |
 |---|---|---|---|---|---|---|
-| — | (fill as runs complete) | | | | | |
+| 1 | SignTransformer d256 (vanilla baseline) | random-v1 | kp-218 | 0.12 | 8.39 | data_full-4e112ae230b9 |
+
+> **Baseline diagnosis (2026-07-14):** first full-dataset run. Outputs are fluent
+> Bengali but semantically unrelated to the signs (819/1799 unique, none empty) —
+> the decoder learned the language prior; visual grounding is weak. Expected for a
+> vanilla, greedy-decoded, untuned model on 14k open-vocabulary pairs. Not yet a
+> tuned baseline (no warmup/scheduler/label-smoothing/beam; not run on the harder
+> splits). Establish trivial floors + training improvements before comparing models.
 
 ---
 
@@ -39,3 +46,11 @@
 - **Compute:** cuda   **Train time:** 0.3 min
 - **Metrics (test):** BLEU-4=0.42 chrF=8.14 chrF++=6.43 ROUGE-L=0.027 (BLEU-1/2/3=6.0/1.4/0.7)
 - **Checkpoint:** trial_1pct/runs/79233c0d47db/best.pt
+
+### EXP-data_full-4e112ae230b9  (2026-07-14)
+- **Model:** SignTransformer d256 L4+4   **Phase/Task:** data_full (WS-C T0.2)
+- **Data/Split:** data_full random-v1 (train 14390 / test 1799)
+- **Representation:** kp-218   **Config hash:** 4e112ae230b9   **Seed:** 42
+- **Compute:** cuda   **Train time:** 35.4 min
+- **Metrics (test):** BLEU-4=0.12 chrF=10.61 chrF++=8.39 ROUGE-L=0.034 (BLEU-1/2/3=8.6/1.6/0.4)
+- **Checkpoint:** data_full/runs/4e112ae230b9/best.pt

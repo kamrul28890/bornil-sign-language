@@ -30,9 +30,14 @@
 > **Baseline diagnosis (2026-07-14):** first full-dataset run. Outputs are fluent
 > Bengali but semantically unrelated to the signs (819/1799 unique, none empty) —
 > the decoder learned the language prior; visual grounding is weak. Expected for a
-> vanilla, greedy-decoded, untuned model on 14k open-vocabulary pairs. Not yet a
-> tuned baseline (no warmup/scheduler/label-smoothing/beam; not run on the harder
-> splits). Establish trivial floors + training improvements before comparing models.
+> vanilla, greedy-decoded, untuned model on 14k open-vocabulary pairs.
+>
+> **Trivial floors (random-v1, same split):** most-freq BLEU-4 0.01 / chrF++ 10.03;
+> random 0.05 / 6.64; retrieval(1-NN) 0.07 / 9.11. The model (0.12 / 8.39) **beats
+> all floors on BLEU-4 and ROUGE-L** (learning real signal) but chrF++ is *below*
+> most-freq — chrF is gameable by emitting one frequent sentence, so read BLEU-4 /
+> ROUGE-L as the discriminating metrics here. Next: warmup+scheduler, label
+> smoothing, beam search; then the harder splits.
 
 ---
 

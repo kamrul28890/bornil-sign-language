@@ -43,6 +43,27 @@ def test_train_epoch_reduces_loss():
     assert last < first
 
 
+def test_train_epoch_with_scheduler_and_label_smoothing():
+    import torch
+    from bornil.train.schedule import noam_lambda
+    torch.manual_seed(0)
+    tok, loader, model = _setup()
+    opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, noam_lambda(5))
+    loss = train_epoch(model, loader, opt, device="cpu", pad_id=tok.pad_id,
+                       label_smoothing=0.1, scheduler=sched)
+    assert loss == loss  # finite (not NaN)
+    assert sched.last_epoch > 0  # scheduler advanced
+
+
+def test_evaluate_with_beam_search():
+    import torch
+    torch.manual_seed(0)
+    tok, loader, model = _setup()
+    metrics, hyps, refs = evaluate(model, loader, tok, device="cpu", max_len=16, beam_size=3)
+    assert "bleu4" in metrics and len(hyps) == len(refs)
+
+
 def test_evaluate_returns_metrics_and_overfits():
     torch.manual_seed(0)
     tok, loader, model = _setup()

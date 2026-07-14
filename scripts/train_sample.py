@@ -32,6 +32,7 @@ from bornil.data.tokenizer import Tokenizer
 from bornil.data.transforms import feature_dim
 from bornil.models.transformer import SignTransformer
 from bornil.train.loop import train_epoch, evaluate
+from bornil.train.schedule import noam_lambda
 
 
 def resolve_device(pref: str) -> str:
@@ -114,29 +115,45 @@ def main():
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["train"]["lr"],
                             weight_decay=cfg["train"]["weight_decay"])
 
+    # Warmup+decay LR schedule (stepped per optimizer step). Default 6% of total
+    # steps as warmup, capped at half so short trials still decay.
+    epochs = cfg["train"]["epochs"]
+    total_steps = max(1, len(train_loader) * epochs)
+    warmup = int(cfg["train"].get("warmup_steps", 0)) or max(1, int(0.06 * total_steps))
+    warmup = min(warmup, max(1, total_steps // 2))
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, noam_lambda(warmup))
+    label_smoothing = float(cfg["train"].get("label_smoothing", 0.0))
+    beam_size = int(cfg["train"].get("beam_size", 1))
+    print(f"warmup_steps={warmup}/{total_steps} | label_smoothing={label_smoothing} "
+          f"| beam_size={beam_size}", flush=True)
+
     h = config_hash(cfg)
     run_dir = os.path.join(out_dir, "runs", h)
     os.makedirs(run_dir, exist_ok=True)
 
     # --- train ---
     best_bleu, t0 = -1.0, time.time()
-    for ep in range(1, cfg["train"]["epochs"] + 1):
+    for ep in range(1, epochs + 1):
         tr = train_epoch(model, train_loader, opt, device=device, pad_id=tok.pad_id,
-                         clip_grad=cfg["train"]["clip_grad"])
-        if ep % 5 == 0 or ep == cfg["train"]["epochs"]:
+                         clip_grad=cfg["train"]["clip_grad"],
+                         label_smoothing=label_smoothing, scheduler=sched)
+        if ep % 5 == 0 or ep == epochs:
             vm, _, _ = evaluate(model, val_loader, tok, device=device,
-                                max_len=cfg["train"]["max_decode_len"])
-            print(f"epoch {ep:3d} | train_loss {tr:.4f} | val BLEU-4 {vm['bleu4']:.2f} "
-                  f"chrF++ {vm['chrf++']:.2f}", flush=True)
+                                max_len=cfg["train"]["max_decode_len"])  # greedy for speed
+            print(f"epoch {ep:3d} | train_loss {tr:.4f} | lr {opt.param_groups[0]['lr']:.2e} "
+                  f"| val BLEU-4 {vm['bleu4']:.2f} chrF++ {vm['chrf++']:.2f}", flush=True)
             if vm["bleu4"] > best_bleu:
                 best_bleu = vm["bleu4"]
                 torch.save(model.state_dict(), os.path.join(run_dir, "best.pt"))
 
-    # --- test eval ---
+    # --- test eval (best checkpoint, beam search) ---
+    best_ckpt = os.path.join(run_dir, "best.pt")
+    if os.path.exists(best_ckpt):
+        model.load_state_dict(torch.load(best_ckpt, map_location=device, weights_only=True))
     tm, hyps, refs = evaluate(model, test_loader, tok, device=device,
-                              max_len=cfg["train"]["max_decode_len"])
+                              max_len=cfg["train"]["max_decode_len"], beam_size=beam_size)
     mins = (time.time() - t0) / 60
-    print(f"\nTEST | " + " ".join(f"{k}={v:.2f}" for k, v in tm.items()))
+    print(f"\nTEST (beam={beam_size}) | " + " ".join(f"{k}={v:.2f}" for k, v in tm.items()))
 
     # --- persist run ---
     with open(os.path.join(run_dir, "config.json"), "w", encoding="utf-8") as f:

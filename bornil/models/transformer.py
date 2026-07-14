@@ -118,3 +118,47 @@ class SignTransformer(nn.Module):
             if all(finished):
                 break
         return outputs
+
+    @torch.no_grad()
+    def beam_search(self, src: torch.Tensor, bos_id: int, eos_id: int,
+                    beam_size: int = 5, max_len: int = 128,
+                    length_penalty: float = 1.0, src_key_padding_mask: torch.Tensor = None):
+        """Beam-search decode. Returns a list (len B) of id lists (tokens after
+        BOS, including terminal EOS). Processes one example at a time for clarity."""
+        self.eval()
+        results = []
+        for b in range(src.size(0)):
+            s = src[b:b + 1]
+            mask = None if src_key_padding_mask is None else src_key_padding_mask[b:b + 1]
+            memory = self.encode(s, mask)
+            beams = [([bos_id], 0.0)]
+            finished = []
+            for _ in range(max_len):
+                candidates = []
+                for tokens, score in beams:
+                    if tokens[-1] == eos_id:
+                        finished.append((tokens, score))
+                        continue
+                    ys = torch.tensor([tokens], dtype=torch.long, device=src.device)
+                    t = self.pos(self.tok_embed(ys) * math.sqrt(self.d_model))
+                    h = self.transformer.decoder(
+                        t, memory, tgt_mask=causal_mask(len(tokens)).to(src.device),
+                        memory_key_padding_mask=mask)
+                    logp = torch.log_softmax(self.out(h[:, -1]), dim=-1)[0]
+                    topv, topi = logp.topk(beam_size)
+                    for v, i in zip(topv.tolist(), topi.tolist()):
+                        candidates.append((tokens + [i], score + v))
+                if not candidates:
+                    break
+                candidates.sort(key=lambda x: x[1], reverse=True)
+                beams = candidates[:beam_size]
+                if all(tok[-1] == eos_id for tok, _ in beams):
+                    finished.extend(beams)
+                    break
+            finished = finished or beams
+            best = max(finished, key=lambda x: x[1] / (len(x[0]) ** length_penalty))
+            toks = best[0][1:]                       # drop BOS
+            if eos_id in toks:
+                toks = toks[:toks.index(eos_id) + 1]
+            results.append(toks)
+        return results

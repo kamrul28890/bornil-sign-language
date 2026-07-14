@@ -94,6 +94,33 @@ def test_generate_stops_at_max_len():
     assert all(len(seq) <= 5 for seq in out)
 
 
+def test_beam_search_shape():
+    model = _tiny_model()
+    src = torch.randn(3, 8, 218)
+    out = model.beam_search(src, bos_id=2, eos_id=3, beam_size=4, max_len=6)
+    assert len(out) == 3
+    assert all(isinstance(seq, list) for seq in out)
+
+
+def test_beam_search_reproduces_overfit_target():
+    vocab, pad, bos, eos = 20, 0, 2, 3
+    model = _tiny_model(vocab)
+    torch.manual_seed(3)
+    src = torch.randn(1, 12, 218)
+    y = torch.tensor([[bos, 5, 7, 9, eos]])
+    tgt_in, tgt_out = y[:, :-1], y[:, 1:]
+    opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+    loss_fn = torch.nn.CrossEntropyLoss(ignore_index=pad)
+    model.train()
+    for _ in range(300):
+        opt.zero_grad()
+        loss = loss_fn(model(src, tgt_in).reshape(-1, vocab), tgt_out.reshape(-1))
+        loss.backward()
+        opt.step()
+    out = model.beam_search(src, bos_id=bos, eos_id=eos, beam_size=5, max_len=10)
+    assert out[0][:4] == [5, 7, 9, eos]
+
+
 def test_padding_mask_from_lengths():
     model = _tiny_model()
     mask = model.src_padding_mask(torch.tensor([3, 5]), seq_len=5)

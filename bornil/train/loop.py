@@ -18,10 +18,15 @@ from bornil.benchmark import metrics as M
 
 
 def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
-                clip_grad: float = 1.0) -> float:
-    """One teacher-forced epoch. Returns mean per-batch loss."""
+                clip_grad: float = 1.0, label_smoothing: float = 0.0,
+                scheduler=None) -> float:
+    """One teacher-forced epoch. Returns mean per-batch loss.
+
+    `label_smoothing` softens the cross-entropy target (helps calibration);
+    `scheduler` (a per-step LR scheduler) is stepped after each optimizer step.
+    """
     model.to(device).train()
-    loss_fn = nn.CrossEntropyLoss(ignore_index=pad_id)
+    loss_fn = nn.CrossEntropyLoss(ignore_index=pad_id, label_smoothing=label_smoothing)
     total, nb = 0.0, 0
     for x, y, x_lengths, _ in loader:
         x, y = x.to(device), y.to(device)
@@ -35,26 +40,31 @@ def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
         if clip_grad:
             nn.utils.clip_grad_norm_(model.parameters(), clip_grad)
         optimizer.step()
+        if scheduler is not None:
+            scheduler.step()
         total += float(loss.item())
         nb += 1
     return total / max(nb, 1)
 
 
 @torch.no_grad()
-def evaluate(model, loader, tokenizer, device: str = "cpu",
-             max_len: int = 128) -> Tuple[Dict[str, float], List[str], List[str]]:
-    """Greedy-decode the loader and score with the locked metric protocol.
-
-    Returns (metrics, hypotheses, references) as parallel string lists.
-    """
+def evaluate(model, loader, tokenizer, device: str = "cpu", max_len: int = 128,
+             beam_size: int = 1) -> Tuple[Dict[str, float], List[str], List[str]]:
+    """Decode the loader (greedy if beam_size<=1, else beam search) and score
+    with the locked metric protocol. Returns (metrics, hypotheses, references)."""
     model.to(device).eval()
     hyps: List[str] = []
     refs: List[str] = []
     for x, y, x_lengths, _ in loader:
         x = x.to(device)
         src_kpm = model.src_padding_mask(x_lengths.to(device), x.size(1))
-        gen = model.generate(x, bos_id=tokenizer.bos_id, eos_id=tokenizer.eos_id,
-                             max_len=max_len, src_key_padding_mask=src_kpm)
+        if beam_size > 1:
+            gen = model.beam_search(x, bos_id=tokenizer.bos_id, eos_id=tokenizer.eos_id,
+                                    beam_size=beam_size, max_len=max_len,
+                                    src_key_padding_mask=src_kpm)
+        else:
+            gen = model.generate(x, bos_id=tokenizer.bos_id, eos_id=tokenizer.eos_id,
+                                 max_len=max_len, src_key_padding_mask=src_kpm)
         for ids in gen:
             hyps.append(tokenizer.decode(ids))
         for row in y:

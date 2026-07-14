@@ -33,16 +33,20 @@ def main():
     ap.add_argument("--device", default="auto", help="auto|cuda|cpu")
     ap.add_argument("--workers", type=int, default=None,
                     help="parallel CPU workers for extraction (default cpu_count-2)")
+    ap.add_argument("--max-frames", type=int, default=None,
+                    help="frames kept per clip during extraction (baked in; e.g. 256)")
     ap.add_argument("--epochs", type=int, default=None)
     ap.add_argument("--config", default="configs/trial_base.yaml")
+    ap.add_argument("--out-dir", default=None, help="override output dir name")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--skip-sample", action="store_true")
     ap.add_argument("--skip-extract", action="store_true",
                     help="reuse already-extracted features (retrain only)")
     args = ap.parse_args()
 
-    out = trial_dirname(args.percent)
-    print(f"TRIAL {args.percent:g}%  ->  {out}  (device={args.device})", flush=True)
+    out = args.out_dir or trial_dirname(args.percent)
+    print(f"RUN {args.percent:g}%  ->  {out}  (device={args.device}, "
+          f"max_frames={args.max_frames or 'default'})", flush=True)
 
     if not args.skip_sample:
         run("1/4 Sample clips", "make_sample.py",
@@ -51,9 +55,14 @@ def main():
         extract_argv = ["--out-dir", out]
         if args.workers is not None:
             extract_argv += ["--workers", str(args.workers)]
-        run("2/4 Extract MediaPipe keypoints (CPU-parallel)", "extract_sample.py",
-            extract_argv)
-    run("3/4 Pack features", "pack_sample.py", ["--out-dir", out])
+        if args.max_frames is not None:
+            extract_argv += ["--max-frames", str(args.max_frames)]
+        run("2/4 Extract MediaPipe keypoints (CPU-parallel, resumable)",
+            "extract_sample.py", extract_argv)
+    pack_argv = ["--out-dir", out]
+    if args.max_frames is not None:
+        pack_argv += ["--max-frames", str(args.max_frames)]
+    run("3/4 Pack features", "pack_sample.py", pack_argv)
 
     train_argv = ["--config", args.config, "--out-dir", out, "--device", args.device]
     if args.epochs is not None:

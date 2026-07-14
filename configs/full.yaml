@@ -1,0 +1,44 @@
+# Full-dataset run (100%). Extraction is resumable: stop any time and re-run the
+# same command; finished clips are skipped. Check progress with scripts/status.py.
+#
+#   python scripts/run_trial.py --percent 100 --out-dir data_full \
+#       --config configs/full.yaml --max-frames 512 --device cuda
+#
+# max_frames is an ADAPTIVE CEILING, not a fixed length: clips shorter than it
+# keep ALL their frames (variable length); only longer clips are downsampled.
+# From the frame-count distribution, 512 keeps 93% of clips at full resolution
+# (256 keeps 77%). It is BAKED INTO extraction — changing it later means
+# re-extracting. Load-time can still downsample further for ablations.
+
+trial:
+  name: data_full
+  seed: 42
+  out_dir: data_full
+
+data:
+  manifest: video_data.csv
+  tokenizer: bsl_sp.model
+  max_frames: 512            # adaptive extraction ceiling (baked in); keeps 93% of clips whole
+  normalize: true
+  upper_body: true           # 218-dim input
+
+split:
+  kind: random-v1            # also evaluate signerindep-v1 / unseen-sentence-v1 later
+  fracs: [0.8, 0.1, 0.1]
+
+model:
+  d_model: 256
+  nhead: 8
+  num_encoder_layers: 4
+  num_decoder_layers: 4
+  dim_feedforward: 1024
+  dropout: 0.1
+
+train:
+  epochs: 60
+  batch_size: 32
+  lr: 0.0003
+  weight_decay: 0.0001
+  clip_grad: 1.0
+  max_decode_len: 256
+  device: auto

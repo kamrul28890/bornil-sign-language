@@ -31,3 +31,11 @@
 
 <!-- Log rows below, newest first -->
 <!-- (smoke/GPU-path proof rows removed — pipeline validation only, not real results) -->
+
+### EXP-trial_1pct-79233c0d47db  (2026-07-13)
+- **Model:** SignTransformer d256 L4+4   **Phase/Task:** trial_1pct (WS-C T0.2)
+- **Data/Split:** trial_1pct random-v1 (train 144 / test 18)
+- **Representation:** kp-218   **Config hash:** 79233c0d47db   **Seed:** 42
+- **Compute:** cuda   **Train time:** 0.3 min
+- **Metrics (test):** BLEU-4=0.42 chrF=8.14 chrF++=6.43 ROUGE-L=0.027 (BLEU-1/2/3=6.0/1.4/0.7)
+- **Checkpoint:** trial_1pct/runs/79233c0d47db/best.pt

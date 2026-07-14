@@ -27,6 +27,7 @@ from torch.utils.data import DataLoader
 from bornil.config import load_config, config_hash
 from bornil.benchmark.splits import make_random_split
 from bornil.data.dataset import SignDataset, make_collate_fn
+from bornil.data.sampler import LengthBucketBatchSampler
 from bornil.data.tokenizer import Tokenizer
 from bornil.data.transforms import feature_dim
 from bornil.models.transformer import SignTransformer
@@ -87,7 +88,10 @@ def main():
         pi, tg = _subset(man, recs, targets_by_rec)
         ds = SignDataset(features, lengths, pi, tg,
                          normalize=cfg["data"]["normalize"], upper_body=cfg["data"]["upper_body"])
-        return DataLoader(ds, batch_size=cfg["train"]["batch_size"], shuffle=shuffle, collate_fn=collate)
+        # Length-bucketed batches: pad similar-length clips together (less waste).
+        bs = LengthBucketBatchSampler(ds.item_lengths(), cfg["train"]["batch_size"],
+                                      shuffle=shuffle, seed=cfg["trial"]["seed"])
+        return DataLoader(ds, batch_sampler=bs, collate_fn=collate)
 
     train_loader = loader(sp["train"], True)
     val_loader = loader(sp["val"], False)

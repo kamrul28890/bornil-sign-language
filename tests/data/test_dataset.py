@@ -43,6 +43,12 @@ def test_getitem_raw_dim_when_no_selection():
     assert x.shape == (10, 258)
 
 
+def test_item_lengths():
+    feats, lengths, pack_idx, targets = _synthetic()
+    ds = SignDataset(feats, lengths, pack_idx, targets)
+    assert ds.item_lengths() == [10, 20, 5, 128]
+
+
 def test_collate_pads_inputs_and_targets():
     feats, lengths, pack_idx, targets = _synthetic()
     ds = SignDataset(feats, lengths, pack_idx, targets)

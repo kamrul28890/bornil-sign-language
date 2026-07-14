@@ -39,6 +39,10 @@ class SignDataset(Dataset):
     def __len__(self) -> int:
         return len(self.pack_idx)
 
+    def item_lengths(self):
+        """Per-item true frame count (for length-bucketed batching)."""
+        return [int(self.lengths[int(p)]) for p in self.pack_idx]
+
     def __getitem__(self, i: int) -> Batch:
         idx = int(self.pack_idx[i])
         t = int(self.lengths[idx])

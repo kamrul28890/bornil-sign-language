@@ -15,6 +15,24 @@
 
 ---
 
+## 2026-07-15 — Eval-only decode ablation script
+- **What:** Added `scripts/eval_checkpoint_decode.py`, which loads an existing run checkpoint and evaluates alternate decode settings without retraining. `evaluate()` now passes `length_penalty` through to beam search.
+- **Why:** Let us test beam size, max decode length, and beam length penalty cheaply before spending GPU time on new model training.
+- **Impact:** Existing full-dataset checkpoints can now produce decode-ablation prediction/metric files under `<run>/decode_ablations/`.
+- **Commit:** (this commit)
+
+## 2026-07-15 — Full official baseline suite + trivial floors
+- **What:** Completed full-dataset SignTransformer baseline runs on `random-v1`, `unseen-sentence-v1`, and `signerindep-v1`; added `docs/logs/BASELINE_TABLE.md` and `docs/logs/TRIVIAL_FLOORS.md`.
+- **Why:** Establish the paper-ready benchmark floor across all official splits before model ablations.
+- **Impact:** The model beats trivial floors on BLEU-4 and ROUGE-L across all splits, while retrieval remains competitive on chrF++ for harder splits; the main diagnosis is weak visual grounding and signer/session generalization.
+- **Commit:** (this commit)
+
+## 2026-07-14 — Official split loading + greedy decode policy
+- **What:** `train_sample.py` and `trivial_baselines.py` now resolve frozen split files from `splits/<kind>` for full-corpus runs, while sample/trial manifests fall back to generated local splits. Added `--split`, `--split-root`, `--no-frozen-splits`, and `--beam-size`; `configs/full.yaml` now uses official greedy decoding (`beam_size: 1`) with beam search reserved for explicit ablations.
+- **Why:** The previous full run used an ad-hoc random split, not `splits/random-v1`; official benchmark numbers must be reproducible and decode policy must be explicit.
+- **Impact:** Official `kp-218` reruns can now target frozen `random-v1`, `signerindep-v1`, and `unseen-sentence-v1`, with split source and decode mode saved in config/log rows.
+- **Commit:** (this commit)
+
 ## 2026-07-14 — Milestone: full dataset extracted + first real baseline
 - **What:** Full 100% run completed — all 17,988 clips extracted (512-frame ceiling), packed `(17988,512,258)`, and the SignTransformer baseline trained on GPU (35 min, random-v1 split, train 14390 / test 1799).
 - **Result:** BLEU-4 **0.12**, chrF **10.61**, chrF++ **8.39**, ROUGE-L 0.034 (EXP data_full-4e112ae230b9).

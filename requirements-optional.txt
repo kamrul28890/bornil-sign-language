@@ -1,0 +1,7 @@
+# Optional Bornil research/evaluation dependencies.
+# Keep these separate from requirements.txt because they may download large
+# model weights or pull extra transformer/NLP stacks.
+
+# Semantic similarity for prediction/reference text pairs:
+bert-score
+transformers

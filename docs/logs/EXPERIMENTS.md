@@ -59,3 +59,38 @@
 - **Compute:** cuda   **Train time:** 35.4 min
 - **Metrics (test):** BLEU-4=0.12 chrF=10.61 chrF++=8.39 ROUGE-L=0.034 (BLEU-1/2/3=8.6/1.6/0.4)
 - **Checkpoint:** data_full/runs/4e112ae230b9/best.pt
+
+### EXP-data_full-2db347d9db75  (2026-07-14)
+- **Model:** SignTransformer d256 L4+4   **Phase/Task:** data_full (WS-C T0.2)
+- **Data/Split:** data_full random-v1 (train 14390 / test 1799)
+- **Representation:** kp-218   **Config hash:** 2db347d9db75   **Seed:** 42
+- **Compute:** cuda   **Train time:** 119.2 min
+- **Metrics (test):** BLEU-4=0.34 chrF=10.91 chrF++=8.79 ROUGE-L=0.049 (BLEU-1/2/3=10.2/2.8/0.9)
+- **Checkpoint:** data_full/runs/2db347d9db75/best.pt
+
+### EXP-data_full-c19d0ea08824  (2026-07-14)
+- **Model:** SignTransformer d256 L4+4   **Phase/Task:** data_full (WS-C T0.2)
+- **Data/Split:** data_full random-v1 (train 14390 / test 1799); source=frozen:splits/random-v1
+- **Representation:** kp-218   **Config hash:** c19d0ea08824   **Seed:** 42
+- **Compute:** cuda   **Train time:** 42.0 min
+- **Decode:** greedy (beam_size=1)
+- **Metrics (test):** BLEU-4=0.52 chrF=11.81 chrF++=9.65 ROUGE-L=0.055 (BLEU-1/2/3=11.7/3.3/1.1)
+- **Checkpoint:** data_full/runs/c19d0ea08824/best.pt
+
+### EXP-data_full-60320f4c6a60  (2026-07-15)
+- **Model:** SignTransformer d256 L4+4   **Phase/Task:** data_full (WS-C T0.2)
+- **Data/Split:** data_full unseen-sentence-v1 (train 14390 / test 1799); source=frozen:splits/unseen-sentence-v1
+- **Representation:** kp-218   **Config hash:** 60320f4c6a60   **Seed:** 42
+- **Compute:** cuda   **Train time:** 37.9 min
+- **Decode:** greedy (beam_size=1)
+- **Metrics (test):** BLEU-4=0.42 chrF=11.29 chrF++=9.19 ROUGE-L=0.048 (BLEU-1/2/3=11.1/3.0/1.0)
+- **Checkpoint:** data_full/runs/60320f4c6a60/best.pt
+
+### EXP-data_full-46a706570712  (2026-07-15)
+- **Model:** SignTransformer d256 L4+4   **Phase/Task:** data_full (WS-C T0.2)
+- **Data/Split:** data_full signerindep-v1 (train 14500 / test 1500); source=frozen:splits/signerindep-v1
+- **Representation:** kp-218   **Config hash:** 46a706570712   **Seed:** 42
+- **Compute:** cuda   **Train time:** 42.0 min
+- **Decode:** greedy (beam_size=1)
+- **Metrics (test):** BLEU-4=0.35 chrF=10.36 chrF++=8.38 ROUGE-L=0.048 (BLEU-1/2/3=8.8/2.4/0.8)
+- **Checkpoint:** data_full/runs/46a706570712/best.pt

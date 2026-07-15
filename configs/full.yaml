@@ -42,6 +42,6 @@ train:
   clip_grad: 1.0
   warmup_steps: 0         # 0 => auto (6% of total steps)
   label_smoothing: 0.1
-  beam_size: 5            # beam search for the final test decode
+  beam_size: 1            # official leaderboard decode: greedy; use --beam-size 5 for ablation
   max_decode_len: 256
   device: auto

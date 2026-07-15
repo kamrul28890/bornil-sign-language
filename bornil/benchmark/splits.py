@@ -18,13 +18,14 @@ from __future__ import annotations
 import json
 import unicodedata
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
 
 Split = Dict[str, List[str]]
 _NAMES = ("train", "val", "test")
+_KINDS = ("random-v1", "signerindep-v1", "unseen-sentence-v1")
 
 
 class LeakageError(AssertionError):
@@ -106,6 +107,47 @@ def make_unseen_sentence_split(df: pd.DataFrame, seed: int = 42,
     """Unseen-sentence split: whole normalized-sentence groups stay on one side."""
     norm = df["text"].map(normalize_text)
     return _group_split(df, norm, seed, fracs)
+
+
+def make_split(df: pd.DataFrame, kind: str, seed: int = 42,
+               fracs: Sequence[float] = (0.8, 0.1, 0.1)) -> Split:
+    """Create a split by benchmark kind."""
+    if kind == "random-v1":
+        return make_random_split(df, seed=seed, fracs=fracs)
+    if kind == "signerindep-v1":
+        return make_signerindep_split(df, seed=seed, fracs=fracs)
+    if kind == "unseen-sentence-v1":
+        return make_unseen_sentence_split(df, seed=seed, fracs=fracs)
+    raise ValueError(f"unknown split kind {kind!r}; expected one of {_KINDS}")
+
+
+def _recording_set(split: Split) -> set:
+    recs = set()
+    for name in _NAMES:
+        recs.update(split.get(name, []))
+    return recs
+
+
+def resolve_split(df: pd.DataFrame, kind: str, seed: int = 42,
+                  fracs: Sequence[float] = (0.8, 0.1, 0.1),
+                  split_root="splits",
+                  prefer_frozen: bool = True) -> Tuple[Split, str]:
+    """Load the frozen split when it exactly matches `df`; otherwise generate.
+
+    Full benchmark runs should use the released files in `splits/<kind>/`.
+    Trial/sample manifests only contain a subset of recordings, so they fall back
+    to a deterministic local split instead of accidentally mixing in full-corpus
+    recording ids.
+
+    Returns `(split, source)` where source is `frozen:<path>` or `generated`.
+    """
+    if prefer_frozen:
+        split_dir = Path(split_root) / kind
+        if all((split_dir / f"{name}.txt").exists() for name in _NAMES):
+            sp = load_split(split_dir)
+            if _recording_set(sp) == set(df["recording"]):
+                return sp, f"frozen:{split_dir.as_posix()}"
+    return make_split(df, kind=kind, seed=seed, fracs=fracs), "generated"
 
 
 def check_no_leakage(split: Split, df: Optional[pd.DataFrame] = None,

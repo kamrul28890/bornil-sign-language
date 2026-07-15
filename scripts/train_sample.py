@@ -25,7 +25,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from bornil.config import load_config, config_hash
-from bornil.benchmark.splits import make_random_split
+from bornil.benchmark.splits import resolve_split
 from bornil.data.dataset import SignDataset, make_collate_fn
 from bornil.data.sampler import LengthBucketBatchSampler
 from bornil.data.tokenizer import Tokenizer
@@ -61,6 +61,14 @@ def main():
     ap.add_argument("--epochs", type=int, default=None, help="override for smoke runs")
     ap.add_argument("--out-dir", default=None, help="override trial.out_dir (e.g. smoke)")
     ap.add_argument("--device", default=None, help="auto|cuda|cpu (overrides config)")
+    ap.add_argument("--beam-size", type=int, default=None,
+                    help="override train.beam_size for final test decode")
+    ap.add_argument("--split", default=None,
+                    help="override split.kind: random-v1|signerindep-v1|unseen-sentence-v1")
+    ap.add_argument("--split-root", default="splits",
+                    help="directory containing frozen split files")
+    ap.add_argument("--no-frozen-splits", action="store_true",
+                    help="generate the split from the current manifest instead of loading splits/<kind>")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -71,6 +79,10 @@ def main():
         cfg["trial"]["name"] = os.path.basename(os.path.normpath(args.out_dir))
     if args.device is not None:
         cfg["train"]["device"] = args.device
+    if args.beam_size is not None:
+        cfg["train"]["beam_size"] = args.beam_size
+    if args.split is not None:
+        cfg.setdefault("split", {})["kind"] = args.split
     out_dir = cfg["trial"]["out_dir"]
 
     device = resolve_device(cfg["train"]["device"])
@@ -82,7 +94,15 @@ def main():
     tok = Tokenizer(cfg["data"]["tokenizer"])
     targets_by_rec = {r: tok.encode(t) for r, t in zip(man["recording"], man["clean_text"])}
 
-    sp = make_random_split(man, seed=cfg["trial"]["seed"], fracs=tuple(cfg["split"]["fracs"]))
+    sp, split_source = resolve_split(
+        man,
+        kind=cfg["split"]["kind"],
+        seed=cfg["trial"]["seed"],
+        fracs=tuple(cfg["split"]["fracs"]),
+        split_root=args.split_root,
+        prefer_frozen=not args.no_frozen_splits,
+    )
+    cfg["split"]["source"] = split_source
     collate = make_collate_fn(tok.pad_id)
 
     def loader(recs, shuffle):
@@ -101,8 +121,9 @@ def main():
     if device == "cuda":
         p = torch.cuda.get_device_properties(0)
         dev_desc = f"cuda ({p.name}, {p.total_memory/1e9:.1f} GB)"
-    print(f"device={dev_desc} | clips train/val/test = "
-          f"{len(sp['train'])}/{len(sp['val'])}/{len(sp['test'])} | vocab={tok.vocab_size}")
+    print(f"device={dev_desc} | split={cfg['split']['kind']} ({split_source}) | "
+          f"clips train/val/test = {len(sp['train'])}/{len(sp['val'])}/{len(sp['test'])} "
+          f"| vocab={tok.vocab_size}")
 
     # --- model ---
     m = cfg["model"]
@@ -124,8 +145,10 @@ def main():
     sched = torch.optim.lr_scheduler.LambdaLR(opt, noam_lambda(warmup))
     label_smoothing = float(cfg["train"].get("label_smoothing", 0.0))
     beam_size = int(cfg["train"].get("beam_size", 1))
+    decode_mode = "greedy" if beam_size <= 1 else f"beam{beam_size}"
+    cfg["train"]["decode_mode"] = decode_mode
     print(f"warmup_steps={warmup}/{total_steps} | label_smoothing={label_smoothing} "
-          f"| beam_size={beam_size}", flush=True)
+          f"| decode={decode_mode}", flush=True)
 
     h = config_hash(cfg)
     run_dir = os.path.join(out_dir, "runs", h)
@@ -157,9 +180,9 @@ def main():
         model.load_state_dict(torch.load(best_ckpt, map_location=device, weights_only=True))
     tm, hyps, refs = evaluate(model, test_loader, tok, device=device,
                               max_len=cfg["train"]["max_decode_len"], beam_size=beam_size,
-                              progress=True, desc=f"test decode (beam={beam_size})")
+                              progress=True, desc=f"test decode ({decode_mode})")
     mins = (time.time() - t0) / 60
-    print(f"\nTEST (beam={beam_size}) | " + " ".join(f"{k}={v:.2f}" for k, v in tm.items()))
+    print(f"\nTEST ({decode_mode}) | " + " ".join(f"{k}={v:.2f}" for k, v in tm.items()))
 
     # --- persist run ---
     with open(os.path.join(run_dir, "config.json"), "w", encoding="utf-8") as f:
@@ -179,10 +202,12 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
         f"L{cfg['model']['num_encoder_layers']}+{cfg['model']['num_decoder_layers']}   "
         f"**Phase/Task:** {cfg['trial']['name']} (WS-C T0.2)\n"
         f"- **Data/Split:** {cfg['trial']['name']} {cfg['split']['kind']} "
-        f"(train {n_train} / test {n_test})\n"
+        f"(train {n_train} / test {n_test}); source={cfg['split'].get('source', 'unknown')}\n"
         f"- **Representation:** kp-{feature_dim(cfg['data']['upper_body'])}   "
         f"**Config hash:** {h}   **Seed:** {cfg['trial']['seed']}\n"
         f"- **Compute:** {device}   **Train time:** {mins:.1f} min\n"
+        f"- **Decode:** {cfg['train'].get('decode_mode', 'unknown')} "
+        f"(beam_size={cfg['train'].get('beam_size', 1)})\n"
         f"- **Metrics (test):** BLEU-4={tm['bleu4']:.2f} chrF={tm['chrf']:.2f} "
         f"chrF++={tm['chrf++']:.2f} ROUGE-L={tm['rougeL']:.3f} "
         f"(BLEU-1/2/3={tm['bleu1']:.1f}/{tm['bleu2']:.1f}/{tm['bleu3']:.1f})\n"

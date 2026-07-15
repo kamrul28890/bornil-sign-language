@@ -97,10 +97,12 @@ def bootstrap_ci(hypotheses: Sequence[str], references: Sequence[str],
     return lo, hi
 
 
-def bertscore(hypotheses, references, model="csebuetnlp/banglabert"):
+def bertscore(hypotheses, references, model="csebuetnlp/banglabert", num_layers=12):
     """BERTScore F1 with BanglaBERT. Optional — requires `bert-score` + torch."""
     try:
-        from bert_score import score as _bscore
+        import importlib
+        import torch  # noqa: F401  # Windows native DLL/import-order guard
+        _bscore_mod = importlib.import_module("bert_score.score")
     except ImportError as e:  # pragma: no cover - environment-dependent
         raise ImportError(
             "BERTScore requires the 'bert-score' package and torch. "
@@ -108,5 +110,20 @@ def bertscore(hypotheses, references, model="csebuetnlp/banglabert"):
         ) from e
     hyps = [nfc(h) for h in hypotheses]
     refs = [nfc(r) for r in references]
-    _, _, f1 = _bscore(hyps, refs, model_type=model, lang="bn", verbose=False)
+    original_get_tokenizer = _bscore_mod.get_tokenizer
+
+    def get_tokenizer_with_sane_max_length(model_type, use_fast=False):
+        tokenizer = original_get_tokenizer(model_type, use_fast)
+        max_len = getattr(tokenizer, "model_max_length", None)
+        if not isinstance(max_len, int) or max_len > 10000:
+            tokenizer.model_max_length = 512
+        return tokenizer
+
+    _bscore_mod.get_tokenizer = get_tokenizer_with_sane_max_length
+    try:
+        _, _, f1 = _bscore_mod.score(hyps, refs, model_type=model,
+                                     num_layers=num_layers, lang="bn",
+                                     verbose=False)
+    finally:
+        _bscore_mod.get_tokenizer = original_get_tokenizer
     return float(f1.mean())

@@ -18,7 +18,7 @@ import pandas as pd
 from bornil.config import load_config
 from bornil.benchmark import metrics as M
 from bornil.benchmark import trivial
-from bornil.benchmark.splits import make_random_split
+from bornil.benchmark.splits import resolve_split
 from bornil.data.transforms import prepare_features
 
 
@@ -37,19 +37,35 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", default="data_full")
     ap.add_argument("--config", default="configs/full.yaml")
+    ap.add_argument("--split", default=None,
+                    help="override split.kind: random-v1|signerindep-v1|unseen-sentence-v1")
+    ap.add_argument("--split-root", default="splits",
+                    help="directory containing frozen split files")
+    ap.add_argument("--no-frozen-splits", action="store_true",
+                    help="generate the split from the current manifest instead of loading splits/<kind>")
     args = ap.parse_args()
     cfg = load_config(args.config)
+    if args.split is not None:
+        cfg.setdefault("split", {})["kind"] = args.split
 
     man = pd.read_csv(os.path.join(args.out_dir, "sample_manifest.csv"))
     features = np.load(os.path.join(args.out_dir, "packed.npy"), mmap_mode="r")
     lengths = np.load(os.path.join(args.out_dir, "lengths.npy"))
 
-    sp = make_random_split(man, seed=cfg["trial"]["seed"], fracs=tuple(cfg["split"]["fracs"]))
+    sp, split_source = resolve_split(
+        man,
+        kind=cfg["split"]["kind"],
+        seed=cfg["trial"]["seed"],
+        fracs=tuple(cfg["split"]["fracs"]),
+        split_root=args.split_root,
+        prefer_frozen=not args.no_frozen_splits,
+    )
     rec2text = dict(zip(man["recording"], man["clean_text"].astype(str)))
     rec2pack = dict(zip(man["recording"], man["pack_idx"]))
 
     train_texts = [rec2text[r] for r in sp["train"]]
     test_refs = [rec2text[r] for r in sp["test"]]
+    print(f"split={cfg['split']['kind']} ({split_source})")
     print(f"train {len(train_texts)} / test {len(test_refs)} clips")
 
     def report(name, hyps):

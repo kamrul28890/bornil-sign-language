@@ -5,6 +5,7 @@
 # Python
 __pycache__/
 *.pyc
+.venv/
 
 # Local Claude Code settings
 .claude/
@@ -19,6 +20,12 @@ features_packed_v2*.npy
 processed_manifest.csv
 vocab.json
 *.tmp
+data_full/
+outputs/
+temp_*.csv
+temp_*.json
+texts.csv
+texts.json
 
 # Trial run artifacts (regenerable): keep manifests + metrics, drop heavy files
 trial_smoke/

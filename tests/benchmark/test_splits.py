@@ -141,3 +141,30 @@ def test_write_then_load_split_roundtrips(tmp_path):
     splits.write_split(sp, tmp_path / "random-v1", meta={"seed": 42})
     loaded = splits.load_split(tmp_path / "random-v1")
     assert loaded == sp
+
+
+def test_resolve_split_loads_matching_frozen_split(tmp_path):
+    df = _toy_manifest()
+    sp = splits.make_random_split(df, seed=42, fracs=(0.8, 0.1, 0.1))
+    splits.write_split(sp, tmp_path / "random-v1", meta={"seed": 42})
+
+    loaded, source = splits.resolve_split(
+        df, "random-v1", seed=99, split_root=tmp_path, prefer_frozen=True
+    )
+
+    assert loaded == sp
+    assert source.startswith("frozen:")
+
+
+def test_resolve_split_falls_back_when_frozen_split_does_not_match_manifest(tmp_path):
+    df = _toy_manifest()
+    full = splits.make_random_split(df, seed=42, fracs=(0.8, 0.1, 0.1))
+    splits.write_split(full, tmp_path / "random-v1", meta={"seed": 42})
+    sample = df.head(12).copy()
+
+    resolved, source = splits.resolve_split(
+        sample, "random-v1", seed=42, split_root=tmp_path, prefer_frozen=True
+    )
+
+    assert source == "generated"
+    assert set(resolved["train"] + resolved["val"] + resolved["test"]) == set(sample["recording"])

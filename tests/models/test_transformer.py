@@ -28,6 +28,35 @@ def test_forward_output_shape():
     assert logits.shape == (2, 6, 20)
 
 
+def test_temporal_conv_frontend_output_shape():
+    model = SignTransformer(
+        input_dim=218, vocab_size=20, d_model=64, nhead=4,
+        num_encoder_layers=1, num_decoder_layers=1, dim_feedforward=128,
+        dropout=0.0, pad_id=0, temporal_conv_layers=2,
+        temporal_conv_kernel=5,
+    )
+    src = torch.randn(2, 15, 218)
+    tgt_in = torch.randint(1, 20, (2, 6))
+    logits = model(src, tgt_in)
+    memory = model.encode(src)
+    assert logits.shape == (2, 6, 20)
+    assert memory.shape == (2, 15, 64)
+
+
+def test_temporal_conv_kernel_must_be_odd():
+    try:
+        SignTransformer(
+            input_dim=218, vocab_size=20, d_model=64, nhead=4,
+            num_encoder_layers=1, num_decoder_layers=1, dim_feedforward=128,
+            dropout=0.0, pad_id=0, temporal_conv_layers=1,
+            temporal_conv_kernel=4,
+        )
+    except ValueError as e:
+        assert "temporal_conv_kernel" in str(e)
+    else:
+        raise AssertionError("expected even temporal_conv_kernel to fail")
+
+
 def test_causal_mask_is_upper_triangular():
     m = causal_mask(3)
     # position i may not attend to positions > i  => True (blocked) above diagonal

@@ -1,0 +1,43 @@
+# Full-dataset temporal-convolution Transformer ablation.
+#
+# First stronger visual-grounding baseline after the vanilla SignTransformer.
+# Run random-v1 first; only run the harder splits if it beats the vanilla
+# random-v1 baseline (BLEU-4 0.520 / ROUGE-L 0.055).
+
+trial:
+  name: data_full_tconv
+  seed: 42
+  out_dir: data_full
+
+data:
+  manifest: video_data.csv
+  tokenizer: bsl_sp.model
+  max_frames: 512
+  normalize: true
+  upper_body: true
+
+split:
+  kind: random-v1
+  fracs: [0.8, 0.1, 0.1]
+
+model:
+  d_model: 256
+  nhead: 8
+  num_encoder_layers: 4
+  num_decoder_layers: 4
+  dim_feedforward: 1024
+  dropout: 0.1
+  temporal_conv_layers: 2
+  temporal_conv_kernel: 5
+
+train:
+  epochs: 60
+  batch_size: 32
+  lr: 0.0005
+  weight_decay: 0.0001
+  clip_grad: 1.0
+  warmup_steps: 0
+  label_smoothing: 0.1
+  beam_size: 1
+  max_decode_len: 256
+  device: auto

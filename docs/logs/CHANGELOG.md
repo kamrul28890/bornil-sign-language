@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-15 — Temporal-convolution encoder ablation
+- **What:** Added optional temporal convolution layers before the Transformer encoder and a `configs/full_tconv.yaml` experiment config.
+- **Why:** Diagnostics show the vanilla model under-generates and degrades sharply on longer references; a local temporal frontend is the first cheap model-side attempt to improve visual grounding.
+- **Impact:** The default model remains checkpoint-compatible (`temporal_conv_layers: 0`), while `full_tconv.yaml` runs a stronger random-v1 baseline before deciding whether to evaluate all official splits.
+- **Commit:** (this commit)
+
 ## 2026-07-15 — Eval-only decode ablation script
 - **What:** Added `scripts/eval_checkpoint_decode.py`, which loads an existing run checkpoint and evaluates alternate decode settings without retraining. `evaluate()` now passes `length_penalty` through to beam search.
 - **Why:** Let us test beam size, max decode length, and beam length penalty cheaply before spending GPU time on new model training.

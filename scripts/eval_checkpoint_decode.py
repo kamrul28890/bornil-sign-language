@@ -164,6 +164,8 @@ def main():
         dim_feedforward=m["dim_feedforward"],
         dropout=m["dropout"],
         pad_id=tok.pad_id,
+        temporal_conv_layers=int(m.get("temporal_conv_layers", 0)),
+        temporal_conv_kernel=int(m.get("temporal_conv_kernel", 5)),
     ).to(device)
     model.load_state_dict(torch.load(checkpoint, map_location=device, weights_only=True))
 

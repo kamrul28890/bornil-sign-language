@@ -132,6 +132,8 @@ def main():
         d_model=m["d_model"], nhead=m["nhead"],
         num_encoder_layers=m["num_encoder_layers"], num_decoder_layers=m["num_decoder_layers"],
         dim_feedforward=m["dim_feedforward"], dropout=m["dropout"], pad_id=tok.pad_id,
+        temporal_conv_layers=int(m.get("temporal_conv_layers", 0)),
+        temporal_conv_kernel=int(m.get("temporal_conv_kernel", 5)),
     ).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["train"]["lr"],
                             weight_decay=cfg["train"]["weight_decay"])
@@ -196,9 +198,13 @@ def main():
 
 
 def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
+    front = ""
+    if int(cfg["model"].get("temporal_conv_layers", 0)):
+        front = (f" + TConv{cfg['model']['temporal_conv_layers']}"
+                 f"k{cfg['model'].get('temporal_conv_kernel', 5)}")
     row = (
         f"\n### EXP-{cfg['trial']['name']}-{h}  ({date.today().isoformat()})\n"
-        f"- **Model:** SignTransformer d{cfg['model']['d_model']} "
+        f"- **Model:** SignTransformer{front} d{cfg['model']['d_model']} "
         f"L{cfg['model']['num_encoder_layers']}+{cfg['model']['num_decoder_layers']}   "
         f"**Phase/Task:** {cfg['trial']['name']} (WS-C T0.2)\n"
         f"- **Data/Split:** {cfg['trial']['name']} {cfg['split']['kind']} "

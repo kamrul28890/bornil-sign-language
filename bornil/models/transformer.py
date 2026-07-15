@@ -43,11 +43,16 @@ class SignTransformer(nn.Module):
     def __init__(self, input_dim: int, vocab_size: int, d_model: int = 256,
                  nhead: int = 8, num_encoder_layers: int = 4,
                  num_decoder_layers: int = 4, dim_feedforward: int = 1024,
-                 dropout: float = 0.1, pad_id: int = 0):
+                 dropout: float = 0.1, pad_id: int = 0,
+                 temporal_conv_layers: int = 0,
+                 temporal_conv_kernel: int = 5):
         super().__init__()
         self.pad_id = pad_id
         self.d_model = d_model
         self.input_proj = nn.Linear(input_dim, d_model)
+        self.temporal_frontend = self._make_temporal_frontend(
+            d_model, temporal_conv_layers, temporal_conv_kernel, dropout
+        )
         self.tok_embed = nn.Embedding(vocab_size, d_model, padding_idx=pad_id)
         self.pos = PositionalEncoding(d_model)
         self.transformer = nn.Transformer(
@@ -58,6 +63,30 @@ class SignTransformer(nn.Module):
             batch_first=True,
         )
         self.out = nn.Linear(d_model, vocab_size)
+
+    @staticmethod
+    def _make_temporal_frontend(d_model: int, layers: int, kernel: int,
+                                dropout: float) -> nn.Module:
+        """Optional local-motion frontend over projected frame features."""
+        if layers <= 0:
+            return nn.Identity()
+        if kernel < 1 or kernel % 2 == 0:
+            raise ValueError("temporal_conv_kernel must be a positive odd integer")
+        blocks = []
+        pad = kernel // 2
+        for _ in range(layers):
+            blocks.extend([
+                nn.Conv1d(d_model, d_model, kernel_size=kernel, padding=pad),
+                nn.GELU(),
+                nn.Dropout(dropout),
+            ])
+        return nn.Sequential(*blocks)
+
+    def _project_src(self, src: torch.Tensor) -> torch.Tensor:
+        s = self.input_proj(src) * math.sqrt(self.d_model)
+        if not isinstance(self.temporal_frontend, nn.Identity):
+            s = self.temporal_frontend(s.transpose(1, 2)).transpose(1, 2)
+        return self.pos(s)
 
     def src_padding_mask(self, src_lengths: torch.Tensor, seq_len: int) -> torch.Tensor:
         """(B, S) bool mask, True at padded frame positions."""
@@ -72,7 +101,7 @@ class SignTransformer(nn.Module):
         Returns logits (B, L, vocab_size). Padding masks are optional (bool,
         True == ignore); the causal mask on the target is always applied.
         """
-        s = self.pos(self.input_proj(src) * math.sqrt(self.d_model))
+        s = self._project_src(src)
         t = self.pos(self.tok_embed(tgt_in) * math.sqrt(self.d_model))
         tgt_mask = causal_mask(tgt_in.size(1)).to(src.device)
         h = self.transformer(
@@ -86,7 +115,7 @@ class SignTransformer(nn.Module):
 
     def encode(self, src: torch.Tensor, src_key_padding_mask: torch.Tensor = None) -> torch.Tensor:
         """Run the encoder over a clip -> memory (B, S, d_model)."""
-        s = self.pos(self.input_proj(src) * math.sqrt(self.d_model))
+        s = self._project_src(src)
         return self.transformer.encoder(s, src_key_padding_mask=src_key_padding_mask)
 
     @torch.no_grad()

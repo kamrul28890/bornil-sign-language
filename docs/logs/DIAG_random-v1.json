@@ -1,0 +1,367 @@
+{
+  "predictions": "data_full\\runs\\c19d0ea08824\\predictions.csv",
+  "summary": {
+    "rows": 1799,
+    "unique_hypotheses": 1616,
+    "empty_hypotheses": 0,
+    "exact_matches": 2,
+    "exact_match_rate": 0.0011117287381878821,
+    "avg_ref_tokens": 7.499166203446359,
+    "avg_hyp_tokens": 6.500277932184547,
+    "repeated_hypothesis_rows": 280,
+    "repeated_hypothesis_rate": 0.1556420233463035,
+    "top_repeated_hypotheses": [
+      {
+        "count": 17,
+        "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ"
+      },
+      {
+        "count": 14,
+        "hypothesis": "এ ছাড়া তিনটি লোকসভা কেন্দ্রেও ভোট হয়েছে"
+      },
+      {
+        "count": 14,
+        "hypothesis": "এছাড়া থেকে জন চাপা পড়ে আছে বলে আশঙ্কা করা হচ্ছে"
+      },
+      {
+        "count": 9,
+        "hypothesis": "এ বিষয়ে ঢাকায় বিএনপি সমর্থিত দুই প্রার্থীকে সতর্কও করা হয়েছে"
+      },
+      {
+        "count": 8,
+        "hypothesis": "প্রথম আলো আওয়ামী লীগ সরকার দ্বিতীয়বারের মেয়াদের প্রথম বছর পার করল"
+      },
+      {
+        "count": 7,
+        "hypothesis": "তবে এই সাফল্য এসেছে শচীন টেন্ডুলকারের শতক ও হারভাজন সিংএর পাঁচ উইকেটের ওপর ভর করে"
+      },
+      {
+        "count": 5,
+        "hypothesis": "প্রধানমন্ত্রী অনুষ্ঠানে বলেন সমালোচনা ভালো"
+      },
+      {
+        "count": 5,
+        "hypothesis": "শনিবার রাতে পুলিশ তাদের লাশ উদ্ধার করেছে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "তবে বোকামির কাণ্ডও করে সে।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এক প্রতিবেদনে এ কথা জানায়।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "ঢাকা জুলাই বিডিনিউজ টোয়েন্টিফোর ডটকমকুমিল্লা বিশ্ববিদ্যালয়ের উপাচার্য অধ্যাপক গোলাম মাওলাকে তার পদ থেকে অব্যাহতি দিয়েছে সরকার"
+      },
+      {
+        "count": 3,
+        "hypothesis": "কিন্তু সে রাতে আর ঘুম এল না"
+      },
+      {
+        "count": 3,
+        "hypothesis": "উত্তর সালাত"
+      },
+      {
+        "count": 3,
+        "hypothesis": "এরপর থেকে এই লাইনে ট্রেন চলাচল বন্ধ রয়েছে"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তীর-কামান আন্দাজ করতে না পেরে বাতাসে হানা দিতে থাকল।"
+      }
+    ]
+  },
+  "length_bins": [
+    {
+      "bin": "0-3",
+      "rows": 353,
+      "avg_ref_tokens": 2.917847025495751,
+      "avg_hyp_tokens": 3.8413597733711047,
+      "bleu4": 1.1508903070029974,
+      "chrf++": 11.089744452061383,
+      "rougeL": 0.07465713386393273
+    },
+    {
+      "bin": "4-6",
+      "rows": 655,
+      "avg_ref_tokens": 4.867175572519084,
+      "avg_hyp_tokens": 5.270229007633588,
+      "bleu4": 1.0823445246432668,
+      "chrf++": 10.870350889232606,
+      "rougeL": 0.06857745981005972
+    },
+    {
+      "bin": "7-9",
+      "rows": 381,
+      "avg_ref_tokens": 7.656167979002625,
+      "avg_hyp_tokens": 7.028871391076115,
+      "bleu4": 0.38683275706668757,
+      "chrf++": 9.783256979820077,
+      "rougeL": 0.04344181801199191
+    },
+    {
+      "bin": "10-12",
+      "rows": 157,
+      "avg_ref_tokens": 10.910828025477707,
+      "avg_hyp_tokens": 8.745222929936306,
+      "bleu4": 0.2022846591161812,
+      "chrf++": 8.897750429513202,
+      "rougeL": 0.028692165199617377
+    },
+    {
+      "bin": "13-plus",
+      "rows": 253,
+      "avg_ref_tokens": 18.35177865612648,
+      "avg_hyp_tokens": 11.205533596837945,
+      "bleu4": 0.1170439447531011,
+      "chrf++": 8.681638993157724,
+      "rougeL": 0.027899831791004092
+    }
+  ],
+  "best_examples": [
+    {
+      "row": 237,
+      "reference": "একটা অদ্ভুত সুন্দর জগত আছে ফুটবলের।",
+      "hypothesis": "একটা অদ্ভুত সুন্দর জগত আছে ফুটবলের।",
+      "ref_tokens": 6,
+      "hyp_tokens": 6,
+      "exact": true,
+      "sentence_chrf++": 100.0,
+      "rougeL": 1.0
+    },
+    {
+      "row": 16,
+      "reference": "অনেক সময় আছে।",
+      "hypothesis": "অনেক সময় আছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": true,
+      "sentence_chrf++": 100.0,
+      "rougeL": 1.0
+    },
+    {
+      "row": 323,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেএফএফএমআই ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 70.61609608831516,
+      "rougeL": 0.75
+    },
+    {
+      "row": 614,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচটিআর ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 70.16728745018382,
+      "rougeL": 0.75
+    },
+    {
+      "row": 416,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচটিআর ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 70.16728745018382,
+      "rougeL": 0.75
+    },
+    {
+      "row": 685,
+      "reference": "আচ্ছা ঠিক আছে।",
+      "hypothesis": "আচ্ছা, ঠিক আছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 68.5134576523378,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 475,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমএএনএমএসএনএল ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 65.85355154929107,
+      "rougeL": 0.75
+    },
+    {
+      "row": 1327,
+      "reference": "আমি ডাক্তার নই।",
+      "hypothesis": "আমি ডাক্তার দেখা করব।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 62.744969340230206,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 346,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমসিএমকিউএইচআরএ ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 62.65091640252582,
+      "rougeL": 0.75
+    },
+    {
+      "row": 1328,
+      "reference": "তুমি চাও এটা?",
+      "hypothesis": "তুমি চাও?",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 56.70812942250312,
+      "rougeL": 0.4
+    },
+    {
+      "row": 632,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমপ্রতিনিধিডিডিএমএইচপিএসইউ ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 52.33473052291835,
+      "rougeL": 0.75
+    },
+    {
+      "row": 1285,
+      "reference": "আমি ঘুমাতে যাচ্ছি।",
+      "hypothesis": "আমি ঘুমাতে দিব না।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 52.15853764935231,
+      "rougeL": 0.5714285714285715
+    }
+  ],
+  "worst_examples": [
+    {
+      "row": 1314,
+      "reference": "কি বুঝতে হবে?",
+      "hypothesis": "চল যাই ভাই।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.0,
+      "rougeL": 0.0
+    },
+    {
+      "row": 904,
+      "reference": "এটা পরীক্ষা কর।",
+      "hypothesis": "হেই, উইল, চল।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.9920634920634922,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1307,
+      "reference": "চা দেওয়া যাবে।",
+      "hypothesis": "কর, কর এটা!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.0245901639344264,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1341,
+      "reference": "তাদের ছেড়ে দিয়েছি।",
+      "hypothesis": "যাও যাও যাও যাও যাও যাও যাও যাও যাও যাও যাও যাও যাও যাও!",
+      "ref_tokens": 3,
+      "hyp_tokens": 14,
+      "exact": false,
+      "sentence_chrf++": 1.0869565217391304,
+      "rougeL": 0.0
+    },
+    {
+      "row": 715,
+      "reference": "এটা অন্য কেউ.",
+      "hypothesis": "ও চলে গেছে!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.179245283018868,
+      "rougeL": 0.0
+    },
+    {
+      "row": 53,
+      "reference": "এ ধরনের প্রাকৃতিক পরিবেশে চাষের কাজ হয় বেশি।",
+      "hypothesis": "ওহ, দুঃখিত।",
+      "ref_tokens": 8,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.5432098765432098,
+      "rougeL": 0.0
+    },
+    {
+      "row": 865,
+      "reference": "সংকট শেষ হয়ে গেছে।",
+      "hypothesis": "এবার ফেরার পালা।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.6025641025641024,
+      "rougeL": 0.0
+    },
+    {
+      "row": 798,
+      "reference": "ভালোই বৃষ্টি হচ্ছে।",
+      "hypothesis": "কর, কর এটা!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.6233766233766236,
+      "rougeL": 0.0
+    },
+    {
+      "row": 11,
+      "reference": "হে হে হে",
+      "hypothesis": "ফোন বন্ধ বলছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.736111111111111,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1044,
+      "reference": "বাহিনী ঠিক হয়ে গেলে যুদ্ধ শুরু হয়।",
+      "hypothesis": "উত্তর সালাত",
+      "ref_tokens": 7,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.923076923076923,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1364,
+      "reference": "বাবা পাইলট ছিল।",
+      "hypothesis": "ওদিকে সরে যাও!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.953125,
+      "rougeL": 0.0
+    },
+    {
+      "row": 838,
+      "reference": "নিলাম, ঠিক আছে?",
+      "hypothesis": "স্বাদ তো একই।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.9841269841269844,
+      "rougeL": 0.0
+    }
+  ]
+}

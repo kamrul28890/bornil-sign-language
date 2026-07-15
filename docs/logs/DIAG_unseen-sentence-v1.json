@@ -1,0 +1,367 @@
+{
+  "predictions": "data_full\\runs\\60320f4c6a60\\predictions.csv",
+  "summary": {
+    "rows": 1799,
+    "unique_hypotheses": 1692,
+    "empty_hypotheses": 0,
+    "exact_matches": 0,
+    "exact_match_rate": 0.0,
+    "avg_ref_tokens": 7.617565314063368,
+    "avg_hyp_tokens": 6.381878821567538,
+    "repeated_hypothesis_rows": 185,
+    "repeated_hypothesis_rate": 0.1028349082823791,
+    "top_repeated_hypotheses": [
+      {
+        "count": 7,
+        "hypothesis": "খালেদা জিয়া ভাষণে বলেন চারদলকে ভোট দিয়ে দেশ বাঁচান মানুষ বাঁচান"
+      },
+      {
+        "count": 5,
+        "hypothesis": "এছাড়া থেকে জন চাপা পড়ে আছে বলে আশঙ্কা করা হচ্ছে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এর মধ্যে রয়েছে পাঁচটি সরকারি"
+      },
+      {
+        "count": 4,
+        "hypothesis": "ময়নাতদন্তের প্রতিবেদন হাতে পাওয়ার পর হত্যা সম্পর্কে বলা যাবে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "একই সঙ্গে অভিভাবকদের সমর্থনের জন্য তাঁদের প্রতি কৃতজ্ঞতা প্রকাশ করেন তিনি"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এই নিন, ক্যাপ্টেন।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "খালেদা জিয়া ভাষণে বলেন চারদলকে ভোট দিয়ে দেশ বাঁচান মানুষ বাঁচান মানুষ বাঁচান"
+      },
+      {
+        "count": 4,
+        "hypothesis": "আর এই করতে করতে করতে এত দেরী করে দেখা।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "আমি বিয়ে করছি!"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তবে আমানের মাথায় জখমের আলামত দেখা গেছে"
+      },
+      {
+        "count": 3,
+        "hypothesis": "শেখ হাসিনা ক্ষমতায় আসার পর ওই ব্যবসায়ীর হাড়গোড় উদ্ধার করেছিলাম"
+      },
+      {
+        "count": 3,
+        "hypothesis": "গত বছর ধরে ধারাবাহিকভাবে জিততে থাকা একটি দলের অংশ হতে পারা দারুণ তৃপ্তির"
+      },
+      {
+        "count": 3,
+        "hypothesis": "এক্ষেত্রে সর্বস্তরের জনগণের সচেতনতাও প্রয়োজন"
+      },
+      {
+        "count": 3,
+        "hypothesis": "পুলিশ গিয়ে লাশ উদ্ধার করে"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তিনি কোষাগার থেকে মাত্র দুই দিরহাম গ্রহণ করতেন।"
+      }
+    ]
+  },
+  "length_bins": [
+    {
+      "bin": "0-3",
+      "rows": 362,
+      "avg_ref_tokens": 2.925414364640884,
+      "avg_hyp_tokens": 3.541436464088398,
+      "bleu4": 1.6565991294339102,
+      "chrf++": 10.524715083881715,
+      "rougeL": 0.06213934929404544
+    },
+    {
+      "bin": "4-6",
+      "rows": 645,
+      "avg_ref_tokens": 4.872868217054264,
+      "avg_hyp_tokens": 5.1503875968992245,
+      "bleu4": 0.5417017682692704,
+      "chrf++": 9.925126216380686,
+      "rougeL": 0.06245992562862028
+    },
+    {
+      "bin": "7-9",
+      "rows": 352,
+      "avg_ref_tokens": 7.715909090909091,
+      "avg_hyp_tokens": 7.244318181818182,
+      "bleu4": 0.448789145525142,
+      "chrf++": 9.378776965068116,
+      "rougeL": 0.042542841382638426
+    },
+    {
+      "bin": "10-12",
+      "rows": 162,
+      "avg_ref_tokens": 10.82716049382716,
+      "avg_hyp_tokens": 8.839506172839506,
+      "bleu4": 0.16950983694726746,
+      "chrf++": 9.233259770264777,
+      "rougeL": 0.024317361355831717
+    },
+    {
+      "bin": "13-plus",
+      "rows": 278,
+      "avg_ref_tokens": 18.100719424460433,
+      "avg_hyp_tokens": 10.413669064748202,
+      "bleu4": 0.09312409292025182,
+      "chrf++": 8.286433899789763,
+      "rougeL": 0.019263971938441742
+    }
+  ],
+  "best_examples": [
+    {
+      "row": 951,
+      "reference": "হ্যাঁ, তাই না?",
+      "hypothesis": "হ্যাঁ, না, তাই না?",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 78.67964588877062,
+      "rougeL": 0.8571428571428571
+    },
+    {
+      "row": 1489,
+      "reference": "ইংরেজি শিখলে হাসতে পারবো?",
+      "hypothesis": "ইংরেজি শিখলে হাসতে পারবি প্রাণ খুলে।",
+      "ref_tokens": 4,
+      "hyp_tokens": 6,
+      "exact": false,
+      "sentence_chrf++": 74.77516787144096,
+      "rougeL": 0.6
+    },
+    {
+      "row": 16,
+      "reference": "আচ্ছা, আমি যাচ্ছি।",
+      "hypothesis": "আচ্ছা, আমি যাই।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 67.60541059396618,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 1100,
+      "reference": "তার বড় ভাই আগস্ট মাসে জন্মগ্রহণ করে।",
+      "hypothesis": "তার বড় বোন মার্চ মাসে জন্মগ্রহণ করে।",
+      "ref_tokens": 7,
+      "hyp_tokens": 7,
+      "exact": false,
+      "sentence_chrf++": 62.98260192100571,
+      "rougeL": 0.7142857142857143
+    },
+    {
+      "row": 1432,
+      "reference": "বললেন, তুমি কে?",
+      "hypothesis": "বললাম তো, তুমি কে?",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 61.35483782128636,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 780,
+      "reference": "তুমি চুপ করো!",
+      "hypothesis": "তুমি চুপ কর, তাই না।",
+      "ref_tokens": 3,
+      "hyp_tokens": 5,
+      "exact": false,
+      "sentence_chrf++": 59.930097633194315,
+      "rougeL": 0.5
+    },
+    {
+      "row": 1797,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমপ্রতিনিধিএসইউএমজেকে ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচটিআর ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 56.798997637756486,
+      "rougeL": 0.75
+    },
+    {
+      "row": 1292,
+      "reference": "খুব বেশি নয়।",
+      "hypothesis": "খুব বেশি হয়ে গেলো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 52.00559281035737,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 947,
+      "reference": "এটা আমি নেব।",
+      "hypothesis": "এটা আমি করিনি।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 49.522498025640495,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 1433,
+      "reference": "কাল দেখা হবে!",
+      "hypothesis": "কাল দেখা করতে আসব।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 47.68662258048438,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 1351,
+      "reference": "আমার সাথে কি হচ্ছে?",
+      "hypothesis": "আমার সাথে অনেক আছে।",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 42.39848844135576,
+      "rougeL": 0.5
+    },
+    {
+      "row": 1303,
+      "reference": "হ্যা, তুমি আছো।",
+      "hypothesis": "হ্যাঁ, তুমিই আছো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 42.29515437228615,
+      "rougeL": 0.3333333333333333
+    }
+  ],
+  "worst_examples": [
+    {
+      "row": 331,
+      "reference": "জাতীয় সংসদ নির্বাচনে তিনি এবার মনোনয়ন পাওয়ারও চেষ্টা করেছিলেন",
+      "hypothesis": "যখন তখন ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম ঝম",
+      "ref_tokens": 9,
+      "hyp_tokens": 129,
+      "exact": false,
+      "sentence_chrf++": 0.6456611570247934,
+      "rougeL": 0.0
+    },
+    {
+      "row": 857,
+      "reference": "ঘুমিয়ে পড়েছে ও।",
+      "hypothesis": "কী খারাপ কথা!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.8802816901408451,
+      "rougeL": 0.0
+    },
+    {
+      "row": 291,
+      "reference": "এঁরাই সোনার বাংলার আসল সোনার মানুষ",
+      "hypothesis": "অন্য কেউ হবে।",
+      "ref_tokens": 6,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.984251968503937,
+      "rougeL": 0.0
+    },
+    {
+      "row": 729,
+      "reference": "আজ হয়তো আসবে।",
+      "hypothesis": "এখন না কিছু নি।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.0416666666666665,
+      "rougeL": 0.0
+    },
+    {
+      "row": 986,
+      "reference": "শুনুন, প্লিজ!",
+      "hypothesis": "তারকা বনে যাও।",
+      "ref_tokens": 2,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.0416666666666665,
+      "rougeL": 0.0
+    },
+    {
+      "row": 804,
+      "reference": "ধুর, সে আসছে।",
+      "hypothesis": "তিনি অন্যতম।",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.1363636363636365,
+      "rougeL": 0.0
+    },
+    {
+      "row": 856,
+      "reference": "নে, ওখানে রাখ।",
+      "hypothesis": "এ কী হল।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.1574074074074072,
+      "rougeL": 0.0
+    },
+    {
+      "row": 644,
+      "reference": "এদিকে এসো তো।",
+      "hypothesis": "চল, যাও।",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.2254901960784312,
+      "rougeL": 0.0
+    },
+    {
+      "row": 853,
+      "reference": "যখন উভয় দল।",
+      "hypothesis": "রিকশা, থামো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.2254901960784317,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1298,
+      "reference": "খুব দ্রুত যেতে হবে।",
+      "hypothesis": "জলদি এসো, ভাই।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.644736842105263,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1130,
+      "reference": "এগুলো বিশ্বজুড়ে রিলিজ হয়",
+      "hypothesis": "আর অনেক পেইনটিং।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.7688679245283019,
+      "rougeL": 0.0
+    },
+    {
+      "row": 637,
+      "reference": "পুনর্মিলনী সভায় অন্যান্যের মধ্যে বক্তব্য রাখেন বাসদ কেন্দ্রীয় কমিটির সদস্য কমরেড মুবিনুল হায়দার চৌধুরী শুভ্রাংশু চক্রবর্ত্তী বাম মোর্চার সমন্বয়ক বদরুল আলম দৈনিক সমকালের প্রকাশক একে আজাদ আরটিভির প্রধান বার্তা সম্পাদক আনিস আলমগীর কৃষিবিদ মোহাম্মদ হোসেন মন্ডল আনম জাহের উদ্দিন নজরুল গবেষক ও শিল্পী বাবু রহমান শেখ আব্দুল খালেক মোঃ সেলিম বিশিষ্ট আবৃত্তিকার জয়ন্ত চট্টোপাধ্যায় ঢাকা বিশ্ববিদ্যালয়ের নৃবিজ্ঞান বিভাগের অধ্যাপক এইচকেএস আরেফীন সাংবাদিক নাসির উদ্দিন বিশিষ্ট নাট্য কর্মী কামরুল আহসান খান সাংবাদিক মতিনউজ্জামান মিঠুসহ কেন্দ্রীয় কমিটির সাবেক নেতারা",
+      "hypothesis": "এক্ষেত্রে সর্বস্তরের জনগণের সচেতনতাও প্রয়োজন",
+      "ref_tokens": 77,
+      "hyp_tokens": 5,
+      "exact": false,
+      "sentence_chrf++": 1.9062226571516558,
+      "rougeL": 0.0
+    }
+  ]
+}

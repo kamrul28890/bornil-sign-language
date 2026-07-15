@@ -1,0 +1,367 @@
+{
+  "predictions": "data_full\\runs\\46a706570712\\predictions.csv",
+  "summary": {
+    "rows": 1500,
+    "unique_hypotheses": 1365,
+    "empty_hypotheses": 0,
+    "exact_matches": 2,
+    "exact_match_rate": 0.0013333333333333333,
+    "avg_ref_tokens": 9.397333333333334,
+    "avg_hyp_tokens": 6.846,
+    "repeated_hypothesis_rows": 215,
+    "repeated_hypothesis_rate": 0.14333333333333334,
+    "top_repeated_hypotheses": [
+      {
+        "count": 13,
+        "hypothesis": "তবে এর বিপরীত মত দেন টি এইচ খান"
+      },
+      {
+        "count": 9,
+        "hypothesis": "এ সময় সিডনির মাঠ দেখে ম্যাক্সওয়েলঝড়"
+      },
+      {
+        "count": 6,
+        "hypothesis": "পরে অবশ্য বাংলাদেশ সরকার প্রেসনোট প্রত্যাহার নেয়"
+      },
+      {
+        "count": 6,
+        "hypothesis": "সানু মাঝিগাতী গ্রামের এস্কেন্দার আলী সিকদারের মেয়ে"
+      },
+      {
+        "count": 5,
+        "hypothesis": "তবে আমানের মাথায় জখমের আলামত দেখা গেছে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "অনেক দিন আগের কথা।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "মঙ্গলবার পুরুষ এককের অন্য কোয়ার্টারফাইনালেও অঘটন ঘটেছে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "ছাত্রদলের বর্তমান নেতাকর্মীদের নিয়ে সংগঠনের প্রতিষ্ঠাবার্ষিকীর কেক কাটেন রিজভী"
+      },
+      {
+        "count": 4,
+        "hypothesis": "তিনি বলেন পাকিস্তানকে পুরো কৃতিত্ব দিতে হবে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "ঢাকা জুলাই বিডিনিউজ টোয়েন্টিফোর ডটকমকুমিল্লা বিশ্ববিদ্যালয়ের উপাচার্য অধ্যাপক গোলাম মাওলাকে তার পদ থেকে অব্যাহতি দিয়েছে সরকার"
+      },
+      {
+        "count": 3,
+        "hypothesis": "সে একাই রয়েছে।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তিনি ছিলেন অসাম্প্রদায়িক"
+      },
+      {
+        "count": 3,
+        "hypothesis": "এ বছরের দায়ের করা মামলার মধ্যে টি পাহাড় কাটার জন্য"
+      },
+      {
+        "count": 3,
+        "hypothesis": "গত তিন দিন ধরে এ অঞ্চলে তাপমাত্রা থেকে ডিগ্রি সেলসিয়াসে ওঠানামা করছে"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তারপরও শিক্ষার্থীদের জীবন অনেক মূল্যবান"
+      }
+    ]
+  },
+  "length_bins": [
+    {
+      "bin": "0-3",
+      "rows": 275,
+      "avg_ref_tokens": 2.92,
+      "avg_hyp_tokens": 3.5927272727272728,
+      "bleu4": 1.4420384473227885,
+      "chrf++": 10.967692816561303,
+      "rougeL": 0.06552984389348027
+    },
+    {
+      "bin": "4-6",
+      "rows": 449,
+      "avg_ref_tokens": 4.643652561247216,
+      "avg_hyp_tokens": 5.302895322939866,
+      "bleu4": 1.049769254808031,
+      "chrf++": 9.892390026201012,
+      "rougeL": 0.07054019971614627
+    },
+    {
+      "bin": "7-9",
+      "rows": 224,
+      "avg_ref_tokens": 7.8125,
+      "avg_hyp_tokens": 6.955357142857143,
+      "bleu4": 0.2643276955253743,
+      "chrf++": 9.002327050765574,
+      "rougeL": 0.03789254602175852
+    },
+    {
+      "bin": "10-12",
+      "rows": 160,
+      "avg_ref_tokens": 10.8375,
+      "avg_hyp_tokens": 7.7375,
+      "bleu4": 0.26160954475459913,
+      "chrf++": 8.697182186267671,
+      "rougeL": 0.030155633767471667
+    },
+    {
+      "bin": "13-plus",
+      "rows": 392,
+      "avg_ref_tokens": 19.70408163265306,
+      "avg_hyp_tokens": 10.46938775510204,
+      "bleu4": 0.049562818698873454,
+      "chrf++": 7.508950119359177,
+      "rougeL": 0.0212504812165613
+    }
+  ],
+  "best_examples": [
+    {
+      "row": 840,
+      "reference": "নিজেকে কষ্ট দিও না।",
+      "hypothesis": "নিজেকে কষ্ট দিও না।",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": true,
+      "sentence_chrf++": 100.0,
+      "rougeL": 1.0
+    },
+    {
+      "row": 654,
+      "reference": "আমার বউ এখানে।",
+      "hypothesis": "আমার বউ এখানে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": true,
+      "sentence_chrf++": 100.0,
+      "rougeL": 1.0
+    },
+    {
+      "row": 21,
+      "reference": "জানি না স্যার।",
+      "hypothesis": "জানি না, স্যার।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 68.5134576523378,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 910,
+      "reference": "স্যার, এটা আমার না।",
+      "hypothesis": "স্যার, নিশ্চয়ই আমার না।",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 56.28995001930397,
+      "rougeL": 0.75
+    },
+    {
+      "row": 799,
+      "reference": "আমরা কিচ্ছু দেখিনি।",
+      "hypothesis": "আমরা কিচ্ছু চাই?",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 53.9399127461322,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 956,
+      "reference": "আচ্ছা, এটা যথেষ্ট।",
+      "hypothesis": "আচ্ছা, এটা তো হলো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 53.74270967315486,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 893,
+      "reference": "এরপর কী হলো, স্যার?",
+      "hypothesis": "এরপর কি, স্যার?",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 52.5598162591549,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 30,
+      "reference": "স্যার, আপনার জন্য।",
+      "hypothesis": "স্যার, আপনি চলে যাও।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 47.17223740487458,
+      "rougeL": 0.28571428571428575
+    },
+    {
+      "row": 85,
+      "reference": "শুভ সকাল ক্যাপ্টেন।",
+      "hypothesis": "ওহ, ক্যাপ্টেন।",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 44.747085637555465,
+      "rougeL": 0.4
+    },
+    {
+      "row": 941,
+      "reference": "আমি একটু আসতে পারি?",
+      "hypothesis": "আমি এটা খুলতে পারি?",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 44.73666958041957,
+      "rougeL": 0.5
+    },
+    {
+      "row": 873,
+      "reference": "আমার সাথে কে থাকবে?",
+      "hypothesis": "আমার সাথে কথা বলার কথা হয়েছে।",
+      "ref_tokens": 4,
+      "hyp_tokens": 6,
+      "exact": false,
+      "sentence_chrf++": 44.19282532167241,
+      "rougeL": 0.4
+    },
+    {
+      "row": 875,
+      "reference": "কিন্তু, এর বাবা কে?",
+      "hypothesis": "কিন্তু, তার বাবার কথা মা।",
+      "ref_tokens": 4,
+      "hyp_tokens": 5,
+      "exact": false,
+      "sentence_chrf++": 42.09336473635886,
+      "rougeL": 0.22222222222222224
+    }
+  ],
+  "worst_examples": [
+    {
+      "row": 663,
+      "reference": "সময় চলে যাচ্ছে!",
+      "hypothesis": "এখনো করিনি।",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 0.0,
+      "rougeL": 0.0
+    },
+    {
+      "row": 926,
+      "reference": "আপনাকে ও পছন্দ করে।",
+      "hypothesis": "তুমি, বলো।",
+      "ref_tokens": 4,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 0.8561643835616439,
+      "rougeL": 0.0
+    },
+    {
+      "row": 965,
+      "reference": "নদীর পাড় সাদা কাশফুলে ভরে যায়।",
+      "hypothesis": "কাক কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা কা",
+      "ref_tokens": 6,
+      "hyp_tokens": 255,
+      "exact": false,
+      "sentence_chrf++": 0.9121071960664905,
+      "rougeL": 0.0
+    },
+    {
+      "row": 800,
+      "reference": "তিনি এর রচনা করেন।",
+      "hypothesis": "ভাই, ভাই!",
+      "ref_tokens": 4,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 0.9191176470588236,
+      "rougeL": 0.0
+    },
+    {
+      "row": 736,
+      "reference": "মোটা হয়ে যাবো।",
+      "hypothesis": "প্লিজ, আসুন।",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 0.9920634920634922,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1305,
+      "reference": "তিনিও খুব খুশি হয়েছেন।",
+      "hypothesis": "এসো, বাবা, চলো।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.3440860215053763,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1286,
+      "reference": "ষড়ঋতুর দেশ বাংলাদেশ।",
+      "hypothesis": "ওহ, হ্যাঁ, আমি।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.4044943820224718,
+      "rougeL": 0.0
+    },
+    {
+      "row": 31,
+      "reference": "আমি দ্রুত ফিরে আসব।",
+      "hypothesis": "অনেক অনেক অনেক গাছ।",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.5625,
+      "rougeL": 0.0
+    },
+    {
+      "row": 785,
+      "reference": "গোরা কহিল, আমি হব।",
+      "hypothesis": "মন্ত্র পড়ে স্ত্রী যে!",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.5822784810126582,
+      "rougeL": 0.0
+    },
+    {
+      "row": 665,
+      "reference": "ব্যথা কমানোর জন্য।",
+      "hypothesis": "আসো, চলো, চলো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.644736842105263,
+      "rougeL": 0.0
+    },
+    {
+      "row": 518,
+      "reference": "গত এপ্রিল বিভাগের দুশ শিক্ষার্র্র্থীর স্বাক্ষর সংবলিত একটি স্মারকলিপি তত্ত্বাবধায়ক সরকারের শিক্ষা উপদেষ্টা বিশ্ববিদ্যালয় মঞ্জুরী কমিশন ইউজিসি এর চেয়ারম্য্যান বিশ্ববিদ্যালয়ের উপাচার্য রেজিস্ট্রার সামাজিক বিজ্ঞান ও কলা অনুষদের ডিন এবং সংশ্লিষ্ট বিভাগীয় চেয়ারম্যানকে দেওয়া হয়েছে",
+      "hypothesis": "দিনের বেলা গরুগুলো মাঠে চরে।",
+      "ref_tokens": 34,
+      "hyp_tokens": 5,
+      "exact": false,
+      "sentence_chrf++": 1.6497557786973125,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1484,
+      "reference": "চোখের পেছনে ব্যথার অনুভূতি তৈরি হতে পারে। ক্লাসিক্যাল মাইগ্রেনের সঙ্গে দৃষ্টি সমস্যা, যেমন চোখে উজ্জ্বল আলোর অনুভূতি, যেকোনো এক পাশ অদৃশ্য হয়ে যাওয়া ইত্যাদি হতে পারে।",
+      "hypothesis": "পারুল ছিল কাছেই।",
+      "ref_tokens": 26,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.7102313089908283,
+      "rougeL": 0.0
+    }
+  ]
+}

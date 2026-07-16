@@ -18,6 +18,14 @@ import torch
 import torch.nn as nn
 
 
+def has_consecutive_repeat(tokens, n: int) -> bool:
+    """True when the last token has repeated `n` times consecutively."""
+    if n <= 0 or len(tokens) < n:
+        return False
+    tail = tokens[-n:]
+    return all(tok == tail[0] for tok in tail)
+
+
 def causal_mask(size: int) -> torch.Tensor:
     """Additive (-inf above diagonal) mask blocking attention to future tokens."""
     return torch.triu(torch.full((size, size), float("-inf")), diagonal=1)
@@ -120,7 +128,8 @@ class SignTransformer(nn.Module):
 
     @torch.no_grad()
     def generate(self, src: torch.Tensor, bos_id: int, eos_id: int,
-                 max_len: int = 128, src_key_padding_mask: torch.Tensor = None):
+                 max_len: int = 128, src_key_padding_mask: torch.Tensor = None,
+                 repetition_stop: int = 0):
         """Greedy autoregressive decode. Returns a list (len B) of id lists,
         each the generated tokens after BOS, including the terminal EOS."""
         self.eval()
@@ -142,7 +151,7 @@ class SignTransformer(nn.Module):
                 if not finished[i]:
                     tok = int(nxt[i])
                     outputs[i].append(tok)
-                    if tok == eos_id:
+                    if tok == eos_id or has_consecutive_repeat(outputs[i], repetition_stop):
                         finished[i] = True
             if all(finished):
                 break
@@ -151,7 +160,8 @@ class SignTransformer(nn.Module):
     @torch.no_grad()
     def beam_search(self, src: torch.Tensor, bos_id: int, eos_id: int,
                     beam_size: int = 5, max_len: int = 128,
-                    length_penalty: float = 1.0, src_key_padding_mask: torch.Tensor = None):
+                    length_penalty: float = 1.0, src_key_padding_mask: torch.Tensor = None,
+                    repetition_stop: int = 0):
         """Beam-search decode. Returns a list (len B) of id lists (tokens after
         BOS, including terminal EOS). Processes one example at a time for clarity."""
         self.eval()
@@ -165,7 +175,7 @@ class SignTransformer(nn.Module):
             for _ in range(max_len):
                 candidates = []
                 for tokens, score in beams:
-                    if tokens[-1] == eos_id:
+                    if tokens[-1] == eos_id or has_consecutive_repeat(tokens[1:], repetition_stop):
                         finished.append((tokens, score))
                         continue
                     ys = torch.tensor([tokens], dtype=torch.long, device=src.device)

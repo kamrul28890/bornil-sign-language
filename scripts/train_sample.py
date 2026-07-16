@@ -177,11 +177,13 @@ def main():
     sched = torch.optim.lr_scheduler.LambdaLR(opt, noam_lambda(warmup))
     label_smoothing = float(cfg["train"].get("label_smoothing", 0.0))
     early_eos_penalty = float(cfg["train"].get("early_eos_penalty", 0.0))
+    repetition_stop = int(cfg["train"].get("decode_repetition_stop", 0))
     beam_size = int(cfg["train"].get("beam_size", 1))
     decode_mode = "greedy" if beam_size <= 1 else f"beam{beam_size}"
     cfg["train"]["decode_mode"] = decode_mode
     print(f"warmup_steps={warmup}/{total_steps} | label_smoothing={label_smoothing} "
-          f"| early_eos_penalty={early_eos_penalty} | decode={decode_mode}", flush=True)
+          f"| early_eos_penalty={early_eos_penalty} | decode={decode_mode} "
+          f"| repetition_stop={repetition_stop}", flush=True)
 
     h = config_hash(cfg)
     run_dir = os.path.join(out_dir, "runs", h)
@@ -201,7 +203,8 @@ def main():
                 f"| elapsed {elapsed/60:.1f}m | ETA {eta/60:.1f}m")
         if ep % 5 == 0 or ep == epochs:
             vm, _, _ = evaluate(model, val_loader, tok, device=device,
-                                max_len=cfg["train"]["max_decode_len"])  # greedy for speed
+                                max_len=cfg["train"]["max_decode_len"],
+                                repetition_stop=repetition_stop)  # greedy for speed
             line += f" | val BLEU-4 {vm['bleu4']:.2f} chrF++ {vm['chrf++']:.2f}"
             if vm["bleu4"] > best_bleu:
                 best_bleu = vm["bleu4"]
@@ -214,6 +217,7 @@ def main():
         model.load_state_dict(torch.load(best_ckpt, map_location=device, weights_only=True))
     tm, hyps, refs = evaluate(model, test_loader, tok, device=device,
                               max_len=cfg["train"]["max_decode_len"], beam_size=beam_size,
+                              repetition_stop=repetition_stop,
                               progress=True, desc=f"test decode ({decode_mode})")
     mins = (time.time() - t0) / 60
     print(f"\nTEST ({decode_mode}) | " + " ".join(f"{k}={v:.2f}" for k, v in tm.items()))
@@ -247,6 +251,7 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
         f"- **Decode:** {cfg['train'].get('decode_mode', 'unknown')} "
         f"(beam_size={cfg['train'].get('beam_size', 1)})\n"
         f"- **Training extras:** early_eos_penalty={cfg['train'].get('early_eos_penalty', 0.0)}\n"
+        f"- **Decode extras:** decode_repetition_stop={cfg['train'].get('decode_repetition_stop', 0)}\n"
         f"- **Metrics (test):** BLEU-4={tm['bleu4']:.2f} chrF={tm['chrf']:.2f} "
         f"chrF++={tm['chrf++']:.2f} ROUGE-L={tm['rougeL']:.3f} "
         f"(BLEU-1/2/3={tm['bleu1']:.1f}/{tm['bleu2']:.1f}/{tm['bleu3']:.1f})\n"

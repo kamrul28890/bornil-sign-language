@@ -28,7 +28,7 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 
-from bornil.benchmark.splits import resolve_split
+from bornil.benchmark.splits import filter_split_by_recordings, resolve_split
 from bornil.data.dataset import SignDataset, make_collate_fn
 from bornil.data.sampler import LengthBucketBatchSampler
 from bornil.data.tokenizer import Tokenizer
@@ -57,6 +57,18 @@ def _subset(manifest, recordings, targets_by_rec):
     return pack_idx, targets
 
 
+def _apply_target_length_filter(cfg, manifest, split, split_source):
+    max_tokens = cfg.get("data", {}).get("max_target_tokens")
+    if max_tokens is None:
+        return split, split_source
+    max_tokens = int(max_tokens)
+    lengths = manifest["clean_text"].astype(str).str.split().map(len)
+    allowed = set(manifest.loc[lengths <= max_tokens, "recording"])
+    filtered = filter_split_by_recordings(split, allowed)
+    split_source = f"{split_source}|max_target_tokens<={max_tokens}"
+    return filtered, split_source
+
+
 def _length_stats(refs, hyps):
     ref_lens = [len(str(r).split()) for r in refs]
     hyp_lens = [len(str(h).split()) for h in hyps]
@@ -81,9 +93,11 @@ def _write_predictions(path: Path, refs, hyps):
             writer.writerow({"reference": ref, "hypothesis": hyp})
 
 
-def _decode_name(beam_size: int, length_penalty: float, max_len: int) -> str:
+def _decode_name(beam_size: int, length_penalty: float, max_len: int,
+                 repetition_stop: int = 0) -> str:
     mode = "greedy" if beam_size <= 1 else f"beam{beam_size}_lp{length_penalty:g}"
-    return f"{mode}_max{max_len}"
+    suffix = f"_repstop{repetition_stop}" if repetition_stop else ""
+    return f"{mode}_max{max_len}{suffix}"
 
 
 def main():
@@ -108,6 +122,8 @@ def main():
                     help="output directory; defaults to <run-dir>/decode_ablations")
     ap.add_argument("--progress", action="store_true",
                     help="show tqdm decode progress")
+    ap.add_argument("--repetition-stop", type=int, default=0,
+                    help="stop a hypothesis when one token repeats this many times; 0 disables")
     args = ap.parse_args()
 
     run_dir = Path(args.run_dir)
@@ -140,6 +156,7 @@ def main():
         split_root=args.split_root,
         prefer_frozen=True,
     )
+    sp, split_source = _apply_target_length_filter(cfg, man, sp, split_source)
     test_recs = sp["test"][:args.limit_test] if args.limit_test else sp["test"]
     pack_idx, targets = _subset(man, test_recs, targets_by_rec)
     ds = SignDataset(features, lengths, pack_idx, targets,
@@ -177,7 +194,7 @@ def main():
     for beam_size in args.beam_size:
         penalties = [1.0] if beam_size <= 1 else args.length_penalty
         for length_penalty in penalties:
-            name = _decode_name(beam_size, length_penalty, max_len)
+            name = _decode_name(beam_size, length_penalty, max_len, args.repetition_stop)
             t0 = time.time()
             metrics, hyps, refs = evaluate(
                 model,
@@ -187,6 +204,7 @@ def main():
                 max_len=max_len,
                 beam_size=beam_size,
                 length_penalty=length_penalty,
+                repetition_stop=args.repetition_stop,
                 progress=args.progress,
                 desc=f"decode {name}",
             )
@@ -200,6 +218,7 @@ def main():
                     "beam_size": beam_size,
                     "length_penalty": length_penalty,
                     "max_decode_len": max_len,
+                    "repetition_stop": args.repetition_stop,
                 },
                 "minutes": mins,
                 "corpus_metrics": metrics,

@@ -66,7 +66,8 @@ def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
 def evaluate(model, loader, tokenizer, device: str = "cpu", max_len: int = 128,
              beam_size: int = 1, progress: bool = False,
              desc: str = "decoding",
-             length_penalty: float = 1.0) -> Tuple[Dict[str, float], List[str], List[str]]:
+             length_penalty: float = 1.0,
+             repetition_stop: int = 0) -> Tuple[Dict[str, float], List[str], List[str]]:
     """Decode the loader (greedy if beam_size<=1, else beam search) and score
     with the locked metric protocol. Returns (metrics, hypotheses, references).
     `progress=True` shows a tqdm bar (beam search is slow — worth watching)."""
@@ -84,10 +85,12 @@ def evaluate(model, loader, tokenizer, device: str = "cpu", max_len: int = 128,
             gen = model.beam_search(x, bos_id=tokenizer.bos_id, eos_id=tokenizer.eos_id,
                                     beam_size=beam_size, max_len=max_len,
                                     length_penalty=length_penalty,
-                                    src_key_padding_mask=src_kpm)
+                                    src_key_padding_mask=src_kpm,
+                                    repetition_stop=repetition_stop)
         else:
             gen = model.generate(x, bos_id=tokenizer.bos_id, eos_id=tokenizer.eos_id,
-                                 max_len=max_len, src_key_padding_mask=src_kpm)
+                                 max_len=max_len, src_key_padding_mask=src_kpm,
+                                 repetition_stop=repetition_stop)
         for ids in gen:
             hyps.append(tokenizer.decode(ids))
         for row in y:

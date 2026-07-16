@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 — Decode repetition guard
+- **What:** Added opt-in `repetition_stop` decoding support for greedy and beam generation, plus `eval_checkpoint_decode.py --repetition-stop`.
+- **Why:** LTE12 diagnostics still showed rare runaway repeated-token hypotheses even when corpus metrics improved.
+- **Impact:** Existing official numbers are unchanged by default; checkpoints can now be re-decoded with a repetition guard to test whether those pathological rows can be clipped without retraining.
+- **Commit:** (this commit)
+
 ## 2026-07-15 — LTE12 filtered TConv ablation
 - **What:** Added `data.max_target_tokens` split filtering, `configs/full_tconv_lte12.yaml`, and `scripts/run_lte12_ablation.ps1`.
 - **Why:** Target-length audit showed 84.6% of rows are <=12 tokens, while long article-like targets dominate the failure cases; this tests the same TConv model on the cleaner short/medium subset.

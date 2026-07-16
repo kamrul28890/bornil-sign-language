@@ -8,7 +8,7 @@ run on real data.
 """
 import torch
 
-from bornil.models.transformer import SignTransformer, causal_mask
+from bornil.models.transformer import SignTransformer, causal_mask, has_consecutive_repeat
 
 
 def _tiny_model(vocab=20):
@@ -62,6 +62,13 @@ def test_causal_mask_is_upper_triangular():
     # position i may not attend to positions > i  => True (blocked) above diagonal
     assert torch.isinf(m[0, 1]) and torch.isinf(m[0, 2])
     assert m[2, 0].item() == 0.0 and m[2, 1].item() == 0.0
+
+
+def test_has_consecutive_repeat_checks_tail_only():
+    assert has_consecutive_repeat([4, 5, 5, 5], 3)
+    assert not has_consecutive_repeat([5, 5, 5, 4], 3)
+    assert not has_consecutive_repeat([4, 5], 3)
+    assert not has_consecutive_repeat([4, 4, 4], 0)
 
 
 def test_overfit_tiny():

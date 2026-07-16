@@ -97,6 +97,46 @@ def bootstrap_ci(hypotheses: Sequence[str], references: Sequence[str],
     return lo, hi
 
 
+def metric_ci(hypotheses, references, metric: str = "bleu4",
+              n: int = 1000, seed: int = 0, alpha: float = 0.05):
+    """Point estimate plus percentile bootstrap CI for one metric.
+
+    Returns (point, lo, hi). Thin wrapper over corpus_metrics + bootstrap_ci
+    so callers get all three numbers from one call with a single seed.
+    """
+    point = corpus_metrics(hypotheses, references)[metric]
+    lo, hi = bootstrap_ci(hypotheses, references, metric=metric,
+                          n=n, seed=seed, alpha=alpha)
+    return float(point), lo, hi
+
+
+def paired_bootstrap_pvalue(hyps_a, hyps_b, references, metric: str = "bleu4",
+                            n: int = 1000, seed: int = 0) -> float:
+    """Two-sided paired bootstrap p-value for H0: metric(A) == metric(B).
+
+    Paired: the same resampled sentence indices score both systems, so the
+    test controls for which sentences are easy/hard. p is the fraction of
+    resampled deltas (B-A) that fall on the opposite side of zero from the
+    observed delta, doubled for a two-sided test and clipped to 1.0.
+    """
+    a, b, r = list(hyps_a), list(hyps_b), list(references)
+    if not (len(a) == len(b) == len(r)):
+        raise ValueError("hyps_a, hyps_b, references must have equal length")
+    m = len(r)
+    observed = corpus_metrics(b, r)[metric] - corpus_metrics(a, r)[metric]
+    rng = np.random.default_rng(seed)
+    opposite = 0
+    for _ in range(n):
+        idx = rng.integers(0, m, size=m)
+        va = [a[i] for i in idx]
+        vb = [b[i] for i in idx]
+        vr = [r[i] for i in idx]
+        delta = corpus_metrics(vb, vr)[metric] - corpus_metrics(va, vr)[metric]
+        if (observed >= 0 and delta <= 0) or (observed < 0 and delta >= 0):
+            opposite += 1
+    return float(min(1.0, 2.0 * opposite / n))
+
+
 def bertscore(hypotheses, references, model="csebuetnlp/banglabert", num_layers=12):
     """BERTScore F1 with BanglaBERT. Optional — requires `bert-score` + torch."""
     try:

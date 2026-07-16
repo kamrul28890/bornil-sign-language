@@ -28,6 +28,7 @@ texts.csv
 texts.json
 
 # Trial run artifacts (regenerable): keep manifests + metrics, drop heavy files
+trial_*/
 trial_smoke/
 trial_*/features/
 trial_*/packed.npy

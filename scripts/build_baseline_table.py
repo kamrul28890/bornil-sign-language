@@ -1,8 +1,8 @@
 """Build the main full-dataset baseline table from saved run artifacts.
 
-The script scans data_full/runs/*/config.json, finds the latest completed run
-for each official split, reads score_metrics.json when available, and writes a
-paper-friendly Markdown summary.
+The script scans data_full/runs/*/config.json, finds the latest completed
+unfiltered `data_full` run for each official split, reads score_metrics.json
+when available, and writes a paper-friendly Markdown summary.
 
 Example:
     python scripts/build_baseline_table.py
@@ -29,7 +29,9 @@ def _run_mtime(run_dir: Path) -> float:
     return max(mtimes) if mtimes else run_dir.stat().st_mtime
 
 
-def _find_runs(runs_root: Path, splits: Iterable[str]) -> Dict[str, Optional[Path]]:
+def _find_runs(runs_root: Path, splits: Iterable[str],
+               trial_name: Optional[str] = "data_full",
+               include_filtered: bool = False) -> Dict[str, Optional[Path]]:
     wanted = set(splits)
     found = {split: [] for split in wanted}
 
@@ -47,6 +49,10 @@ def _find_runs(runs_root: Path, splits: Iterable[str]) -> Dict[str, Optional[Pat
         try:
             cfg = _load_json(cfg_path)
         except json.JSONDecodeError:
+            continue
+        if trial_name and cfg.get("trial", {}).get("name") != trial_name:
+            continue
+        if not include_filtered and cfg.get("data", {}).get("max_target_tokens") is not None:
             continue
         split = cfg.get("split", {}).get("kind")
         if split in wanted:
@@ -100,10 +106,19 @@ def _count_lines(path: Path) -> Optional[int]:
 
 
 def _split_counts(cfg: Dict[str, Any]) -> Dict[str, Optional[int]]:
+    after_filter = cfg.get("split", {}).get("filter", {}).get("after")
+    if after_filter:
+        return {
+            "train": after_filter.get("train"),
+            "val": after_filter.get("val"),
+            "test": after_filter.get("test"),
+        }
+
     source = cfg.get("split", {}).get("source", "")
     if not source.startswith("frozen:"):
         return {"train": None, "val": None, "test": None}
 
+    source = source.split("|", 1)[0]
     split_dir = Path(source.removeprefix("frozen:"))
     return {
         "train": _count_lines(split_dir / "train.txt"),
@@ -189,7 +204,9 @@ def _detail(split: str, result: Optional[Dict[str, Any]]) -> str:
 
 def build_table(args: argparse.Namespace) -> str:
     splits = tuple(args.splits)
-    run_dirs = _find_runs(Path(args.runs_root), splits)
+    run_dirs = _find_runs(Path(args.runs_root), splits,
+                          trial_name=args.trial_name,
+                          include_filtered=args.include_filtered)
     results = {
         split: _read_result(run_dir) if run_dir is not None else None
         for split, run_dir in run_dirs.items()
@@ -215,7 +232,13 @@ def main() -> None:
     ap.add_argument("--runs-root", default="data_full/runs")
     ap.add_argument("--out", default="docs/logs/BASELINE_TABLE.md")
     ap.add_argument("--splits", nargs="+", default=list(DEFAULT_SPLITS))
+    ap.add_argument("--trial-name", default="data_full",
+                    help="trial.name to select; empty string allows any trial")
+    ap.add_argument("--include-filtered", action="store_true",
+                    help="allow filtered runs such as data.max_target_tokens experiments")
     args = ap.parse_args()
+    if args.trial_name == "":
+        args.trial_name = None
 
     text = build_table(args)
     out = Path(args.out)

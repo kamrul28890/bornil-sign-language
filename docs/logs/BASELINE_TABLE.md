@@ -1,6 +1,6 @@
 # Bornil Full-Dataset Baseline Table
 
-Generated: 2026-07-15 03:40
+Generated: 2026-07-16 01:55
 
 | Split | Run | Source | Decode | Train clips | Test rows | BLEU-4 | chrF++ | ROUGE-L | BERTScore F1 | Exact % | Unique hyps |
 |---|---:|---|---|---:|---:|---:|---:|---:|---:|---:|---:|

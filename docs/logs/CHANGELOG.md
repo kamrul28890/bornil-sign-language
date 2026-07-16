@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 — Result reporting structure
+- **What:** Added `docs/logs/RESULTS_OVERVIEW.md` and guarded `build_baseline_table.py` against accidentally selecting filtered LTE12 runs by default.
+- **Why:** The project now has official full-data results, full-data ablations, filtered LTE12 diagnostics, and decode diagnostics; these need separate report tables.
+- **Impact:** The main baseline table remains the official unfiltered benchmark, while filtered LTE12 is clearly documented as a diagnostic track.
+- **Commit:** (this commit)
+
 ## 2026-07-16 — Decode repetition guard
 - **What:** Added opt-in `repetition_stop` decoding support for greedy and beam generation, plus `eval_checkpoint_decode.py --repetition-stop`.
 - **Why:** LTE12 diagnostics still showed rare runaway repeated-token hypotheses even when corpus metrics improved.

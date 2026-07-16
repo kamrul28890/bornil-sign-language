@@ -1,0 +1,358 @@
+{
+  "predictions": "D:\\My Projects\\Bornil\\data_full\\runs\\2ff734ae1aae\\predictions.csv",
+  "summary": {
+    "rows": 1108,
+    "unique_hypotheses": 991,
+    "empty_hypotheses": 0,
+    "exact_matches": 0,
+    "exact_match_rate": 0.0,
+    "avg_ref_tokens": 5.750902527075812,
+    "avg_hyp_tokens": 5.188628158844765,
+    "repeated_hypothesis_rows": 183,
+    "repeated_hypothesis_rate": 0.1651624548736462,
+    "top_repeated_hypotheses": [
+      {
+        "count": 16,
+        "hypothesis": "এ সময় গ্রামবাসী দুজনকে আটক করেন"
+      },
+      {
+        "count": 7,
+        "hypothesis": "এ ব্যাপারে মামলার প্রস্তুতি চলছে"
+      },
+      {
+        "count": 7,
+        "hypothesis": "এই বিষয়ে তোমাদিগকে সাবধান হইতে হইবে।"
+      },
+      {
+        "count": 6,
+        "hypothesis": "তিনি আর কোন গ্রন্থ প্রকাশ করেননি।"
+      },
+      {
+        "count": 6,
+        "hypothesis": "এ সময় দেশবাসীকে রোজার শুভেচ্ছা জানান শেখ হাসিনা"
+      },
+      {
+        "count": 6,
+        "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেবিপিডি ঘ"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এ ব্যাপারে বিভাগীয় তদন্ত করা হবে।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এ সময় শ্রমিকদের দাবি মানার আশ্বাস দিলে তাঁরা অবরোধ তুলে নেন"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এ সময় গ্রামবাসী দুজনকে আটক করেন।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "টিভি চালু করো।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তাকে ফোন করো।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তিনি তার রাজ্যে সম্মনীয় ছিলেন।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "আর এতেই পেয়ে যান জীবন সম্পর্কে একটি স্বচ্ছ ধারণা।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "গত জানুয়ারি থেকে গুলশানে নিজের রাজনৈতিক কার্যালয়ে অবস্থান করছেন খালেদা জিয়া"
+      },
+      {
+        "count": 3,
+        "hypothesis": "এ সময় ফোটে শিউলি ফুল।"
+      }
+    ]
+  },
+  "length_bins": [
+    {
+      "bin": "0-3",
+      "rows": 275,
+      "avg_ref_tokens": 2.92,
+      "avg_hyp_tokens": 3.618181818181818,
+      "bleu4": 0.8288456894848717,
+      "chrf++": 9.643409464560301,
+      "rougeL": 0.05319795356158993
+    },
+    {
+      "bin": "4-6",
+      "rows": 449,
+      "avg_ref_tokens": 4.643652561247216,
+      "avg_hyp_tokens": 4.888641425389755,
+      "bleu4": 1.0348735062362435,
+      "chrf++": 10.260034056410543,
+      "rougeL": 0.07637845072667554
+    },
+    {
+      "bin": "7-9",
+      "rows": 224,
+      "avg_ref_tokens": 7.8125,
+      "avg_hyp_tokens": 6.3125,
+      "bleu4": 0.6969380228464661,
+      "chrf++": 8.874103095311124,
+      "rougeL": 0.035592021627998516
+    },
+    {
+      "bin": "10-12",
+      "rows": 160,
+      "avg_ref_tokens": 10.8375,
+      "avg_hyp_tokens": 7.15625,
+      "bleu4": 0.33705498743135903,
+      "chrf++": 8.098046339976367,
+      "rougeL": 0.02348888349632898
+    }
+  ],
+  "best_examples": [
+    {
+      "row": 396,
+      "reference": "তার বড় বোন মার্চ মাসে জন্মগ্রহণ করে।",
+      "hypothesis": "তার বড় বোন মার্চ মাসে মৃত্যুবরণ করে।",
+      "ref_tokens": 7,
+      "hyp_tokens": 7,
+      "exact": false,
+      "sentence_chrf++": 67.25487534650495,
+      "rougeL": 0.8571428571428571
+    },
+    {
+      "row": 101,
+      "reference": "সে আমার বন্ধু ছিল।",
+      "hypothesis": "সে আমার বন্ধু।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 65.04853025643936,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 784,
+      "reference": "আচ্ছা, এটা যথেষ্ট।",
+      "hypothesis": "আচ্ছা, এটা শুধু একটা স্থায়ী হয়নি।",
+      "ref_tokens": 3,
+      "hyp_tokens": 6,
+      "exact": false,
+      "sentence_chrf++": 48.58566172665639,
+      "rougeL": 0.4444444444444444
+    },
+    {
+      "row": 275,
+      "reference": "আমার সাথে কে থাকবে?",
+      "hypothesis": "আমার সাথে কী করছেন?",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 48.43968531468531,
+      "rougeL": 0.5
+    },
+    {
+      "row": 204,
+      "reference": "পাগল হয়ে গেলে নাকি?",
+      "hypothesis": "পাগল হলে নাকি?",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 48.20637408696055,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 229,
+      "reference": "সব কিছু ঠিক আছে তো?",
+      "hypothesis": "সবকিছু ঠিক ছিল?",
+      "ref_tokens": 5,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 45.78443148627509,
+      "rougeL": 0.25
+    },
+    {
+      "row": 508,
+      "reference": "দেখ আমি কী করি!",
+      "hypothesis": "দেখ আমি কি এটা করছি?",
+      "ref_tokens": 4,
+      "hyp_tokens": 5,
+      "exact": false,
+      "sentence_chrf++": 43.363906126237474,
+      "rougeL": 0.4444444444444445
+    },
+    {
+      "row": 163,
+      "reference": "এটা আমি করিনি।",
+      "hypothesis": "এটা আমি ছিলাম।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 42.6758658008658,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 183,
+      "reference": "আমি কোথাও যাবো না।",
+      "hypothesis": "আমি কোথায় যাবো?",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 41.854379310539365,
+      "rougeL": 0.28571428571428575
+    },
+    {
+      "row": 70,
+      "reference": "জানি না স্যার।",
+      "hypothesis": "জানতাম না, স্যার।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 41.709697255078595,
+      "rougeL": 0.3333333333333333
+    },
+    {
+      "row": 1,
+      "reference": "হ্যাঁ, ছিলাম।",
+      "hypothesis": "হ্যাঁ, তাই না!",
+      "ref_tokens": 2,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 40.15953102324631,
+      "rougeL": 0.4
+    },
+    {
+      "row": 1101,
+      "reference": "এক প্রতিবেদনে এ কথা জানায় দ্য ডেইলি স্টারের অনলাইন সংস্করণ।",
+      "hypothesis": "এক প্রতিবেদনে এ কথা জানিয়েছে ভারতীয় সংবাদমাধ্যমিশিয়ানিয়া পড়িল।",
+      "ref_tokens": 10,
+      "hyp_tokens": 8,
+      "exact": false,
+      "sentence_chrf++": 39.53851539963648,
+      "rougeL": 0.4444444444444445
+    }
+  ],
+  "worst_examples": [
+    {
+      "row": 58,
+      "reference": "দিতে হবে দিতে হবে।",
+      "hypothesis": "কাজ কর, কাজ কর!",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 0.0,
+      "rougeL": 0.0
+    },
+    {
+      "row": 683,
+      "reference": "দুঃখের পরে সুখ আসে।",
+      "hypothesis": "কষ্ট হয় না এটা।",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 0.8116883116883116,
+      "rougeL": 0.0
+    },
+    {
+      "row": 685,
+      "reference": "প্রিয় মাতৃভূমি।",
+      "hypothesis": "কল কেটে গেছে।",
+      "ref_tokens": 2,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.8802816901408451,
+      "rougeL": 0.0
+    },
+    {
+      "row": 75,
+      "reference": "ও লজ্জা পায়।",
+      "hypothesis": "সে এসে গেছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.1574074074074074,
+      "rougeL": 0.0
+    },
+    {
+      "row": 737,
+      "reference": "অবশ্যই নিয়ে এসেছি।",
+      "hypothesis": "যাও, যাও, যাও, যাও, যাও, যাও, যাও!",
+      "ref_tokens": 3,
+      "hyp_tokens": 7,
+      "exact": false,
+      "sentence_chrf++": 1.3020833333333333,
+      "rougeL": 0.0
+    },
+    {
+      "row": 346,
+      "reference": "একবার তাকাতে হয় নিজের দিকে।",
+      "hypothesis": "প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম প্রথম টেস্ট গেছে।",
+      "ref_tokens": 5,
+      "hyp_tokens": 47,
+      "exact": false,
+      "sentence_chrf++": 1.3246977080122342,
+      "rougeL": 0.0
+    },
+    {
+      "row": 495,
+      "reference": "যাহা এখানে নাই, তাহা সেখানেও নাই।",
+      "hypothesis": "ভালো করে কিছু বলো।",
+      "ref_tokens": 6,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.4763779527559056,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1015,
+      "reference": "সেজন্য বাওয়ালিরা তাদের সাথে পানির ছোট ছোট পাত্র রাখেন।",
+      "hypothesis": "এই আবুল করবে।",
+      "ref_tokens": 9,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.5703517587939697,
+      "rougeL": 0.0
+    },
+    {
+      "row": 732,
+      "reference": "অত্যন্ত আনন্দিত হল।",
+      "hypothesis": "আয়, আয়!",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.644736842105263,
+      "rougeL": 0.0
+    },
+    {
+      "row": 690,
+      "reference": "এটা মাথার ওপর রাখো।",
+      "hypothesis": "এ বনে আছে।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.7361111111111112,
+      "rougeL": 0.0
+    },
+    {
+      "row": 390,
+      "reference": "এই বলে সে চলে গেল।",
+      "hypothesis": "এটা ওর দোষ নয়।",
+      "ref_tokens": 5,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.8382352941176467,
+      "rougeL": 0.0
+    },
+    {
+      "row": 74,
+      "reference": "বলা যায় না ভাই।",
+      "hypothesis": "এক্ষুণি বের হও।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.9230769230769231,
+      "rougeL": 0.0
+    }
+  ]
+}

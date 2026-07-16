@@ -168,3 +168,19 @@ def test_resolve_split_falls_back_when_frozen_split_does_not_match_manifest(tmp_
 
     assert source == "generated"
     assert set(resolved["train"] + resolved["val"] + resolved["test"]) == set(sample["recording"])
+
+
+def test_filter_split_by_recordings_preserves_partition_membership():
+    split = {
+        "train": ["a.webm", "b.webm", "c.webm"],
+        "val": ["d.webm", "e.webm"],
+        "test": ["f.webm", "g.webm"],
+    }
+
+    filtered = splits.filter_split_by_recordings(split, {"b.webm", "d.webm", "g.webm"})
+
+    assert filtered == {
+        "train": ["b.webm"],
+        "val": ["d.webm"],
+        "test": ["g.webm"],
+    }

@@ -1,0 +1,358 @@
+{
+  "predictions": "D:\\My Projects\\Bornil\\data_full\\runs\\bc38907bece6\\predictions.csv",
+  "summary": {
+    "rows": 1546,
+    "unique_hypotheses": 1463,
+    "empty_hypotheses": 0,
+    "exact_matches": 2,
+    "exact_match_rate": 0.00129366106080207,
+    "avg_ref_tokens": 5.723156532988357,
+    "avg_hyp_tokens": 5.5077619663648125,
+    "repeated_hypothesis_rows": 155,
+    "repeated_hypothesis_rate": 0.10025873221216042,
+    "top_repeated_hypotheses": [
+      {
+        "count": 3,
+        "hypothesis": "সেদিন কী হয়েছে?"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তবে সরকারের পক্ষ থেকেও সহায়তা দেওয়া হবে"
+      },
+      {
+        "count": 3,
+        "hypothesis": "অনেক দিন স্কুল ছুটি।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "আমরা অনেক উপরে আছি।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "সরকারের পক্ষ থেকেও এ বিষয়ে ইতিবাচক সাড়া পাওয়া গেছে"
+      },
+      {
+        "count": 3,
+        "hypothesis": "মহেন্দ্র কহিল, আছে।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "এক পর্যায়ে সংঘর্ষে অনেকেই জড়িয়ে পড়ে"
+      },
+      {
+        "count": 3,
+        "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ"
+      },
+      {
+        "count": 3,
+        "hypothesis": "প্রতিযোগিতার স্পন্সর সিটিসেল"
+      },
+      {
+        "count": 3,
+        "hypothesis": "তার সাথে থাকা ছেলেরা কিছু ভুল করেছে।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "কি বাল ঘটেছে এখানে?"
+      },
+      {
+        "count": 2,
+        "hypothesis": "সেজন্য সবার সহযোগিতা চাই"
+      },
+      {
+        "count": 2,
+        "hypothesis": "ঘটনাটি ছিল।"
+      },
+      {
+        "count": 2,
+        "hypothesis": "যোগ দিয়েছিলেন মিছিলে।"
+      },
+      {
+        "count": 2,
+        "hypothesis": "আমিই আগে শুরু করছি।"
+      }
+    ]
+  },
+  "length_bins": [
+    {
+      "bin": "0-3",
+      "rows": 353,
+      "avg_ref_tokens": 2.917847025495751,
+      "avg_hyp_tokens": 3.6090651558073654,
+      "bleu4": 1.2278679645939727,
+      "chrf++": 11.111033530850131,
+      "rougeL": 0.07822743828409551
+    },
+    {
+      "bin": "4-6",
+      "rows": 655,
+      "avg_ref_tokens": 4.867175572519084,
+      "avg_hyp_tokens": 5.158778625954199,
+      "bleu4": 1.0571121349766661,
+      "chrf++": 10.35756556105765,
+      "rougeL": 0.060960253885714154
+    },
+    {
+      "bin": "7-9",
+      "rows": 381,
+      "avg_ref_tokens": 7.656167979002625,
+      "avg_hyp_tokens": 6.68241469816273,
+      "bleu4": 0.3206422669370072,
+      "chrf++": 9.476312397847353,
+      "rougeL": 0.040855289089809475
+    },
+    {
+      "bin": "10-12",
+      "rows": 157,
+      "avg_ref_tokens": 10.910828025477707,
+      "avg_hyp_tokens": 8.382165605095542,
+      "bleu4": 0.171687892310502,
+      "chrf++": 9.247890341192605,
+      "rougeL": 0.01685631620199028
+    }
+  ],
+  "best_examples": [
+    {
+      "row": 193,
+      "reference": "বাংলা নতুন বছরের প্রথম দিন বৈশাখ।",
+      "hypothesis": "বাংলা নতুন বছরের প্রথম দিন বৈশাখ।",
+      "ref_tokens": 6,
+      "hyp_tokens": 6,
+      "exact": true,
+      "sentence_chrf++": 100.0,
+      "rougeL": 1.0
+    },
+    {
+      "row": 18,
+      "reference": "অনেক সময় আছে।",
+      "hypothesis": "অনেক সময় আছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": true,
+      "sentence_chrf++": 100.0,
+      "rougeL": 1.0
+    },
+    {
+      "row": 435,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেএফএফএমআই ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 70.61609608831516,
+      "rougeL": 0.75
+    },
+    {
+      "row": 636,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচটিআর ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 70.16728745018382,
+      "rougeL": 0.75
+    },
+    {
+      "row": 702,
+      "reference": "আচ্ছা ঠিক আছে।",
+      "hypothesis": "আচ্ছা, ঠিক আছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 68.5134576523378,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 654,
+      "reference": "আমার সময় নাই।",
+      "hypothesis": "আমার সময় আছে!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 56.03763169027389,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 657,
+      "reference": "আমি ঘুমাতে যাচ্ছি।",
+      "hypothesis": "আমি ঘুমাতে চাই।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 54.23841146198611,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 639,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমপ্রতিনিধিডিডিএমএইচপিএসইউ ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 52.33473052291835,
+      "rougeL": 0.75
+    },
+    {
+      "row": 668,
+      "reference": "খুব বেশি নয়।",
+      "hypothesis": "খুব বেশি হয়ে গেলো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 52.00559281035737,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 1060,
+      "reference": "দাঁড়াও, আমিও আসছি।",
+      "hypothesis": "দাঁড়াও, আমার ভাই।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 49.981730659482885,
+      "rougeL": 0.3333333333333333
+    },
+    {
+      "row": 1147,
+      "reference": "ঠিক আছে, তোমরা কে?",
+      "hypothesis": "ঠিক আছে, তুমি?",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 49.38460036125976,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 647,
+      "reference": "হ্যাঁ, ও পারে।",
+      "hypothesis": "হ্যাঁ, ওর পেট।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 48.757665945165954,
+      "rougeL": 0.3333333333333333
+    }
+  ],
+  "worst_examples": [
+    {
+      "row": 1395,
+      "reference": "তার কথার মাঝেই কথা বলবো না।",
+      "hypothesis": "কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে কে?",
+      "ref_tokens": 6,
+      "hyp_tokens": 56,
+      "exact": false,
+      "sentence_chrf++": 0.9328358208955223,
+      "rougeL": 0.0
+    },
+    {
+      "row": 728,
+      "reference": "এসব কেন বলছেন?",
+      "hypothesis": "মহারাজ, গুরু আপনি।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.9765625,
+      "rougeL": 0.0
+    },
+    {
+      "row": 656,
+      "reference": "কাজটা সারা যাক।",
+      "hypothesis": "পড়া পড়েছো?",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 0.9920634920634922,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1089,
+      "reference": "চতুর্থ পর্যায়ে মৃত্যুদণ্ড শুরু হয়।",
+      "hypothesis": "কত ফেলা গেল!",
+      "ref_tokens": 5,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.358695652173913,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1359,
+      "reference": "পুরাণ চালে ভাতে বাড়ে।",
+      "hypothesis": "ছোট একটি শব্দ।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.4204545454545452,
+      "rougeL": 0.0
+    },
+    {
+      "row": 197,
+      "reference": "কার্যালয়ের ভেতরে অবস্থান করছেন খালেদা জিয়া",
+      "hypothesis": "কৃষি এ লিমি নই।",
+      "ref_tokens": 6,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.488095238095238,
+      "rougeL": 0.0
+    },
+    {
+      "row": 925,
+      "reference": "বেঁচে থাকবে কিভাবে?",
+      "hypothesis": "অজ্ঞান ছিলো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.5822784810126582,
+      "rougeL": 0.0
+    },
+    {
+      "row": 978,
+      "reference": "কোনো ভয় নেই আর এখন।",
+      "hypothesis": "ঘটনাটি ছিল।",
+      "ref_tokens": 5,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.689189189189189,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1135,
+      "reference": "কারণ এটা তাই, ওকে?",
+      "hypothesis": "হাড় ভেঙে গেছে!",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.7123287671232879,
+      "rougeL": 0.0
+    },
+    {
+      "row": 964,
+      "reference": "মিশেল এটা কী করছে?",
+      "hypothesis": "বন্দুক নাও।",
+      "ref_tokens": 4,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.7857142857142856,
+      "rougeL": 0.0
+    },
+    {
+      "row": 12,
+      "reference": "হে হে হে",
+      "hypothesis": "এদিকে দাও মা!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.785714285714286,
+      "rougeL": 0.0
+    },
+    {
+      "row": 806,
+      "reference": "বিলি, ফিরে আসো!",
+      "hypothesis": "গেম শুরু হয়ে গেছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.8382352941176472,
+      "rougeL": 0.0
+    }
+  ]
+}

@@ -128,6 +128,20 @@ def _recording_set(split: Split) -> set:
     return recs
 
 
+def filter_split_by_recordings(split: Split, allowed_recordings) -> Split:
+    """Keep only allowed recordings while preserving existing partition membership.
+
+    This is for controlled filtered-data experiments: resolve the official split
+    first, then remove rows inside each partition. That keeps train/val/test
+    provenance fixed instead of creating a new split over the filtered manifest.
+    """
+    allowed = set(allowed_recordings)
+    return {
+        name: [rec for rec in split.get(name, []) if rec in allowed]
+        for name in _NAMES
+    }
+
+
 def resolve_split(df: pd.DataFrame, kind: str, seed: int = 42,
                   fracs: Sequence[float] = (0.8, 0.1, 0.1),
                   split_root="splits",

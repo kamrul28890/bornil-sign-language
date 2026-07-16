@@ -1,0 +1,358 @@
+{
+  "predictions": "D:\\My Projects\\Bornil\\data_full\\runs\\58269a7b1003\\predictions.csv",
+  "summary": {
+    "rows": 1521,
+    "unique_hypotheses": 1356,
+    "empty_hypotheses": 0,
+    "exact_matches": 0,
+    "exact_match_rate": 0.0,
+    "avg_ref_tokens": 5.701512163050625,
+    "avg_hyp_tokens": 5.482577251808021,
+    "repeated_hypothesis_rows": 280,
+    "repeated_hypothesis_rate": 0.18408941485864563,
+    "top_repeated_hypotheses": [
+      {
+        "count": 12,
+        "hypothesis": "এ সময় উত্তুরে হাওয়া বয়।"
+      },
+      {
+        "count": 7,
+        "hypothesis": "সরকার সেই আন্তরিক ইচ্ছাটুকু দেখাবে বিশ্বাস করতে চাই"
+      },
+      {
+        "count": 5,
+        "hypothesis": "তিনি বলেন অবশ্যই শকড হয়েছি"
+      },
+      {
+        "count": 5,
+        "hypothesis": "এ সময় সিডনির মাঠ দেখে ম্যাক্সওয়েলঝড়"
+      },
+      {
+        "count": 4,
+        "hypothesis": "তবে মিনিটে এসপানিয়লকে এগিয়ে নেন সার্জিও গার্সিয়া দে লা সুয়েন্তে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এ সময় গ্রামবাসী দুজনকে আটক করেন"
+      },
+      {
+        "count": 4,
+        "hypothesis": "তাই ছুটি নিয়ে দেখতে এসেছেন।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এছাড়া অনুতপ্ত মানুষের কান্নার আওয়াজও শোনা যায়"
+      },
+      {
+        "count": 4,
+        "hypothesis": "প্রথমত ভাষার সঙ্গে সংস্কৃতির গভীর যোগ রয়েছে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "আর এজন্য এটাকে চ্যালেঞ্জ হিসাবে নিয়ে ঐক্যবদ্ধভাবে কাজ করা"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এর মধ্যে ছয় লাখ সাত হাজার টাকা ঘটনার পরপরই উদ্ধার করা হয়েছে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচএ ঘ"
+      },
+      {
+        "count": 4,
+        "hypothesis": "১৯৭১ সালের ২৮ শে অক্টোবর।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "এর দুটো দিক রয়েছে।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "ওই টাকা ফেরত পেতে গ্রাহকেরা তাঁকে চাপ দিচ্ছেন"
+      }
+    ]
+  },
+  "length_bins": [
+    {
+      "bin": "0-3",
+      "rows": 362,
+      "avg_ref_tokens": 2.925414364640884,
+      "avg_hyp_tokens": 3.770718232044199,
+      "bleu4": 1.0070731510128534,
+      "chrf++": 10.291685295047696,
+      "rougeL": 0.058636283912527
+    },
+    {
+      "bin": "4-6",
+      "rows": 645,
+      "avg_ref_tokens": 4.872868217054264,
+      "avg_hyp_tokens": 5.2015503875969,
+      "bleu4": 0.5075447850946337,
+      "chrf++": 9.92232570156492,
+      "rougeL": 0.05644462468675875
+    },
+    {
+      "bin": "7-9",
+      "rows": 352,
+      "avg_ref_tokens": 7.715909090909091,
+      "avg_hyp_tokens": 6.974431818181818,
+      "bleu4": 0.4794687779750115,
+      "chrf++": 8.975029790598795,
+      "rougeL": 0.039968555059187665
+    },
+    {
+      "bin": "10-12",
+      "rows": 162,
+      "avg_ref_tokens": 10.82716049382716,
+      "avg_hyp_tokens": 7.185185185185185,
+      "bleu4": 0.38695823249771066,
+      "chrf++": 8.185114362005805,
+      "rougeL": 0.0256303610305445
+    }
+  ],
+  "best_examples": [
+    {
+      "row": 972,
+      "reference": "কাল দেখা হবে!",
+      "hypothesis": "কাল দেখা হবে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 77.00827823093725,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 508,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমএএইচএএএলজেকে ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচএ ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 68.15552856754333,
+      "rougeL": 0.75
+    },
+    {
+      "row": 260,
+      "reference": "তার বড় ভাই আগস্ট মাসে জন্মগ্রহণ করে।",
+      "hypothesis": "তার বড় বোন মার্চ মাসে জন্মগ্রহণ করে।",
+      "ref_tokens": 7,
+      "hyp_tokens": 7,
+      "exact": false,
+      "sentence_chrf++": 62.98260192100571,
+      "rougeL": 0.7142857142857143
+    },
+    {
+      "row": 906,
+      "reference": "না, এটা আমার।",
+      "hypothesis": "না, এটা আমি করিনি।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 62.19877050674317,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 1521,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমপ্রতিনিধিএসইউএমজেকে ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচএ ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 56.94405976403195,
+      "rougeL": 0.75
+    },
+    {
+      "row": 946,
+      "reference": "চেপে ধরে থাকো।",
+      "hypothesis": "ধৈর্য ধরে থাকো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 56.06520416959415,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 674,
+      "reference": "খুব বেশি নয়।",
+      "hypothesis": "খুব বেশি হয়ে গেলো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 52.00559281035737,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 219,
+      "reference": "আমি বললাম, সব মানুষের সঙ্গেই আছে?",
+      "hypothesis": "আমি বললাম, সব মানুষ তো এক রকম নয়।",
+      "ref_tokens": 6,
+      "hyp_tokens": 8,
+      "exact": false,
+      "sentence_chrf++": 51.653208678815496,
+      "rougeL": 0.42857142857142855
+    },
+    {
+      "row": 648,
+      "reference": "আমি সত্য বলছি।",
+      "hypothesis": "আমি সত্যি বলছি!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 48.66311773575496,
+      "rougeL": 0.3333333333333333
+    },
+    {
+      "row": 896,
+      "reference": "দয়া করে আসুন স্যার।",
+      "hypothesis": "দয়া করে আসবেন।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 47.55575679103296,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 20,
+      "reference": "আচ্ছা, আমি যাচ্ছি।",
+      "hypothesis": "আচ্ছা, আমিই শুরু করি।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 46.668280973077984,
+      "rougeL": 0.28571428571428575
+    },
+    {
+      "row": 455,
+      "reference": "প্রত্যেক নাগরিকের স্বাধীনভাবে নিজের পছন্দ অনুযায়ী কিছু করার অধিকার আছে।",
+      "hypothesis": "প্রত্যেক নাগরিকের সম্পত্তি অর্জন ও ভোগ করার অধিকার আছে।",
+      "ref_tokens": 10,
+      "hyp_tokens": 9,
+      "exact": false,
+      "sentence_chrf++": 46.49142767757922,
+      "rougeL": 0.5263157894736842
+    }
+  ],
+  "worst_examples": [
+    {
+      "row": 785,
+      "reference": "সেতু অবরোধ কর!",
+      "hypothesis": "যখন এ চাপ না।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 0.0,
+      "rougeL": 0.0
+    },
+    {
+      "row": 755,
+      "reference": "কিছু জিজ্ঞাসা করছি।",
+      "hypothesis": "ওষুধ খেতে হবে?",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.7812499999999999,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1034,
+      "reference": "শান্ত হও, শান্ত হও।",
+      "hypothesis": "মন থেকে বলছি!",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.8333333333333334,
+      "rougeL": 0.0
+    },
+    {
+      "row": 756,
+      "reference": "সে কি ঠিক হবে?",
+      "hypothesis": "মাথায় আঘাত করো!",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.0775862068965516,
+      "rougeL": 0.0
+    },
+    {
+      "row": 108,
+      "reference": "হ্যাঁ, তাই না?",
+      "hypothesis": "পরে চড় দেন",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.0964912280701753,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1282,
+      "reference": "আপাতত, হ্যাঁ।",
+      "hypothesis": "জলদি এসো।",
+      "ref_tokens": 2,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.1160714285714284,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1097,
+      "reference": "এসো, প্লিজ!",
+      "hypothesis": "সবার হাতে নতুন বই।",
+      "ref_tokens": 2,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.1363636363636362,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1268,
+      "reference": "অনেকের কাছে গল্প শুনেছি, রকেট স্টিমারে চড়ার মজাই আলাদা।",
+      "hypothesis": "মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে মানুষে",
+      "ref_tokens": 9,
+      "hyp_tokens": 128,
+      "exact": false,
+      "sentence_chrf++": 1.1722197136344858,
+      "rougeL": 0.0
+    },
+    {
+      "row": 846,
+      "reference": "মূল ঘটনা কী?",
+      "hypothesis": "বন্ধ হয়ে গেছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.179245283018868,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1302,
+      "reference": "সুখের ঘরে অসুখ এনেছি।",
+      "hypothesis": "ভালবাসার গল্প, তো?",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.4204545454545454,
+      "rougeL": 0.0
+    },
+    {
+      "row": 26,
+      "reference": "জলপরি আবার ডুব দিল।",
+      "hypothesis": "চেন্নাই যাওয়া যাক।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.54320987654321,
+      "rougeL": 0.0
+    },
+    {
+      "row": 813,
+      "reference": "আসো একটু চুমু দিই।",
+      "hypothesis": "হ্যাঁ, ওর পেট।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.7361111111111112,
+      "rougeL": 0.0
+    }
+  ]
+}

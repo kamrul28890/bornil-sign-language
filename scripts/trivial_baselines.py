@@ -18,7 +18,7 @@ import pandas as pd
 from bornil.config import load_config
 from bornil.benchmark import metrics as M
 from bornil.benchmark import trivial
-from bornil.benchmark.splits import resolve_split
+from bornil.benchmark.splits import filter_split_by_recordings, resolve_split
 from bornil.data.transforms import prepare_features
 
 
@@ -31,6 +31,30 @@ def _pool(features, lengths, pack_idx, normalize, upper_body):
         x = prepare_features(x, normalize=normalize, upper_body=upper_body)
         out.append(x.mean(axis=0))
     return np.stack(out) if out else np.zeros((0, 1), dtype=np.float32)
+
+
+def _apply_target_length_filter(cfg, manifest, split, split_source):
+    max_tokens = cfg.get("data", {}).get("max_target_tokens")
+    if max_tokens is None:
+        return split, split_source
+    max_tokens = int(max_tokens)
+    if max_tokens <= 0:
+        raise SystemExit("data.max_target_tokens must be a positive integer")
+
+    lengths = manifest["clean_text"].astype(str).str.split().map(len)
+    allowed = set(manifest.loc[lengths <= max_tokens, "recording"])
+    filtered = filter_split_by_recordings(split, allowed)
+    before = {name: len(split.get(name, [])) for name in ("train", "val", "test")}
+    after = {name: len(filtered.get(name, [])) for name in ("train", "val", "test")}
+    if any(after[name] == 0 for name in ("train", "val", "test")):
+        raise SystemExit(
+            "target-length filter removed an entire split partition: "
+            f"before={before} after={after}"
+        )
+
+    split_source = f"{split_source}|max_target_tokens<={max_tokens}"
+    print(f"target_length_filter<={max_tokens} tokens | before={before} | after={after}")
+    return filtered, split_source
 
 
 def main():
@@ -60,6 +84,7 @@ def main():
         split_root=args.split_root,
         prefer_frozen=not args.no_frozen_splits,
     )
+    sp, split_source = _apply_target_length_filter(cfg, man, sp, split_source)
     rec2text = dict(zip(man["recording"], man["clean_text"].astype(str)))
     rec2pack = dict(zip(man["recording"], man["pack_idx"]))
 

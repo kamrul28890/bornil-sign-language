@@ -25,7 +25,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from bornil.config import load_config, config_hash
-from bornil.benchmark.splits import resolve_split
+from bornil.benchmark.splits import filter_split_by_recordings, resolve_split
 from bornil.data.dataset import SignDataset, make_collate_fn
 from bornil.data.sampler import LengthBucketBatchSampler
 from bornil.data.tokenizer import Tokenizer
@@ -53,6 +53,35 @@ def _subset(manifest, recordings, targets_by_rec):
     pack_idx = rows["pack_idx"].tolist()
     targets = [targets_by_rec[r] for r in rows["recording"]]
     return pack_idx, targets
+
+
+def _apply_target_length_filter(cfg, manifest, split, split_source):
+    max_tokens = cfg.get("data", {}).get("max_target_tokens")
+    if max_tokens is None:
+        return split, split_source
+    max_tokens = int(max_tokens)
+    if max_tokens <= 0:
+        raise SystemExit("data.max_target_tokens must be a positive integer")
+
+    lengths = manifest["clean_text"].astype(str).str.split().map(len)
+    allowed = set(manifest.loc[lengths <= max_tokens, "recording"])
+    filtered = filter_split_by_recordings(split, allowed)
+    before = {name: len(split.get(name, [])) for name in ("train", "val", "test")}
+    after = {name: len(filtered.get(name, [])) for name in ("train", "val", "test")}
+    if any(after[name] == 0 for name in ("train", "val", "test")):
+        raise SystemExit(
+            "target-length filter removed an entire split partition: "
+            f"before={before} after={after}"
+        )
+
+    cfg.setdefault("split", {})["filter"] = {
+        "max_target_tokens": max_tokens,
+        "before": before,
+        "after": after,
+    }
+    split_source = f"{split_source}|max_target_tokens<={max_tokens}"
+    print(f"target_length_filter<={max_tokens} tokens | before={before} | after={after}")
+    return filtered, split_source
 
 
 def main():
@@ -102,6 +131,7 @@ def main():
         split_root=args.split_root,
         prefer_frozen=not args.no_frozen_splits,
     )
+    sp, split_source = _apply_target_length_filter(cfg, man, sp, split_source)
     cfg["split"]["source"] = split_source
     collate = make_collate_fn(tok.pad_id)
 

@@ -113,3 +113,33 @@
 - **Training extras:** early_eos_penalty=0.2
 - **Metrics (test):** BLEU-4=0.11 chrF=8.99 chrF++=7.26 ROUGE-L=0.031 (BLEU-1/2/3=9.2/1.9/0.3)
 - **Checkpoint:** data_full/runs/a459d1148d0c/best.pt
+
+### EXP-data_full_tconv_lte12-bc38907bece6  (2026-07-16)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_tconv_lte12 (WS-C T0.2)
+- **Data/Split:** data_full_tconv_lte12 random-v1 (train 12162 / test 1546); source=frozen:splits/random-v1|max_target_tokens<=12
+- **Representation:** kp-218   **Config hash:** bc38907bece6   **Seed:** 42
+- **Compute:** cuda   **Train time:** 38.4 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0
+- **Metrics (test):** BLEU-4=0.72 chrF=11.98 chrF++=9.95 ROUGE-L=0.055 (BLEU-1/2/3=15.6/4.3/1.4)
+- **Checkpoint:** data_full/runs/bc38907bece6/best.pt
+
+### EXP-data_full_tconv_lte12-58269a7b1003  (2026-07-16)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_tconv_lte12 (WS-C T0.2)
+- **Data/Split:** data_full_tconv_lte12 unseen-sentence-v1 (train 12170 / test 1521); source=frozen:splits/unseen-sentence-v1|max_target_tokens<=12
+- **Representation:** kp-218   **Config hash:** 58269a7b1003   **Seed:** 42
+- **Compute:** cuda   **Train time:** 32.2 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0
+- **Metrics (test):** BLEU-4=0.60 chrF=11.24 chrF++=9.33 ROUGE-L=0.050 (BLEU-1/2/3=15.0/4.0/1.3)
+- **Checkpoint:** data_full/runs/58269a7b1003/best.pt
+
+### EXP-data_full_tconv_lte12-2ff734ae1aae  (2026-07-16)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_tconv_lte12 (WS-C T0.2)
+- **Data/Split:** data_full_tconv_lte12 signerindep-v1 (train 12507 / test 1108); source=frozen:splits/signerindep-v1|max_target_tokens<=12
+- **Representation:** kp-218   **Config hash:** 2ff734ae1aae   **Seed:** 42
+- **Compute:** cuda   **Train time:** 32.2 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0
+- **Metrics (test):** BLEU-4=0.81 chrF=11.01 chrF++=9.22 ROUGE-L=0.055 (BLEU-1/2/3=15.4/4.0/1.5)
+- **Checkpoint:** data_full/runs/2ff734ae1aae/best.pt

@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-15 — LTE12 filtered TConv ablation
+- **What:** Added `data.max_target_tokens` split filtering, `configs/full_tconv_lte12.yaml`, and `scripts/run_lte12_ablation.ps1`.
+- **Why:** Target-length audit showed 84.6% of rows are <=12 tokens, while long article-like targets dominate the failure cases; this tests the same TConv model on the cleaner short/medium subset.
+- **Impact:** Filtered experiments now preserve frozen split membership and remove long-target rows within each partition, so model, trivial floors, and diagnostics stay comparable.
+- **Commit:** (this commit)
+
 ## 2026-07-15 — TConv length-pressure ablation
 - **What:** Added optional `early_eos_penalty` training loss and `configs/full_tconv_len.yaml`.
 - **Why:** TConv improved BLEU-4 but still under-generated and did not beat vanilla ROUGE-L; this ablation directly discourages premature EOS before running harder splits.

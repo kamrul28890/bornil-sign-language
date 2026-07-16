@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 — Results section draft
+- **What:** Added `docs/logs/RESULTS_SECTION_DRAFT.md` as report-ready prose for the official baselines, ablations, LTE12 diagnostic track, and decode stability result.
+- **Why:** Convert experiment logs into a coherent paper/report narrative before starting more model training.
+- **Impact:** The current results can now be copied into a manuscript draft with clear separation between official and diagnostic tracks.
+- **Commit:** (this commit)
+
 ## 2026-07-16 — Result reporting structure
 - **What:** Added `docs/logs/RESULTS_OVERVIEW.md` and guarded `build_baseline_table.py` against accidentally selecting filtered LTE12 runs by default.
 - **Why:** The project now has official full-data results, full-data ablations, filtered LTE12 diagnostics, and decode diagnostics; these need separate report tables.

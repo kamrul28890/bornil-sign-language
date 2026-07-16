@@ -94,3 +94,12 @@
 - **Decode:** greedy (beam_size=1)
 - **Metrics (test):** BLEU-4=0.35 chrF=10.36 chrF++=8.38 ROUGE-L=0.048 (BLEU-1/2/3=8.8/2.4/0.8)
 - **Checkpoint:** data_full/runs/46a706570712/best.pt
+
+### EXP-data_full_tconv-c26953197929  (2026-07-15)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_tconv (WS-C T0.2)
+- **Data/Split:** data_full_tconv random-v1 (train 14390 / test 1799); source=frozen:splits/random-v1
+- **Representation:** kp-218   **Config hash:** c26953197929   **Seed:** 42
+- **Compute:** cuda   **Train time:** 46.1 min
+- **Decode:** greedy (beam_size=1)
+- **Metrics (test):** BLEU-4=0.66 chrF=11.60 chrF++=9.48 ROUGE-L=0.054 (BLEU-1/2/3=11.8/3.4/1.3)
+- **Checkpoint:** data_full/runs/c26953197929/best.pt

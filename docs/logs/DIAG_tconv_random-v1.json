@@ -1,0 +1,367 @@
+{
+  "predictions": "data_full\\runs\\c26953197929\\predictions.csv",
+  "summary": {
+    "rows": 1799,
+    "unique_hypotheses": 1644,
+    "empty_hypotheses": 0,
+    "exact_matches": 2,
+    "exact_match_rate": 0.0011117287381878821,
+    "avg_ref_tokens": 7.499166203446359,
+    "avg_hyp_tokens": 6.3046136742634795,
+    "repeated_hypothesis_rows": 252,
+    "repeated_hypothesis_rate": 0.14007782101167315,
+    "top_repeated_hypotheses": [
+      {
+        "count": 13,
+        "hypothesis": "এ ছাড়া তিনটি লোকসভা কেন্দ্রেও ভোট হয়েছে"
+      },
+      {
+        "count": 9,
+        "hypothesis": "আর এ থেকেই অবসান ঘটে শান্তিপূর্ণভাবে চালানো আন্দোলনের"
+      },
+      {
+        "count": 7,
+        "hypothesis": "এ সময় চটের বস্তায় আগুন দিয়ে রাস্তা অবরোধের চেষ্টা করা হয়"
+      },
+      {
+        "count": 7,
+        "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ"
+      },
+      {
+        "count": 5,
+        "hypothesis": "যে কারণে টোটাল প্রফেশনালিজম এখনও গড়ে ওঠেনি"
+      },
+      {
+        "count": 5,
+        "hypothesis": "সব মিলিয়ে বিহারটিতে ৮০০ মানুষের থাকার ব্যবস্থা ছিল।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "আমাদের দেশে করিবার অনেক কিছু আছে।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "যদি না পেয়ে থাকে তাহলে সে উদ্যোগ নেয়া যেতে পারে।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "বাংলাদেশের রাজনীতিকেরা সবকিছুই করেন জনগণের নামে জনগণের দোহাই দিয়ে"
+      },
+      {
+        "count": 4,
+        "hypothesis": "বুধবার সকালে এ বছর পুরস্কারের জন্য মনোনীতদের পদক তুলে দেন প্রধানমন্ত্রী শেখ হাসিনা"
+      },
+      {
+        "count": 4,
+        "hypothesis": "নক্ষত্ররায় খানিকটা হাঁ করিয়া রহিলেন।"
+      },
+      {
+        "count": 4,
+        "hypothesis": "মঙ্গলবার ভবনটিতে ফাটল ধরার পর মঙ্গলবার দুপুরে ভবনটি ঘুরে দেখেন স্থানীয় প্রশাসনের কর্মকর্তারা"
+      },
+      {
+        "count": 3,
+        "hypothesis": "অনেক গরম ছিল।"
+      },
+      {
+        "count": 3,
+        "hypothesis": "সেজন্য সবার সহযোগিতা চাই"
+      },
+      {
+        "count": 3,
+        "hypothesis": "পরে দিনাজপুরের বিশপের সঙ্গে আলোচনা করেন"
+      }
+    ]
+  },
+  "length_bins": [
+    {
+      "bin": "0-3",
+      "rows": 353,
+      "avg_ref_tokens": 2.917847025495751,
+      "avg_hyp_tokens": 3.555240793201133,
+      "bleu4": 2.177616474261699,
+      "chrf++": 11.055501843212417,
+      "rougeL": 0.08378524214218264
+    },
+    {
+      "bin": "4-6",
+      "rows": 655,
+      "avg_ref_tokens": 4.867175572519084,
+      "avg_hyp_tokens": 4.996946564885496,
+      "bleu4": 1.1207803063688533,
+      "chrf++": 10.075680398851926,
+      "rougeL": 0.0618053374240598
+    },
+    {
+      "bin": "7-9",
+      "rows": 381,
+      "avg_ref_tokens": 7.656167979002625,
+      "avg_hyp_tokens": 6.706036745406824,
+      "bleu4": 0.5956877040245557,
+      "chrf++": 9.710454757381653,
+      "rougeL": 0.0456522874455948
+    },
+    {
+      "bin": "10-12",
+      "rows": 157,
+      "avg_ref_tokens": 10.910828025477707,
+      "avg_hyp_tokens": 8.789808917197453,
+      "bleu4": 0.14584194433222625,
+      "chrf++": 8.570558226522497,
+      "rougeL": 0.022255186918236084
+    },
+    {
+      "bin": "13-plus",
+      "rows": 253,
+      "avg_ref_tokens": 18.35177865612648,
+      "avg_hyp_tokens": 11.379446640316205,
+      "bleu4": 0.13521366571117777,
+      "chrf++": 8.905457020890637,
+      "rougeL": 0.021722797447204206
+    }
+  ],
+  "best_examples": [
+    {
+      "row": 835,
+      "reference": "আমি বললাম, কেন?",
+      "hypothesis": "আমি বললাম, কেন?",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": true,
+      "sentence_chrf++": 100.0,
+      "rougeL": 1.0
+    },
+    {
+      "row": 78,
+      "reference": "এতে আছে রাজ্যের উপকরণ।",
+      "hypothesis": "এতে আছে রাজ্যের উপকরণ।",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": true,
+      "sentence_chrf++": 100.0,
+      "rougeL": 1.0
+    },
+    {
+      "row": 1444,
+      "reference": "তুমি কি করছ?",
+      "hypothesis": "তুমি কি করছ তুমি?",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 79.05556808658206,
+      "rougeL": 0.5714285714285715
+    },
+    {
+      "row": 922,
+      "reference": "খুব খুশি হয়েছি।",
+      "hypothesis": "খুব খুশি হয়েছেন।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 76.06457968188278,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 614,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচটিআর ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমকেজেকে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 70.16728745018382,
+      "rougeL": 0.75
+    },
+    {
+      "row": 685,
+      "reference": "আচ্ছা ঠিক আছে।",
+      "hypothesis": "আচ্ছা, ঠিক আছে।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 68.5134576523378,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 1284,
+      "reference": "আমার সময় নাই।",
+      "hypothesis": "আমার সময় নেই।",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 68.30762987012986,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 700,
+      "reference": "ঘুম আসছে না, বাবা।",
+      "hypothesis": "ঘুম আসছে না, মা।",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 67.97320753936275,
+      "rougeL": 0.75
+    },
+    {
+      "row": 838,
+      "reference": "নিলাম, ঠিক আছে?",
+      "hypothesis": "লুইস, ঠিক আছে?",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 59.41267983379128,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 1328,
+      "reference": "তুমি চাও এটা?",
+      "hypothesis": "তুমি চাও?",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 56.70812942250312,
+      "rougeL": 0.4
+    },
+    {
+      "row": 853,
+      "reference": "কি কাজ করবেন?",
+      "hypothesis": "কি কাজ করি?",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 54.908885028855345,
+      "rougeL": 0.6666666666666666
+    },
+    {
+      "row": 632,
+      "reference": "বিডিনিউজ টোয়েন্টিফোর ডটকমপ্রতিনিধিডিডিএমএইচপিএসইউ ঘ",
+      "hypothesis": "বিডিনিউজ টোয়েন্টিফোর ডটকমএমএইচএএএএএএএএইচজে ঘ",
+      "ref_tokens": 4,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 54.12261086979241,
+      "rougeL": 0.75
+    }
+  ],
+  "worst_examples": [
+    {
+      "row": 359,
+      "reference": "ইনটেক থেকে দেখান একটা।",
+      "hypothesis": "নির্বাচনে নবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবিবি",
+      "ref_tokens": 4,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 0.42087542087542085,
+      "rougeL": 0.0
+    },
+    {
+      "row": 687,
+      "reference": "তুমি এতে জড়িত ছিলে।",
+      "hypothesis": "কারন, রওনা হও।",
+      "ref_tokens": 4,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 0.7812499999999999,
+      "rougeL": 0.0
+    },
+    {
+      "row": 829,
+      "reference": "করছি, করছি!",
+      "hypothesis": "আরে তুই যা তো।",
+      "ref_tokens": 2,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.2254901960784317,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1038,
+      "reference": "লাইট অফ কর।",
+      "hypothesis": "যথেষ্ট হয়েছে!",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.2755102040816326,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1507,
+      "reference": "বাইরের তীব্র ঠান্ডা।",
+      "hypothesis": "প্লিজ, এসো।",
+      "ref_tokens": 3,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.5243902439024388,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1446,
+      "reference": "রবার্ট দেখেছে এটা?",
+      "hypothesis": "বিনয় কহিল, মা!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.6233766233766231,
+      "rougeL": 0.0
+    },
+    {
+      "row": 11,
+      "reference": "হে হে হে",
+      "hypothesis": "মহিলা মানুষ তো!",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 1.6891891891891893,
+      "rougeL": 0.0
+    },
+    {
+      "row": 789,
+      "reference": "এটা, এটা, এটা, এটা।",
+      "hypothesis": "এরকম করছ।",
+      "ref_tokens": 4,
+      "hyp_tokens": 2,
+      "exact": false,
+      "sentence_chrf++": 1.7361111111111112,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1491,
+      "reference": "ঠিক জানি বৈকি।",
+      "hypothesis": "এই গ্রীষ্মের পর আসে বর্ষ।",
+      "ref_tokens": 3,
+      "hyp_tokens": 5,
+      "exact": false,
+      "sentence_chrf++": 1.8115942028985508,
+      "rougeL": 0.0
+    },
+    {
+      "row": 1315,
+      "reference": "এদিকে দেখবে না।",
+      "hypothesis": "ভুল ভুল ভুল ছিল।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.9230769230769231,
+      "rougeL": 0.0
+    },
+    {
+      "row": 938,
+      "reference": "কোন সময়, ভাই?",
+      "hypothesis": "চার বছর আগের ঘটনা।",
+      "ref_tokens": 3,
+      "hyp_tokens": 4,
+      "exact": false,
+      "sentence_chrf++": 1.984126984126984,
+      "rougeL": 0.0
+    },
+    {
+      "row": 755,
+      "reference": "তিনি সক্ষম হন।",
+      "hypothesis": "তাকে দয়া করেছ?",
+      "ref_tokens": 3,
+      "hyp_tokens": 3,
+      "exact": false,
+      "sentence_chrf++": 2.0491803278688523,
+      "rougeL": 0.0
+    }
+  ]
+}

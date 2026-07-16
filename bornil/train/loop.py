@@ -17,10 +17,29 @@ import torch.nn as nn
 from bornil.benchmark import metrics as M
 
 
+def ctc_targets_from_padded(y, y_lengths, bos_id, eos_id, pad_id):
+    """Flatten padded [BOS, ...labels..., EOS, PAD] rows to CTC label targets.
+
+    Returns (targets_1d, target_lengths): the concatenated label ids with
+    BOS/EOS/pad removed, and each row's label count. CTC consumes a flat
+    target buffer plus per-row lengths.
+    """
+    flat, lens = [], []
+    for row, n in zip(y.tolist(), y_lengths.tolist()):
+        labels = [t for t in row[:n] if t not in (bos_id, eos_id, pad_id)]
+        flat.extend(labels)
+        lens.append(len(labels))
+    return (
+        torch.tensor(flat, dtype=torch.long),
+        torch.tensor(lens, dtype=torch.long),
+    )
+
+
 def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
                 clip_grad: float = 1.0, label_smoothing: float = 0.0,
                 scheduler=None, progress: bool = False, desc: str = "",
-                eos_id: int = None, early_eos_penalty: float = 0.0) -> float:
+                eos_id: int = None, early_eos_penalty: float = 0.0,
+                ctc_weight: float = 0.0, bos_id: int = None) -> float:
     """One teacher-forced epoch. Returns mean per-batch loss.
 
     `label_smoothing` softens the cross-entropy target (helps calibration);
@@ -48,6 +67,17 @@ def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
             if non_terminal.any():
                 eos_prob = torch.softmax(logits, dim=-1)[..., int(eos_id)]
                 loss = loss + float(early_eos_penalty) * eos_prob[non_terminal].mean()
+        if ctc_weight and getattr(model, "use_ctc", False) and bos_id is not None:
+            ctc_logits = model.ctc_logits(x, src_key_padding_mask=src_kpm)
+            log_probs = ctc_logits.log_softmax(-1).transpose(0, 1)
+            targets, target_lengths = ctc_targets_from_padded(
+                y, y.ne(pad_id).sum(1), bos_id, eos_id, pad_id)
+            input_lengths = x_lengths.to(device)
+            ctc = nn.functional.ctc_loss(
+                log_probs, targets.to(device),
+                input_lengths, target_lengths.to(device),
+                blank=pad_id, zero_infinity=True)
+            loss = loss + float(ctc_weight) * ctc
         loss.backward()
         if clip_grad:
             nn.utils.clip_grad_norm_(model.parameters(), clip_grad)

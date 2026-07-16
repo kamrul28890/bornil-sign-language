@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 — Results overview reconciled with significance
+- **What:** Updated `docs/logs/RESULTS_OVERVIEW.md` — added the CTC and BiLSTM runs to the random-v1 ablation table, rewrote the ablation decision, and corrected "Main Claims To Write" to match the Phase A/B/C paired-bootstrap results.
+- **Why:** The overview still framed TConv as a useful win and BLEU-4 as a headline metric; significance testing contradicts both.
+- **Impact:** TConv-alone is documented as *not* a supported win (BLEU-4 gain n.s. p=0.486); joint CTC/attention is the current best model-side change (chrF++ significantly > vanilla and > TConv, p=0.000, and it enables WS-E); BLEU-4 is flagged as noise-floor for this benchmark. Pending: confirm CTC on `signerindep-v1` / `unseen-sentence-v1`; re-run borderline comparisons at n=1000.
+- **Commit:** (this commit)
+
 ## 2026-07-16 - BiLSTM encoder baseline
 - **What:** Added `bornil/models/bilstm.py`, `configs/full_bilstm.yaml`, and `model.arch` selection in `scripts/train_sample.py`; completed BiLSTM random-v1 run `07709687f916`.
 - **Why:** Phase C puts the classic WS-C T0.1 BiLSTM baseline on the leaderboard using the shared decoder contract.

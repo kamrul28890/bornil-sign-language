@@ -146,11 +146,12 @@ def main():
     warmup = min(warmup, max(1, total_steps // 2))
     sched = torch.optim.lr_scheduler.LambdaLR(opt, noam_lambda(warmup))
     label_smoothing = float(cfg["train"].get("label_smoothing", 0.0))
+    early_eos_penalty = float(cfg["train"].get("early_eos_penalty", 0.0))
     beam_size = int(cfg["train"].get("beam_size", 1))
     decode_mode = "greedy" if beam_size <= 1 else f"beam{beam_size}"
     cfg["train"]["decode_mode"] = decode_mode
     print(f"warmup_steps={warmup}/{total_steps} | label_smoothing={label_smoothing} "
-          f"| decode={decode_mode}", flush=True)
+          f"| early_eos_penalty={early_eos_penalty} | decode={decode_mode}", flush=True)
 
     h = config_hash(cfg)
     run_dir = os.path.join(out_dir, "runs", h)
@@ -162,7 +163,8 @@ def main():
         tr = train_epoch(model, train_loader, opt, device=device, pad_id=tok.pad_id,
                          clip_grad=cfg["train"]["clip_grad"],
                          label_smoothing=label_smoothing, scheduler=sched,
-                         progress=True, desc=f"epoch {ep}/{epochs}")
+                         progress=True, desc=f"epoch {ep}/{epochs}",
+                         eos_id=tok.eos_id, early_eos_penalty=early_eos_penalty)
         elapsed = time.time() - t0
         eta = elapsed / ep * (epochs - ep)
         line = (f"epoch {ep:3d}/{epochs} | loss {tr:.4f} | lr {opt.param_groups[0]['lr']:.2e} "
@@ -214,6 +216,7 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
         f"- **Compute:** {device}   **Train time:** {mins:.1f} min\n"
         f"- **Decode:** {cfg['train'].get('decode_mode', 'unknown')} "
         f"(beam_size={cfg['train'].get('beam_size', 1)})\n"
+        f"- **Training extras:** early_eos_penalty={cfg['train'].get('early_eos_penalty', 0.0)}\n"
         f"- **Metrics (test):** BLEU-4={tm['bleu4']:.2f} chrF={tm['chrf']:.2f} "
         f"chrF++={tm['chrf++']:.2f} ROUGE-L={tm['rougeL']:.3f} "
         f"(BLEU-1/2/3={tm['bleu1']:.1f}/{tm['bleu2']:.1f}/{tm['bleu3']:.1f})\n"

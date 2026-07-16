@@ -19,11 +19,13 @@ from bornil.benchmark import metrics as M
 
 def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
                 clip_grad: float = 1.0, label_smoothing: float = 0.0,
-                scheduler=None, progress: bool = False, desc: str = "") -> float:
+                scheduler=None, progress: bool = False, desc: str = "",
+                eos_id: int = None, early_eos_penalty: float = 0.0) -> float:
     """One teacher-forced epoch. Returns mean per-batch loss.
 
     `label_smoothing` softens the cross-entropy target (helps calibration);
     `scheduler` (a per-step LR scheduler) is stepped after each optimizer step;
+    `early_eos_penalty` discourages EOS probability before the target EOS token;
     `progress=True` shows a tqdm batch bar (auto-hidden when output isn't a TTY).
     """
     model.to(device).train()
@@ -41,6 +43,11 @@ def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
         optimizer.zero_grad()
         logits = model(x, tgt_in, src_key_padding_mask=src_kpm, tgt_key_padding_mask=tgt_kpm)
         loss = loss_fn(logits.reshape(-1, logits.size(-1)), tgt_out.reshape(-1))
+        if early_eos_penalty and eos_id is not None:
+            non_terminal = (tgt_out != pad_id) & (tgt_out != eos_id)
+            if non_terminal.any():
+                eos_prob = torch.softmax(logits, dim=-1)[..., int(eos_id)]
+                loss = loss + float(early_eos_penalty) * eos_prob[non_terminal].mean()
         loss.backward()
         if clip_grad:
             nn.utils.clip_grad_norm_(model.parameters(), clip_grad)

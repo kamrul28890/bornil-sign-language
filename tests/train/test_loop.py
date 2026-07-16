@@ -56,6 +56,15 @@ def test_train_epoch_with_scheduler_and_label_smoothing():
     assert sched.last_epoch > 0  # scheduler advanced
 
 
+def test_train_epoch_with_early_eos_penalty():
+    torch.manual_seed(0)
+    tok, loader, model = _setup()
+    opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+    loss = train_epoch(model, loader, opt, device="cpu", pad_id=tok.pad_id,
+                       eos_id=tok.eos_id, early_eos_penalty=0.2)
+    assert loss == loss  # finite (not NaN)
+
+
 def test_evaluate_with_beam_search():
     import torch
     torch.manual_seed(0)

@@ -53,7 +53,8 @@ class SignTransformer(nn.Module):
                  num_decoder_layers: int = 4, dim_feedforward: int = 1024,
                  dropout: float = 0.1, pad_id: int = 0,
                  temporal_conv_layers: int = 0,
-                 temporal_conv_kernel: int = 5):
+                 temporal_conv_kernel: int = 5,
+                 use_ctc: bool = False):
         super().__init__()
         self.pad_id = pad_id
         self.d_model = d_model
@@ -71,6 +72,8 @@ class SignTransformer(nn.Module):
             batch_first=True,
         )
         self.out = nn.Linear(d_model, vocab_size)
+        self.use_ctc = use_ctc
+        self.ctc_head = nn.Linear(d_model, vocab_size) if use_ctc else None
 
     @staticmethod
     def _make_temporal_frontend(d_model: int, layers: int, kernel: int,
@@ -125,6 +128,17 @@ class SignTransformer(nn.Module):
         """Run the encoder over a clip -> memory (B, S, d_model)."""
         s = self._project_src(src)
         return self.transformer.encoder(s, src_key_padding_mask=src_key_padding_mask)
+
+    def ctc_logits(self, src: torch.Tensor,
+                   src_key_padding_mask: torch.Tensor = None) -> torch.Tensor:
+        """Per-frame vocab logits from the encoder for a CTC loss/alignment.
+
+        Returns (B, S, vocab_size). Requires use_ctc=True at construction.
+        """
+        if self.ctc_head is None:
+            raise RuntimeError("SignTransformer built with use_ctc=False has no CTC head")
+        memory = self.encode(src, src_key_padding_mask)
+        return self.ctc_head(memory)
 
     @torch.no_grad()
     def generate(self, src: torch.Tensor, bos_id: int, eos_id: int,

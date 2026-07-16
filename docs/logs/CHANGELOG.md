@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 - BiLSTM encoder baseline
+- **What:** Added `bornil/models/bilstm.py`, `configs/full_bilstm.yaml`, and `model.arch` selection in `scripts/train_sample.py`; completed BiLSTM random-v1 run `07709687f916`.
+- **Why:** Phase C puts the classic WS-C T0.1 BiLSTM baseline on the leaderboard using the shared decoder contract.
+- **Impact:** BiLSTM reached BLEU-4 0.621 / chrF++ 8.990 / ROUGE-L 0.064. BLEU-4 did not significantly beat the vanilla Transformer (`p=0.490`, n=200), and chrF++ was significantly lower (`p=0.000`).
+- **Commit:** (this commit)
+
 ## 2026-07-16 - Joint CTC/attention ablation
 - **What:** Added `configs/full_ctc.yaml`, wired `model.ctc_head` and `train.ctc_weight` through `scripts/train_sample.py`, and completed the TConv+CTC random-v1 run (`b0a590ea3317`).
 - **Why:** Phase B tests joint CTC/attention as an encoder regularizer and WS-E alignment prerequisite.

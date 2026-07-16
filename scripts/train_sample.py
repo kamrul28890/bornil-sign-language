@@ -157,15 +157,26 @@ def main():
 
     # --- model ---
     m = cfg["model"]
-    model = SignTransformer(
-        input_dim=feature_dim(cfg["data"]["upper_body"]), vocab_size=tok.vocab_size,
-        d_model=m["d_model"], nhead=m["nhead"],
-        num_encoder_layers=m["num_encoder_layers"], num_decoder_layers=m["num_decoder_layers"],
-        dim_feedforward=m["dim_feedforward"], dropout=m["dropout"], pad_id=tok.pad_id,
-        temporal_conv_layers=int(m.get("temporal_conv_layers", 0)),
-        temporal_conv_kernel=int(m.get("temporal_conv_kernel", 5)),
-        use_ctc=bool(m.get("ctc_head", False)),
-    ).to(device)
+    arch = m.get("arch", "transformer")
+    if arch == "bilstm":
+        from bornil.models.bilstm import SignBiLSTM
+        model = SignBiLSTM(
+            input_dim=feature_dim(cfg["data"]["upper_body"]), vocab_size=tok.vocab_size,
+            d_model=m["d_model"], enc_layers=int(m.get("enc_layers", 2)),
+            num_decoder_layers=m["num_decoder_layers"],
+            dim_feedforward=m["dim_feedforward"], nhead=m["nhead"],
+            dropout=m["dropout"], pad_id=tok.pad_id,
+        ).to(device)
+    else:
+        model = SignTransformer(
+            input_dim=feature_dim(cfg["data"]["upper_body"]), vocab_size=tok.vocab_size,
+            d_model=m["d_model"], nhead=m["nhead"],
+            num_encoder_layers=m["num_encoder_layers"], num_decoder_layers=m["num_decoder_layers"],
+            dim_feedforward=m["dim_feedforward"], dropout=m["dropout"], pad_id=tok.pad_id,
+            temporal_conv_layers=int(m.get("temporal_conv_layers", 0)),
+            temporal_conv_kernel=int(m.get("temporal_conv_kernel", 5)),
+            use_ctc=bool(m.get("ctc_head", False)),
+        ).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["train"]["lr"],
                             weight_decay=cfg["train"]["weight_decay"])
 
@@ -241,11 +252,15 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
     if int(cfg["model"].get("temporal_conv_layers", 0)):
         front = (f" + TConv{cfg['model']['temporal_conv_layers']}"
                  f"k{cfg['model'].get('temporal_conv_kernel', 5)}")
+    arch = cfg["model"].get("arch", "transformer")
+    model_name = "BiLSTM" if arch == "bilstm" else "SignTransformer"
+    enc_layers = cfg["model"].get("num_encoder_layers", cfg["model"].get("enc_layers", "?"))
+    phase_task = "WS-C T0.1" if arch == "bilstm" else "WS-C T0.2"
     row = (
         f"\n### EXP-{cfg['trial']['name']}-{h}  ({date.today().isoformat()})\n"
-        f"- **Model:** SignTransformer{front} d{cfg['model']['d_model']} "
-        f"L{cfg['model']['num_encoder_layers']}+{cfg['model']['num_decoder_layers']}   "
-        f"**Phase/Task:** {cfg['trial']['name']} (WS-C T0.2)\n"
+        f"- **Model:** {model_name}{front} d{cfg['model']['d_model']} "
+        f"L{enc_layers}+{cfg['model']['num_decoder_layers']}   "
+        f"**Phase/Task:** {cfg['trial']['name']} ({phase_task})\n"
         f"- **Data/Split:** {cfg['trial']['name']} {cfg['split']['kind']} "
         f"(train {n_train} / test {n_test}); source={cfg['split'].get('source', 'unknown')}\n"
         f"- **Representation:** kp-{feature_dim(cfg['data']['upper_body'])}   "

@@ -154,3 +154,14 @@
 - **Decode extras:** decode_repetition_stop=0
 - **Metrics (test):** BLEU-4=0.68 chrF=13.27 chrF++=10.91 ROUGE-L=0.067 (BLEU-1/2/3=13.3/4.3/1.5)
 - **Checkpoint:** data_full/runs/b0a590ea3317/best.pt
+
+### EXP-data_full_bilstm-07709687f916  (2026-07-16)
+- **Model:** BiLSTM d256 L2+4   **Phase/Task:** data_full_bilstm (WS-C T0.1)
+- **Data/Split:** data_full_bilstm random-v1 (train 14390 / test 1799); source=frozen:splits/random-v1
+- **Representation:** kp-218   **Config hash:** 07709687f916   **Seed:** 42
+- **Compute:** cuda   **Train time:** 28.5 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.0
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.62 chrF=10.78 chrF++=8.99 ROUGE-L=0.064 (BLEU-1/2/3=12.5/4.0/1.5)
+- **Checkpoint:** data_full/runs/07709687f916/best.pt

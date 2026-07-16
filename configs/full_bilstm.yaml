@@ -1,0 +1,37 @@
+# Full-dataset BiLSTM encoder + Transformer decoder baseline (WS-C T0.1).
+trial:
+  name: data_full_bilstm
+  seed: 42
+  out_dir: data_full
+
+data:
+  manifest: video_data.csv
+  tokenizer: bsl_sp.model
+  max_frames: 512
+  normalize: true
+  upper_body: true
+
+split:
+  kind: random-v1
+  fracs: [0.8, 0.1, 0.1]
+
+model:
+  arch: bilstm
+  d_model: 256
+  nhead: 8
+  enc_layers: 2
+  num_decoder_layers: 4
+  dim_feedforward: 1024
+  dropout: 0.1
+
+train:
+  epochs: 60
+  batch_size: 32
+  lr: 0.0005
+  weight_decay: 0.0001
+  clip_grad: 1.0
+  warmup_steps: 0
+  label_smoothing: 0.1
+  beam_size: 1
+  max_decode_len: 256
+  device: auto

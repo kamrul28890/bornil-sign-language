@@ -18,7 +18,8 @@ official full-data benchmark separate from filtered diagnostic experiments.
 CI and paired-significance tables for the saved random-v1 baseline/ablation
 runs are in `docs/logs/SIGNIFICANCE.md` (vanilla vs TConv),
 `docs/logs/SIGNIFICANCE_CTC.md` (CTC vs TConv),
-`docs/logs/SIGNIFICANCE_CTC_VS_VANILLA.md` (CTC vs vanilla), and
+`docs/logs/SIGNIFICANCE_CTC_VS_VANILLA.md` (CTC vs vanilla),
+`docs/logs/SIGNIFICANCE_CTC_HARDSPLITS.md` (CTC vs hard-split vanilla), and
 `docs/logs/SIGNIFICANCE_BILSTM.md` (BiLSTM vs Transformer). All p-values are
 two-sided paired bootstrap.
 
@@ -56,9 +57,27 @@ significant, chrF++ unchanged) — do not claim it. **Joint CTC/attention is the
 current best model-side change**: a significant chrF++ improvement over both
 vanilla and TConv, and it additionally enables the WS-E alignment workstream
 (CTC forced alignment). BiLSTM (T0.1) underperforms the Transformer on chrF++.
-Abandon `early_eos_penalty=0.2`. **Pending:** confirm the joint-CTC chrF++ gain
-on `signerindep-v1` and `unseen-sentence-v1` before treating it as a benchmark
-result; re-run the borderline CTC/BiLSTM comparisons at n=1000.
+Abandon `early_eos_penalty=0.2`. The joint-CTC chrF++ gain generalizes to both
+hard official splits: signerindep-v1 improves from 8.382 to 10.361 (p=0.000)
+and unseen-sentence-v1 improves from 9.187 to 10.943 (p=0.000), using n=1000
+paired bootstrap. The firmed-up random-v1 CTC comparisons at n=1000 keep
+chrF++ significant vs vanilla and vs TConv (both p=0.000), while BLEU-4 remains
+not significant on random-v1 (p=0.462 vs vanilla; p=0.894 vs TConv).
+
+## Table 2b: Joint CTC Hard-Split Generalization
+
+Use this to decide whether the random-v1 joint-CTC chrF++ gain transfers to the
+harder official settings. All comparisons are vs the vanilla baseline for the
+same split, with two-sided paired bootstrap (n=1000).
+
+| Split | Model | Run | Test rows | BLEU-4 | chrF++ | ROUGE-L | Interpretation |
+|---|---|---|---:|---:|---:|---:|---|
+| signerindep-v1 | Vanilla SignTransformer | `46a706570712` | 1500 | 0.351 | 8.382 | 0.048 | official baseline |
+| signerindep-v1 | TConv2k5 + joint CTC | `40cffb9e62bb` | 1500 | 0.792 | 10.361 | 0.072 | chrF++ gain +1.979, p=0.000; BLEU-4 p=0.000 |
+| unseen-sentence-v1 | Vanilla SignTransformer | `60320f4c6a60` | 1799 | 0.419 | 9.187 | 0.048 | official baseline |
+| unseen-sentence-v1 | TConv2k5 + joint CTC | `a5a9060499a4` | 1799 | 0.889 | 10.943 | 0.070 | chrF++ gain +1.756, p=0.000; BLEU-4 p=0.014 |
+
+Source: `docs/logs/SIGNIFICANCE_CTC_HARDSPLITS.md`.
 
 ## Table 3: Filtered LTE12 Diagnostic Track
 
@@ -111,8 +130,10 @@ Source: `docs/logs/DECODE_REPETITION_GUARD.md`.
   statistically significant chrF++ improvement**; TConv-alone and the BiLSTM
   T0.1 baseline do not (paired bootstrap). The apparent TConv BLEU-4 gain is not
   significant and must not be claimed.
-- The joint-CTC gain is so far shown on random-v1 only; it is pending
-  confirmation on `signerindep-v1` and `unseen-sentence-v1`.
+- Joint CTC/attention also significantly improves chrF++ on the two harder
+  official splits: signerindep-v1 (p=0.000) and unseen-sentence-v1 (p=0.000).
+  This is the current strongest model-side result, though BLEU-4 remains a
+  secondary/noise-floor metric for headline claims.
 - The LTE12 track shows that long article-like targets are a major data-quality
   problem. Report it separately as evidence for a cleaned short/medium target
   benchmark, not as a replacement for official full-data results.

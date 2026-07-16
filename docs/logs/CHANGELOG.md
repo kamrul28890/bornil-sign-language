@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 - Joint CTC hard-split confirmation
+- **What:** Ran `configs/full_ctc.yaml` on `signerindep-v1` (`40cffb9e62bb`) and `unseen-sentence-v1` (`a5a9060499a4`), regenerated random-v1 CTC significance at n=1000, and added `docs/logs/SIGNIFICANCE_CTC_HARDSPLITS.md`.
+- **Why:** Confirm whether the random-v1 joint-CTC chrF++ gain generalizes beyond the easiest split and firm up borderline CTC p-values.
+- **Impact:** The chrF++ gain holds on both hard splits: signerindep-v1 10.361 vs 8.382 (p=0.000) and unseen-sentence-v1 10.943 vs 9.187 (p=0.000). Random-v1 remains chrF++-significant at n=1000 vs vanilla and TConv (both p=0.000), while random-v1 BLEU-4 remains not significant.
+- **Commit:** (this commit)
+
 ## 2026-07-16 — Results overview reconciled with significance
 - **What:** Updated `docs/logs/RESULTS_OVERVIEW.md` — added the CTC and BiLSTM runs to the random-v1 ablation table, rewrote the ablation decision, and corrected "Main Claims To Write" to match the Phase A/B/C paired-bootstrap results.
 - **Why:** The overview still framed TConv as a useful win and BLEU-4 as a headline metric; significance testing contradicts both.

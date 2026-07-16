@@ -164,6 +164,7 @@ def main():
         dim_feedforward=m["dim_feedforward"], dropout=m["dropout"], pad_id=tok.pad_id,
         temporal_conv_layers=int(m.get("temporal_conv_layers", 0)),
         temporal_conv_kernel=int(m.get("temporal_conv_kernel", 5)),
+        use_ctc=bool(m.get("ctc_head", False)),
     ).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["train"]["lr"],
                             weight_decay=cfg["train"]["weight_decay"])
@@ -178,12 +179,13 @@ def main():
     label_smoothing = float(cfg["train"].get("label_smoothing", 0.0))
     early_eos_penalty = float(cfg["train"].get("early_eos_penalty", 0.0))
     repetition_stop = int(cfg["train"].get("decode_repetition_stop", 0))
+    ctc_weight = float(cfg["train"].get("ctc_weight", 0.0))
     beam_size = int(cfg["train"].get("beam_size", 1))
     decode_mode = "greedy" if beam_size <= 1 else f"beam{beam_size}"
     cfg["train"]["decode_mode"] = decode_mode
     print(f"warmup_steps={warmup}/{total_steps} | label_smoothing={label_smoothing} "
           f"| early_eos_penalty={early_eos_penalty} | decode={decode_mode} "
-          f"| repetition_stop={repetition_stop}", flush=True)
+          f"| repetition_stop={repetition_stop} | ctc_weight={ctc_weight}", flush=True)
 
     h = config_hash(cfg)
     run_dir = os.path.join(out_dir, "runs", h)
@@ -196,7 +198,8 @@ def main():
                          clip_grad=cfg["train"]["clip_grad"],
                          label_smoothing=label_smoothing, scheduler=sched,
                          progress=True, desc=f"epoch {ep}/{epochs}",
-                         eos_id=tok.eos_id, early_eos_penalty=early_eos_penalty)
+                         eos_id=tok.eos_id, early_eos_penalty=early_eos_penalty,
+                         ctc_weight=ctc_weight, bos_id=tok.bos_id)
         elapsed = time.time() - t0
         eta = elapsed / ep * (epochs - ep)
         line = (f"epoch {ep:3d}/{epochs} | loss {tr:.4f} | lr {opt.param_groups[0]['lr']:.2e} "
@@ -250,7 +253,8 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
         f"- **Compute:** {device}   **Train time:** {mins:.1f} min\n"
         f"- **Decode:** {cfg['train'].get('decode_mode', 'unknown')} "
         f"(beam_size={cfg['train'].get('beam_size', 1)})\n"
-        f"- **Training extras:** early_eos_penalty={cfg['train'].get('early_eos_penalty', 0.0)}\n"
+        f"- **Training extras:** early_eos_penalty={cfg['train'].get('early_eos_penalty', 0.0)} "
+        f"ctc_weight={cfg['train'].get('ctc_weight', 0.0)}\n"
         f"- **Decode extras:** decode_repetition_stop={cfg['train'].get('decode_repetition_stop', 0)}\n"
         f"- **Metrics (test):** BLEU-4={tm['bleu4']:.2f} chrF={tm['chrf']:.2f} "
         f"chrF++={tm['chrf++']:.2f} ROUGE-L={tm['rougeL']:.3f} "

@@ -60,15 +60,22 @@ def train_epoch(model, loader, optimizer, device: str = "cpu", pad_id: int = 0,
         src_kpm = model.src_padding_mask(x_lengths.to(device), x.size(1))
         tgt_kpm = tgt_in == pad_id
         optimizer.zero_grad()
-        logits = model(x, tgt_in, src_key_padding_mask=src_kpm, tgt_key_padding_mask=tgt_kpm)
+        use_ctc_loss = bool(ctc_weight and getattr(model, "use_ctc", False) and bos_id is not None)
+        ctc_logits = None
+        if use_ctc_loss and hasattr(model, "forward_with_ctc"):
+            logits, ctc_logits = model.forward_with_ctc(
+                x, tgt_in, src_key_padding_mask=src_kpm, tgt_key_padding_mask=tgt_kpm)
+        else:
+            logits = model(x, tgt_in, src_key_padding_mask=src_kpm, tgt_key_padding_mask=tgt_kpm)
         loss = loss_fn(logits.reshape(-1, logits.size(-1)), tgt_out.reshape(-1))
         if early_eos_penalty and eos_id is not None:
             non_terminal = (tgt_out != pad_id) & (tgt_out != eos_id)
             if non_terminal.any():
                 eos_prob = torch.softmax(logits, dim=-1)[..., int(eos_id)]
                 loss = loss + float(early_eos_penalty) * eos_prob[non_terminal].mean()
-        if ctc_weight and getattr(model, "use_ctc", False) and bos_id is not None:
-            ctc_logits = model.ctc_logits(x, src_key_padding_mask=src_kpm)
+        if use_ctc_loss:
+            if ctc_logits is None:
+                ctc_logits = model.ctc_logits(x, src_key_padding_mask=src_kpm)
             log_probs = ctc_logits.log_softmax(-1).transpose(0, 1)
             targets, target_lengths = ctc_targets_from_padded(
                 y, y.ne(pad_id).sum(1), bos_id, eos_id, pad_id)

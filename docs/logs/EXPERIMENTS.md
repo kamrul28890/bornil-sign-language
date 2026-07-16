@@ -143,3 +143,14 @@
 - **Training extras:** early_eos_penalty=0.0
 - **Metrics (test):** BLEU-4=0.81 chrF=11.01 chrF++=9.22 ROUGE-L=0.055 (BLEU-1/2/3=15.4/4.0/1.5)
 - **Checkpoint:** data_full/runs/2ff734ae1aae/best.pt
+
+### EXP-data_full_ctc-b0a590ea3317  (2026-07-16)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc random-v1 (train 14390 / test 1799); source=frozen:splits/random-v1
+- **Representation:** kp-218   **Config hash:** b0a590ea3317   **Seed:** 42
+- **Compute:** cuda   **Train time:** 44.8 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.68 chrF=13.27 chrF++=10.91 ROUGE-L=0.067 (BLEU-1/2/3=13.3/4.3/1.5)
+- **Checkpoint:** data_full/runs/b0a590ea3317/best.pt

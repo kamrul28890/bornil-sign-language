@@ -124,6 +124,18 @@ class SignTransformer(nn.Module):
         )
         return self.out(h)
 
+    def _decode_memory(self, memory: torch.Tensor, tgt_in: torch.Tensor,
+                       src_key_padding_mask: torch.Tensor = None,
+                       tgt_key_padding_mask: torch.Tensor = None) -> torch.Tensor:
+        t = self.pos(self.tok_embed(tgt_in) * math.sqrt(self.d_model))
+        h = self.transformer.decoder(
+            t, memory,
+            tgt_mask=causal_mask(tgt_in.size(1)).to(tgt_in.device),
+            tgt_key_padding_mask=tgt_key_padding_mask,
+            memory_key_padding_mask=src_key_padding_mask,
+        )
+        return self.out(h)
+
     def encode(self, src: torch.Tensor, src_key_padding_mask: torch.Tensor = None) -> torch.Tensor:
         """Run the encoder over a clip -> memory (B, S, d_model)."""
         s = self._project_src(src)
@@ -139,6 +151,20 @@ class SignTransformer(nn.Module):
             raise RuntimeError("SignTransformer built with use_ctc=False has no CTC head")
         memory = self.encode(src, src_key_padding_mask)
         return self.ctc_head(memory)
+
+    def forward_with_ctc(self, src: torch.Tensor, tgt_in: torch.Tensor,
+                         src_key_padding_mask: torch.Tensor = None,
+                         tgt_key_padding_mask: torch.Tensor = None):
+        """Return attention-decoder logits and CTC logits from one encoder pass."""
+        if self.ctc_head is None:
+            raise RuntimeError("SignTransformer built with use_ctc=False has no CTC head")
+        memory = self.encode(src, src_key_padding_mask)
+        logits = self._decode_memory(
+            memory, tgt_in,
+            src_key_padding_mask=src_key_padding_mask,
+            tgt_key_padding_mask=tgt_key_padding_mask,
+        )
+        return logits, self.ctc_head(memory)
 
     @torch.no_grad()
     def generate(self, src: torch.Tensor, bos_id: int, eos_id: int,

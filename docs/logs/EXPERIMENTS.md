@@ -165,3 +165,25 @@
 - **Decode extras:** decode_repetition_stop=0
 - **Metrics (test):** BLEU-4=0.62 chrF=10.78 chrF++=8.99 ROUGE-L=0.064 (BLEU-1/2/3=12.5/4.0/1.5)
 - **Checkpoint:** data_full/runs/07709687f916/best.pt
+
+### EXP-data_full_ctc-40cffb9e62bb  (2026-07-16)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc signerindep-v1 (train 14500 / test 1500); source=frozen:splits/signerindep-v1
+- **Representation:** kp-218   **Config hash:** 40cffb9e62bb   **Seed:** 42
+- **Compute:** cuda   **Train time:** 47.5 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.79 chrF=12.65 chrF++=10.36 ROUGE-L=0.072 (BLEU-1/2/3=10.6/4.0/1.7)
+- **Checkpoint:** data_full/runs/40cffb9e62bb/best.pt
+
+### EXP-data_full_ctc-a5a9060499a4  (2026-07-16)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc unseen-sentence-v1 (train 14390 / test 1799); source=frozen:splits/unseen-sentence-v1
+- **Representation:** kp-218   **Config hash:** a5a9060499a4   **Seed:** 42
+- **Compute:** cuda   **Train time:** 48.5 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.89 chrF=13.24 chrF++=10.94 ROUGE-L=0.070 (BLEU-1/2/3=13.5/4.7/2.0)
+- **Checkpoint:** data_full/runs/a5a9060499a4/best.pt

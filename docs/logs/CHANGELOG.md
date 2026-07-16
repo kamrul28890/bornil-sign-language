@@ -18,7 +18,7 @@
 ## 2026-07-15 — TConv length-pressure ablation
 - **What:** Added optional `early_eos_penalty` training loss and `configs/full_tconv_len.yaml`.
 - **Why:** TConv improved BLEU-4 but still under-generated and did not beat vanilla ROUGE-L; this ablation directly discourages premature EOS before running harder splits.
-- **Impact:** Existing configs default to `early_eos_penalty: 0.0`; the new config runs TConv2k5 with a conservative `0.2` early-EOS penalty on `random-v1`.
+- **Impact:** Existing configs default to `early_eos_penalty: 0.0`; the `0.2` ablation collapsed output diversity and is documented as a failed setting in `docs/logs/TCONV_LENGTH_PRESSURE_RESULT.md`.
 - **Commit:** (this commit)
 
 ## 2026-07-15 — Temporal-convolution encoder ablation

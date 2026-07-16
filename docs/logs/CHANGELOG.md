@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 — Qualitative example selection
+- **What:** Added `scripts/select_qualitative_examples.py` and generated `docs/logs/QUALITATIVE_EXAMPLES.md` from per-example prediction scores.
+- **Why:** The report needs representative prediction examples, not only corpus-level metric tables.
+- **Impact:** Official and LTE12 runs now have automatic exact/best, representative, and failure examples ready for human review.
+- **Commit:** (this commit)
+
 ## 2026-07-16 — Results section draft
 - **What:** Added `docs/logs/RESULTS_SECTION_DRAFT.md` as report-ready prose for the official baselines, ablations, LTE12 diagnostic track, and decode stability result.
 - **Why:** Convert experiment logs into a coherent paper/report narrative before starting more model training.

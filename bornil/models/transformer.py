@@ -172,30 +172,18 @@ class SignTransformer(nn.Module):
                  repetition_stop: int = 0):
         """Greedy autoregressive decode. Returns a list (len B) of id lists,
         each the generated tokens after BOS, including the terminal EOS."""
+        from bornil.models.decode import greedy_decode
+
         self.eval()
         memory = self.encode(src, src_key_padding_mask)
-        b = src.size(0)
-        ys = torch.full((b, 1), bos_id, dtype=torch.long, device=src.device)
-        finished = [False] * b
-        outputs = [[] for _ in range(b)]
-        for _ in range(max_len):
-            t = self.pos(self.tok_embed(ys) * math.sqrt(self.d_model))
-            h = self.transformer.decoder(
-                t, memory,
-                tgt_mask=causal_mask(ys.size(1)).to(src.device),
-                memory_key_padding_mask=src_key_padding_mask,
-            )
-            nxt = self.out(h[:, -1]).argmax(-1)            # (B,)
-            ys = torch.cat([ys, nxt[:, None]], dim=1)
-            for i in range(b):
-                if not finished[i]:
-                    tok = int(nxt[i])
-                    outputs[i].append(tok)
-                    if tok == eos_id or has_consecutive_repeat(outputs[i], repetition_stop):
-                        finished[i] = True
-            if all(finished):
-                break
-        return outputs
+
+        def step_fn(ys):
+            ys = ys.to(src.device)
+            return self._decode_memory(
+                memory, ys, src_key_padding_mask=src_key_padding_mask)[:, -1]
+
+        return greedy_decode(step_fn, bos_id, eos_id, src.size(0), src.device,
+                             max_len=max_len, repetition_stop=repetition_stop)
 
     @torch.no_grad()
     def beam_search(self, src: torch.Tensor, bos_id: int, eos_id: int,
@@ -204,40 +192,22 @@ class SignTransformer(nn.Module):
                     repetition_stop: int = 0):
         """Beam-search decode. Returns a list (len B) of id lists (tokens after
         BOS, including terminal EOS). Processes one example at a time for clarity."""
+        from bornil.models.decode import beam_decode
+
         self.eval()
         results = []
         for b in range(src.size(0)):
             s = src[b:b + 1]
             mask = None if src_key_padding_mask is None else src_key_padding_mask[b:b + 1]
             memory = self.encode(s, mask)
-            beams = [([bos_id], 0.0)]
-            finished = []
-            for _ in range(max_len):
-                candidates = []
-                for tokens, score in beams:
-                    if tokens[-1] == eos_id or has_consecutive_repeat(tokens[1:], repetition_stop):
-                        finished.append((tokens, score))
-                        continue
-                    ys = torch.tensor([tokens], dtype=torch.long, device=src.device)
-                    t = self.pos(self.tok_embed(ys) * math.sqrt(self.d_model))
-                    h = self.transformer.decoder(
-                        t, memory, tgt_mask=causal_mask(len(tokens)).to(src.device),
-                        memory_key_padding_mask=mask)
-                    logp = torch.log_softmax(self.out(h[:, -1]), dim=-1)[0]
-                    topv, topi = logp.topk(beam_size)
-                    for v, i in zip(topv.tolist(), topi.tolist()):
-                        candidates.append((tokens + [i], score + v))
-                if not candidates:
-                    break
-                candidates.sort(key=lambda x: x[1], reverse=True)
-                beams = candidates[:beam_size]
-                if all(tok[-1] == eos_id for tok, _ in beams):
-                    finished.extend(beams)
-                    break
-            finished = finished or beams
-            best = max(finished, key=lambda x: x[1] / (len(x[0]) ** length_penalty))
-            toks = best[0][1:]                       # drop BOS
-            if eos_id in toks:
-                toks = toks[:toks.index(eos_id) + 1]
-            results.append(toks)
+
+            def step_fn_single(ys, memory=memory, mask=mask):
+                ys = ys.to(src.device)
+                return self._decode_memory(
+                    memory, ys, src_key_padding_mask=mask)[:, -1][0]
+
+            results.append(beam_decode(
+                step_fn_single, bos_id, eos_id, beam_size=beam_size,
+                max_len=max_len, length_penalty=length_penalty,
+                repetition_stop=repetition_stop))
         return results

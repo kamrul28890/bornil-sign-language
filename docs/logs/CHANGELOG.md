@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 - Significance & CIs added
+- **What:** Added `scripts/results_significance.py` and `docs/logs/SIGNIFICANCE.md` with bootstrap confidence intervals and paired p-values for the saved random-v1 vanilla/TConv ablation runs.
+- **Why:** Phase A requires CIs and paired significance before model-gain claims are used in the report.
+- **Impact:** TConv's random-v1 BLEU-4 gain over vanilla is **not significant** at p<0.05 in the local report (`p=0.450`, bootstrap n=200), so the paper should not claim a statistically supported TConv win yet; the EOS-penalty regression is significant.
+- **Commit:** (this commit)
+
 ## 2026-07-16 — Qualitative example selection
 - **What:** Added `scripts/select_qualitative_examples.py` and generated `docs/logs/QUALITATIVE_EXAMPLES.md` from per-example prediction scores.
 - **Why:** The report needs representative prediction examples, not only corpus-level metric tables.

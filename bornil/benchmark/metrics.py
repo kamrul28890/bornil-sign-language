@@ -78,6 +78,23 @@ def corpus_metrics(hypotheses: Sequence[str], references: Sequence[str]) -> Dict
     return out
 
 
+def _corpus_metric(hypotheses: Sequence[str], references: Sequence[str], metric: str) -> float:
+    """Compute one locked corpus metric without building the full metric suite."""
+    if len(hypotheses) != len(references):
+        raise ValueError(f"count mismatch: {len(hypotheses)} hyps vs {len(references)} refs")
+    hyps = [nfc(h) for h in hypotheses]
+    refs = [nfc(r) for r in references]
+    if metric.startswith("bleu") and metric[4:].isdigit():
+        return _bleu_k(hyps, refs, int(metric[4:]))
+    if metric == "chrf":
+        return CHRF(word_order=0).corpus_score(hyps, [refs]).score
+    if metric == "chrf++":
+        return CHRF(word_order=2).corpus_score(hyps, [refs]).score
+    if metric == "rougeL":
+        return float(np.mean([rouge_l(h, r) for h, r in zip(hyps, refs)]))
+    raise KeyError(metric)
+
+
 def bootstrap_ci(hypotheses: Sequence[str], references: Sequence[str],
                  metric: str = "bleu4", n: int = 1000, seed: int = 0,
                  alpha: float = 0.05) -> Tuple[float, float]:
@@ -91,7 +108,7 @@ def bootstrap_ci(hypotheses: Sequence[str], references: Sequence[str],
         idx = rng.integers(0, m, size=m)
         vh = [hyps[i] for i in idx]
         vr = [refs[i] for i in idx]
-        vals.append(corpus_metrics(vh, vr)[metric])
+        vals.append(_corpus_metric(vh, vr, metric))
     lo = float(np.percentile(vals, 100 * alpha / 2))
     hi = float(np.percentile(vals, 100 * (1 - alpha / 2)))
     return lo, hi
@@ -104,7 +121,7 @@ def metric_ci(hypotheses, references, metric: str = "bleu4",
     Returns (point, lo, hi). Thin wrapper over corpus_metrics + bootstrap_ci
     so callers get all three numbers from one call with a single seed.
     """
-    point = corpus_metrics(hypotheses, references)[metric]
+    point = _corpus_metric(hypotheses, references, metric)
     lo, hi = bootstrap_ci(hypotheses, references, metric=metric,
                           n=n, seed=seed, alpha=alpha)
     return float(point), lo, hi
@@ -123,7 +140,7 @@ def paired_bootstrap_pvalue(hyps_a, hyps_b, references, metric: str = "bleu4",
     if not (len(a) == len(b) == len(r)):
         raise ValueError("hyps_a, hyps_b, references must have equal length")
     m = len(r)
-    observed = corpus_metrics(b, r)[metric] - corpus_metrics(a, r)[metric]
+    observed = _corpus_metric(b, r, metric) - _corpus_metric(a, r, metric)
     rng = np.random.default_rng(seed)
     opposite = 0
     for _ in range(n):
@@ -131,7 +148,7 @@ def paired_bootstrap_pvalue(hyps_a, hyps_b, references, metric: str = "bleu4",
         va = [a[i] for i in idx]
         vb = [b[i] for i in idx]
         vr = [r[i] for i in idx]
-        delta = corpus_metrics(vb, vr)[metric] - corpus_metrics(va, vr)[metric]
+        delta = _corpus_metric(vb, vr, metric) - _corpus_metric(va, vr, metric)
         if (observed >= 0 and delta <= 0) or (observed < 0 and delta >= 0):
             opposite += 1
     return float(min(1.0, 2.0 * opposite / n))

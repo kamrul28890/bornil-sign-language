@@ -15,6 +15,9 @@ official full-data benchmark separate from filtered diagnostic experiments.
 4. Decode diagnostics: eval-only checks that should not replace official
    numbers unless the protocol is explicitly changed.
 
+CI and paired-significance tables for the saved random-v1 baseline/ablation
+runs are in `docs/logs/SIGNIFICANCE.md`.
+
 ## Table 1: Official Full-Data Baselines
 
 Use this as the main benchmark table.

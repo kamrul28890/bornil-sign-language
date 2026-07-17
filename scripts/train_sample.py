@@ -167,6 +167,18 @@ def main():
             dim_feedforward=m["dim_feedforward"], nhead=m["nhead"],
             dropout=m["dropout"], pad_id=tok.pad_id,
         ).to(device)
+    elif arch == "stgcn":
+        from bornil.models.stgcn import SignSTGCN
+        model = SignSTGCN(
+            input_dim=feature_dim(cfg["data"]["upper_body"]), vocab_size=tok.vocab_size,
+            d_model=m["d_model"], nhead=m["nhead"],
+            stgcn_channels=int(m.get("stgcn_channels", 64)),
+            stgcn_layers=int(m.get("stgcn_layers", 3)),
+            temporal_kernel=int(m.get("temporal_kernel", 5)),
+            num_decoder_layers=m["num_decoder_layers"],
+            dim_feedforward=m["dim_feedforward"], dropout=m["dropout"],
+            pad_id=tok.pad_id, use_ctc=bool(m.get("ctc_head", False)),
+        ).to(device)
     else:
         model = SignTransformer(
             input_dim=feature_dim(cfg["data"]["upper_body"]), vocab_size=tok.vocab_size,
@@ -253,9 +265,18 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
         front = (f" + TConv{cfg['model']['temporal_conv_layers']}"
                  f"k{cfg['model'].get('temporal_conv_kernel', 5)}")
     arch = cfg["model"].get("arch", "transformer")
-    model_name = "BiLSTM" if arch == "bilstm" else "SignTransformer"
-    enc_layers = cfg["model"].get("num_encoder_layers", cfg["model"].get("enc_layers", "?"))
-    phase_task = "WS-C T0.1" if arch == "bilstm" else "WS-C T0.2"
+    if arch == "bilstm":
+        model_name = "BiLSTM"
+        enc_layers = cfg["model"].get("enc_layers", "?")
+        phase_task = "WS-C T0.1"
+    elif arch == "stgcn":
+        model_name = "ST-GCN"
+        enc_layers = cfg["model"].get("stgcn_layers", "?")
+        phase_task = "WS-C T1.1"
+    else:
+        model_name = "SignTransformer"
+        enc_layers = cfg["model"].get("num_encoder_layers", "?")
+        phase_task = "WS-C T0.2"
     row = (
         f"\n### EXP-{cfg['trial']['name']}-{h}  ({date.today().isoformat()})\n"
         f"- **Model:** {model_name}{front} d{cfg['model']['d_model']} "

@@ -187,3 +187,14 @@
 - **Decode extras:** decode_repetition_stop=0
 - **Metrics (test):** BLEU-4=0.89 chrF=13.24 chrF++=10.94 ROUGE-L=0.070 (BLEU-1/2/3=13.5/4.7/2.0)
 - **Checkpoint:** data_full/runs/a5a9060499a4/best.pt
+
+### EXP-trial_1pct-d9216f4420cd  (2026-07-16)
+- **Model:** ST-GCN d256 L3+4   **Phase/Task:** trial_1pct (WS-C T1.1)
+- **Data/Split:** trial_1pct random-v1 (train 144 / test 18); source=generated
+- **Representation:** kp-218   **Config hash:** d9216f4420cd   **Seed:** 42
+- **Compute:** cuda   **Train time:** 0.1 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.00 chrF=0.00 chrF++=0.00 ROUGE-L=0.000 (BLEU-1/2/3=0.0/0.0/0.0)
+- **Checkpoint:** trial_1pct/runs/d9216f4420cd/best.pt

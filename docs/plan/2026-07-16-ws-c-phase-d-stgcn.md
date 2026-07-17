@@ -67,16 +67,16 @@
 - [x] `.venv/Scripts/python -m pytest -q`
 
 **Commit:**
-- [ ] `git add bornil/models/stgcn.py tests/models/test_stgcn.py scripts/train_sample.py configs/full_stgcn.yaml docs/plan/2026-07-16-ws-c-phase-d-stgcn.md`
-- [ ] `git commit -m "feat(model): ST-GCN skeleton encoder (WS-C T1.1)"`
+- [x] `git add bornil/models/stgcn.py tests/models/test_stgcn.py scripts/train_sample.py configs/full_stgcn.yaml docs/plan/2026-07-16-ws-c-phase-d-stgcn.md`
+- [x] `git commit -m "feat(model): ST-GCN skeleton encoder (WS-C T1.1)"`
 
 ## Task D4 - Overfit-Tiny Gate on Real Data
 
 **Command:**
-- [ ] `.venv/Scripts/python scripts/train_sample.py --config configs/full_stgcn.yaml --out-dir trial_1pct --epochs 3 --device cuda`
+- [x] `.venv/Scripts/python scripts/train_sample.py --config configs/full_stgcn.yaml --out-dir trial_1pct --epochs 3 --device cuda`
 
 **Gate:**
-- [ ] Confirm epoch loss decreases and is finite before the full run.
+- [x] Confirm epoch loss decreases and is finite before the full run.
 - [ ] If loss is NaN or non-decreasing, debug before full training; first fallback is `train.ctc_weight: 0.1` in a smoke-only config override path documented in `FAILURES.md`.
 
 ## Task D5 - Full ST-GCN+CTC Random-v1 Run

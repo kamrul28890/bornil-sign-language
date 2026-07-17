@@ -31,6 +31,7 @@ from bornil.data.sampler import LengthBucketBatchSampler
 from bornil.data.tokenizer import Tokenizer
 from bornil.data.transforms import feature_dim
 from bornil.models.transformer import SignTransformer
+from bornil.train.checkpoint import load_training_state, save_training_state
 from bornil.train.loop import train_epoch, evaluate
 from bornil.train.schedule import noam_lambda
 
@@ -98,9 +99,16 @@ def main():
                     help="directory containing frozen split files")
     ap.add_argument("--no-frozen-splits", action="store_true",
                     help="generate the split from the current manifest instead of loading splits/<kind>")
+    ap.add_argument("--resume", action="store_true",
+                    help=("resume from <run_dir>/last.pt when present. Execution-only; "
+                          "does not enter the config hash. Batch-sampler RNG state is "
+                          "not restored, so resumed epochs may use a different batch order."))
     args = ap.parse_args()
 
     cfg = load_config(args.config)
+    # --resume is intentionally argparse-only: it is an execution mode, not a
+    # hyperparameter. If it entered cfg, config_hash(cfg) would change and the
+    # run would look in a different run_dir for its own checkpoint.
     if args.epochs is not None:
         cfg["train"]["epochs"] = args.epochs
     if args.out_dir is not None:
@@ -213,20 +221,44 @@ def main():
     h = config_hash(cfg)
     run_dir = os.path.join(out_dir, "runs", h)
     os.makedirs(run_dir, exist_ok=True)
+    last_ckpt = os.path.join(run_dir, "last.pt")
+
+    best_bleu = -1.0
+    start_epoch = 1
+    elapsed_prior_min = 0.0
+    if args.resume:
+        if os.path.exists(last_ckpt):
+            state = load_training_state(last_ckpt, model, opt, sched, device)
+            best_bleu = state["best_bleu"]
+            elapsed_prior_min = state["elapsed_min"]
+            start_epoch = state["epoch"] + 1
+            print(
+                f"resumed from {last_ckpt} at epoch {state['epoch']}/{epochs}; "
+                f"next epoch {start_epoch}/{epochs}; prior elapsed {elapsed_prior_min:.1f}m",
+                flush=True,
+            )
+        else:
+            print(f"--resume requested but no checkpoint found at {last_ckpt}; starting fresh",
+                  flush=True)
 
     # --- train ---
-    best_bleu, t0 = -1.0, time.time()
-    for ep in range(1, epochs + 1):
+    t0 = time.time()
+    if start_epoch > epochs:
+        print(f"training already complete at epoch {start_epoch - 1}/{epochs}; "
+              "skipping to test eval", flush=True)
+    for ep in range(start_epoch, epochs + 1):
         tr = train_epoch(model, train_loader, opt, device=device, pad_id=tok.pad_id,
                          clip_grad=cfg["train"]["clip_grad"],
                          label_smoothing=label_smoothing, scheduler=sched,
                          progress=True, desc=f"epoch {ep}/{epochs}",
                          eos_id=tok.eos_id, early_eos_penalty=early_eos_penalty,
                          ctc_weight=ctc_weight, bos_id=tok.bos_id)
-        elapsed = time.time() - t0
-        eta = elapsed / ep * (epochs - ep)
+        session_elapsed = time.time() - t0
+        elapsed_min = elapsed_prior_min + session_elapsed / 60
+        completed_this_session = ep - start_epoch + 1
+        eta = session_elapsed / max(completed_this_session, 1) * (epochs - ep)
         line = (f"epoch {ep:3d}/{epochs} | loss {tr:.4f} | lr {opt.param_groups[0]['lr']:.2e} "
-                f"| elapsed {elapsed/60:.1f}m | ETA {eta/60:.1f}m")
+                f"| elapsed {elapsed_min:.1f}m | ETA {eta/60:.1f}m")
         if ep % 5 == 0 or ep == epochs:
             vm, _, _ = evaluate(model, val_loader, tok, device=device,
                                 max_len=cfg["train"]["max_decode_len"],
@@ -235,6 +267,7 @@ def main():
             if vm["bleu4"] > best_bleu:
                 best_bleu = vm["bleu4"]
                 torch.save(model.state_dict(), os.path.join(run_dir, "best.pt"))
+        save_training_state(last_ckpt, ep, model, opt, sched, best_bleu, elapsed_min)
         print(line, flush=True)
 
     # --- test eval (best checkpoint, beam search) ---
@@ -245,7 +278,7 @@ def main():
                               max_len=cfg["train"]["max_decode_len"], beam_size=beam_size,
                               repetition_stop=repetition_stop,
                               progress=True, desc=f"test decode ({decode_mode})")
-    mins = (time.time() - t0) / 60
+    mins = elapsed_prior_min + (time.time() - t0) / 60
     print(f"\nTEST ({decode_mode}) | " + " ".join(f"{k}={v:.2f}" for k, v in tm.items()))
 
     # --- persist run ---

@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-16 — Trivial floors + claims reconciled with the CTC model
+- **What:** Rewrote `docs/logs/RESULTS_OVERVIEW.md` Table 4 (trivial floors now compare retrieval vs vanilla vs TConv+CTC across BLEU-4/chrF++/ROUGE-L), added Table 5 (output diversity & length calibration), and corrected "Main Claims To Write".
+- **Why:** Table 4 still compared only the vanilla model and claimed "retrieval chrF++ exceeds model chrF++" — stale now that CTC is the best model. The CTC chrF++ gain also needed a control against the "chrF++ rewards generic output" explanation.
+- **Impact:** **TConv+CTC is the first model to clear the retrieval floor on all three splits on every metric** (vanilla lost to retrieval on chrF++ on both hard splits) — this is now the headline claim. Diversity diagnostic rules out generic output: CTC raises unique-output rate from ~90–94% to 98–99% and fixes under-generation (7.56 vs 7.50 ref length on random-v1) where `early_eos_penalty=0.2` collapsed diversity. Generalization gap documented as model-dependent: CTC shows no unseen-sentence penalty; signerindep still under-generates (7.43 vs 9.40) and remains unsolved.
+- **Commit:** (this commit)
+
 ## 2026-07-16 - Joint CTC hard-split confirmation
 - **What:** Ran `configs/full_ctc.yaml` on `signerindep-v1` (`40cffb9e62bb`) and `unseen-sentence-v1` (`a5a9060499a4`), regenerated random-v1 CTC significance at n=1000, and added `docs/logs/SIGNIFICANCE_CTC_HARDSPLITS.md`.
 - **Why:** Confirm whether the random-v1 joint-CTC chrF++ gain generalizes beyond the easiest split and firm up borderline CTC p-values.

@@ -32,8 +32,7 @@ from bornil.benchmark.splits import filter_split_by_recordings, resolve_split
 from bornil.data.dataset import SignDataset, make_collate_fn
 from bornil.data.sampler import LengthBucketBatchSampler
 from bornil.data.tokenizer import Tokenizer
-from bornil.data.transforms import feature_dim
-from bornil.models.transformer import SignTransformer
+from bornil.models.build import build_model
 from bornil.train.loop import evaluate
 
 
@@ -170,20 +169,7 @@ def main():
     )
     loader = DataLoader(ds, batch_sampler=sampler, collate_fn=make_collate_fn(tok.pad_id))
 
-    m = cfg["model"]
-    model = SignTransformer(
-        input_dim=feature_dim(cfg["data"]["upper_body"]),
-        vocab_size=tok.vocab_size,
-        d_model=m["d_model"],
-        nhead=m["nhead"],
-        num_encoder_layers=m["num_encoder_layers"],
-        num_decoder_layers=m["num_decoder_layers"],
-        dim_feedforward=m["dim_feedforward"],
-        dropout=m["dropout"],
-        pad_id=tok.pad_id,
-        temporal_conv_layers=int(m.get("temporal_conv_layers", 0)),
-        temporal_conv_kernel=int(m.get("temporal_conv_kernel", 5)),
-    ).to(device)
+    model = build_model(cfg, vocab_size=tok.vocab_size, pad_id=tok.pad_id).to(device)
     model.load_state_dict(torch.load(checkpoint, map_location=device, weights_only=True))
 
     print(f"run={run_dir} | checkpoint={checkpoint}")

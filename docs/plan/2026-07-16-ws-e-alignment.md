@@ -26,7 +26,58 @@
 
 ---
 
-## Phase A — CTC forced alignment core
+## Plan amendments (2026-07-19, after the input ablation)
+
+`docs/logs/INPUT_ABLATION.md` landed after this plan was written and changes four
+things. Amendments are recorded here rather than rewritten inline so the original
+reasoning stays auditable.
+
+1. **New Task A0 gates Phase B.** The ablation showed the CTC model retains 92% of
+   its chrF++ with frame order shuffled — it is close to time-invariant on the
+   character metric. If the CTC head's per-frame posteriors are also temporally
+   flat, forced alignment returns essentially arbitrary segmentations and Phase B
+   would measure nothing: it would report chance agreement for a *degenerate-head*
+   reason, not the interesting *ungrounded-temporal-model* reason. A0 distinguishes
+   these before any motion-changepoint machinery is built.
+2. **A1 must be vectorized, not a Python double loop.** Measured on this machine at
+   T=512 / S=51: the plan's `for t: for s:` body with tensor indexing runs 0.63 s
+   per clip (~19 min across the three runs at the real median length of 171
+   frames). Tolerable once — but Phase B's agreement-vs-chance needs a randomized
+   baseline, and at N=100 permutations that becomes ~32 h. A vectorized numpy
+   implementation measured 8.3 ms per clip (**76× faster**), making the same
+   baseline ~20 min. Build it vectorized from the start.
+3. **A1's test suite does not exercise the DP.** Every test uses log-probs so peaked
+   that per-frame argmax already gives the answer, so they would pass against a
+   greedy implementation that ignores the CTC constraints entirely. Add cases where
+   the constrained Viterbi path *must* differ from greedy.
+4. **A2 uses `build_model`.** `scripts/eval_checkpoint_decode.py` no longer contains
+   inline model construction to copy — it now calls `bornil.models.build.build_model`,
+   which reads `model.ctc_head` from the run config. The plan's note that
+   "`use_ctc=True` must be set from the run's `config.json`" described a bug that
+   was fixed on 2026-07-19; A2 gets this for free and must not hand-roll it.
+
+### Task A0: Is the CTC head temporally informative? (gate for Phase B)
+
+**Files:** create `scripts/ctc_posterior_stats.py`; no new library module.
+
+**Why:** cheap falsification of the premise Phase A/B rest on. Consumes an existing
+checkpoint, no retraining.
+
+Report, over the test split of `b0a590ea3317`:
+- **Blank rate** — fraction of frames whose CTC argmax is blank. Near 1.0 means the
+  head emits almost nothing per-frame and alignments will be driven by tie-breaking.
+- **Per-frame posterior entropy** (mean, and vs. the log-vocab ceiling). Near-uniform
+  posteriors mean no frame carries label evidence.
+- **Temporal variability** — number of distinct non-blank argmax labels per clip, and
+  mean run length of a constant argmax. A head that outputs the same label for all
+  frames is temporally uninformative even if confident.
+- **Contrast against `frame_shuffle`** — recompute all three on frame-shuffled input.
+  If the statistics are unchanged, the CTC head is genuinely time-invariant, which
+  predicts chance-level Phase B agreement for a mechanistic reason.
+
+**Gate:** if the blank rate exceeds ~0.95 *and* per-clip distinct labels is ~1, stop
+and log to `docs/logs/FAILURES.md` — Phase B cannot produce an interpretable result
+and the WS-E→WS-F bridge needs rethinking. Otherwise continue to B.
 
 ### Task A1: Viterbi forced-alignment algorithm
 
@@ -587,6 +638,30 @@ Report boundary F1 between CTC spans and attention spans, against the same chanc
 - **§9 validation "triangulate, no gold alignment"** → Phase B2/B3 (agreement vs randomized chance) and C2 (cross-method agreement).
 - **§9.2.3 contrastive word↔clip, §9.2.5 pseudo-glosses, sign lexicon** → deliberately out of scope; own plan once this layer is validated.
 - **§9.3 two granularities** → this plan delivers the **frame/clip level** only. Word/unit level needs §9.2.3+9.2.5 and is deferred.
+
+## Pre-registered prediction (recorded 2026-07-19, before Phase A0 was run)
+
+Written down *before* any alignment code existed, so the outcome cannot be
+rationalized after the fact. Evidence: `docs/logs/INPUT_ABLATION.md`.
+
+**Prediction.** CTC forced alignments will show **weak but above-chance** boundary
+agreement with motion changepoints — clearly better than the randomized baseline,
+but far from the agreement a genuinely temporally-grounded model would produce.
+
+**Basis.** Frame-order shuffling costs the CTC model only −0.88 chrF++ (92%
+retained) but 89% of its BLEU-4. Read together: whatever temporal structure the
+encoder has is real but weak, and it shows up in word-order-sensitive metrics
+rather than character-overlap ones. So there should be *some* temporal signal for
+forced alignment to latch onto, but not much.
+
+**How each outcome is read:**
+
+| Phase B result | Interpretation |
+|---|---|
+| Agreement at chance, **and** A0 shows a degenerate head (blank rate >0.95, ~1 distinct label) | Uninformative — the head never emits per-frame evidence. Not a finding about grounding. Log to FAILURES.md, rethink the bridge. |
+| Agreement at chance, **and** A0 shows a healthy head | **Strong negative result.** The CTC gain in Table 5 is not temporal grounding. Consistent with the ablation and publishable with it. |
+| Weak but above chance (**predicted**) | Confirms the ablation. The joint claim — grounded but not temporally grounded — is stronger than either result alone. |
+| Strongly above chance | **Surprise; contradicts the ablation.** Most likely reconciliation: chrF++ is too blunt to register temporal structure that alignment does capture (consistent with BLEU-4 retaining only 11%). Would require re-examining `frame_shuffle` before any claim is made. |
 
 ## Note on the honest outcome
 

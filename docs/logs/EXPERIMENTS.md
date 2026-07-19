@@ -39,6 +39,16 @@
 > ROUGE-L as the discriminating metrics here. Next: warmup+scheduler, label
 > smoothing, beam search; then the harder splits.
 
+> **Input ablation (2026-07-19, run `b0a590ea3317`):** supersedes the qualitative
+> "visual grounding is weak" claim above with a measurement. Deranging only the
+> video↔text pairing (`mismatch`) costs −4.71 chrF++ (10.91 → 6.20) and 13.7× BLEU-4,
+> so the encoder **is** genuinely used. But shuffling frame order within each clip
+> costs only −0.88 chrF++ (retains 92%), so the grounding is largely **static pose,
+> not motion**. Gaussian-noise input still scores 9.08 chrF++ — near the retrieval
+> floor (9.20) — so chrF++ margins of 1–2 over trivial floors are weak evidence;
+> anchor claims to the `mismatch` control instead. Full analysis:
+> `docs/logs/INPUT_ABLATION.md`.
+
 ---
 
 <!-- Log rows below, newest first -->
@@ -198,3 +208,56 @@
 - **Decode extras:** decode_repetition_stop=0
 - **Metrics (test):** BLEU-4=0.00 chrF=0.00 chrF++=0.00 ROUGE-L=0.000 (BLEU-1/2/3=0.0/0.0/0.0)
 - **Checkpoint:** trial_1pct/runs/d9216f4420cd/best.pt
+
+### EXP-data_full_stgcn-2dfdcbdf4e2d  (2026-07-19)
+- **Model:** ST-GCN d256 L3+4   **Phase/Task:** data_full_stgcn (WS-C T1.1)
+- **Data/Split:** data_full_stgcn random-v1 (train 14390 / test 1799); source=frozen:splits/random-v1
+- **Representation:** kp-218   **Config hash:** 2dfdcbdf4e2d   **Seed:** 42
+- **Compute:** cuda   **Train time:** 2569.5 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.36 chrF=10.25 chrF++=8.27 ROUGE-L=0.040 (BLEU-1/2/3=10.2/2.4/0.8)
+- **Checkpoint:** data_full/runs/2dfdcbdf4e2d/best.pt
+- **Notes:** **Negative result — do not tune further, do not run on the hard splits.**
+  chrF++ 8.27 is *below* both the random-v1 retrieval floor (9.11) and the
+  most-frequent-sentence floor (10.03); it beats the floors on BLEU-4 only. It is
+  the only recent model to fall under the floors on chrF++, at 42.8 h vs 44.8 min
+  for TConv+CTC (~57× the compute for a worse result). Mechanism, from
+  `docs/logs/INPUT_ABLATION.md`: the exploited signal on this benchmark is largely
+  static pose (frame-order shuffling costs the CTC model only −0.88 chrF++), and a
+  spatio-temporal graph encoder's whole value proposition is modelling motion
+  structure — so there is little for it to win on here. Closes WS-C T1.1.
+
+### EXP-trial_2pct-b092ae873aef  (2026-07-19)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** trial_2pct (WS-C T0.2)
+- **Data/Split:** trial_2pct random-v1 (train 1 / test 1); source=generated
+- **Representation:** kp-218   **Config hash:** b092ae873aef   **Seed:** 42
+- **Compute:** cuda   **Train time:** 0.0 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=1.83 chrF=7.25 chrF++=3.62 ROUGE-L=0.000 (BLEU-1/2/3=1.8/1.8/1.8)
+- **Checkpoint:** trial_2pct/runs/b092ae873aef/best.pt
+
+### EXP-trial_2pct-2189811eb2fa  (2026-07-19)
+- **Model:** ST-GCN d256 L3+4   **Phase/Task:** trial_2pct (WS-C T1.1)
+- **Data/Split:** trial_2pct random-v1 (train 1 / test 1); source=generated
+- **Representation:** kp-218   **Config hash:** 2189811eb2fa   **Seed:** 42
+- **Compute:** cuda   **Train time:** 0.0 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.14 chrF=0.26 chrF++=0.22 ROUGE-L=0.000 (BLEU-1/2/3=0.4/0.3/0.2)
+- **Checkpoint:** trial_2pct/runs/2189811eb2fa/best.pt
+
+### EXP-trial_2pct-745ef396baa4  (2026-07-19)
+- **Model:** BiLSTM d256 L2+4   **Phase/Task:** trial_2pct (WS-C T0.1)
+- **Data/Split:** trial_2pct random-v1 (train 1 / test 1); source=generated
+- **Representation:** kp-218   **Config hash:** 745ef396baa4   **Seed:** 42
+- **Compute:** cuda   **Train time:** 0.0 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.0
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.20 chrF=1.53 chrF++=1.15 ROUGE-L=0.000 (BLEU-1/2/3=0.6/0.4/0.3)
+- **Checkpoint:** trial_2pct/runs/745ef396baa4/best.pt

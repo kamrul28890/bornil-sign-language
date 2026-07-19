@@ -116,12 +116,43 @@ metric (BLEU-4 is at the noise floor for all systems).
 splits** (−0.05 on unseen-sentence-v1, −0.76 on signerindep-v1) — the weakest
 point in the earlier results narrative, since a nearest-neighbour lookup matched
 our model on the character-level metric. **TConv+CTC clears the retrieval floor
-on all three splits on every metric.** This removes that objection and is the
-strongest single argument that the model is learning grounded translation rather
-than dataset priors.
+on all three splits on every metric.** This removes that objection.
+
+> **Caveat (2026-07-19, from the input ablation).** Do not lead with this table.
+> Feeding the trained model pure Gaussian noise scores **9.08 chrF++** — within
+> 0.12 of the random-v1 retrieval floor (9.20). The retrieval floor therefore sits
+> at roughly the *no-information* level, so clearing it by +1.71 is a much lower
+> bar than it reads. Use Table 4b instead, where the input distribution is held
+> exactly constant. See `docs/logs/INPUT_ABLATION.md`.
 
 Source: `docs/logs/TRIVIAL_FLOORS.md`; CTC rows from runs `b0a590ea3317`,
 `a5a9060499a4`, `40cffb9e62bb`.
+
+## Table 4b: Input Ablation (the grounding control)
+
+Same checkpoint (`b0a590ea3317`, random-v1, n=1799), decoder untouched, keypoint
+stream corrupted. `mismatch` deranges only which clip sits opposite which
+sentence, holding real clips, real feature statistics and real lengths constant —
+so it differs from the control in exactly one respect.
+
+| Condition | BLEU-4 | chrF++ | ROUGE-L | unique hyps |
+|---|---:|---:|---:|---:|
+| control (`none`) | **0.684** | **10.91** | **0.067** | 1777 |
+| frame order shuffled | 0.074 | 10.04 | 0.018 | 1763 |
+| Gaussian noise input | 0.037 | 9.08 | 0.007 | 1403 |
+| **video↔text mismatched** | 0.050 | **6.20** | 0.007 | 1776 |
+| zero input | 0.032 | 4.70 | 0.005 | 112 |
+
+**Two results.** (1) *Grounding is real*: `mismatch` costs −4.71 chrF++ and 13.7×
+BLEU-4. This is the strongest evidence in the project that the model translates
+rather than generates from a prior, and it is a stricter control than any trivial
+floor. (2) *Grounding is static pose, not motion*: shuffling frame order costs
+only −0.88 chrF++ (92% retained), while BLEU-4 retains 11%. The encoder largely
+behaves as a bag-of-poses classifier despite the TConv frontend and CTC
+objective. This is the measured version of "weak visual grounding" and is the
+target WS-E should be evaluated against.
+
+Source: `docs/logs/INPUT_ABLATION.md`, `docs/logs/SIGNIFICANCE_INPUT_ABLATION.md`.
 
 ## Table 5: Output Diversity & Length Calibration (why joint CTC helps)
 
@@ -172,11 +203,19 @@ Source: `docs/logs/DECODE_REPETITION_GUARD.md`.
   vs 10.913 on random-v1 — statistically indistinguishable) and only a modest
   signer-independent drop (10.361). Open-vocabulary generalization is largely
   solved by a better-grounded encoder; **signer/session generalization is not**.
-- **Beating the floors is a model-dependent claim too, and it is the headline.**
-  All models beat the trivial floors on BLEU-4 and ROUGE-L, but the vanilla
-  baseline *loses to retrieval on chrF++* on both hard splits. TConv+CTC is the
-  first model to clear the retrieval floor on **all three splits on every
-  metric** (Table 4). Lead with this.
+- **The model performs grounded translation — lead with the input ablation, not
+  the floors.** Deranging only the video↔text correspondence costs −4.71 chrF++
+  (10.91 → 6.20) and 13.7× BLEU-4 with the input distribution held exactly
+  constant (Table 4b). This is the strongest and cleanest grounding evidence
+  available. The floor comparison is supporting material: TConv+CTC does clear
+  the retrieval floor on all three splits on every metric (Table 4), but that
+  floor sits near the noise-input level (9.20 vs 9.08), so a +1.71 margin is weak
+  on its own.
+- **The grounding is static pose, not motion — state this as an open weakness.**
+  Shuffling frame order within clips retains 92% of chrF++ (10.91 → 10.04) while
+  BLEU-4 retains 11%. The current best model is close to time-invariant on the
+  character metric despite a temporal-conv frontend and a CTC objective. This is
+  the honest characterization of the remaining gap and the target for WS-E.
 - Character-level metrics are fragile here: chrF++ can reward generic overlap and
   make trivial baselines look deceptively strong. We control for this explicitly
   — the CTC chrF++ gain comes with *higher* output diversity (98–99% unique) and

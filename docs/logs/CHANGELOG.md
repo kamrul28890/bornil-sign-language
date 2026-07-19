@@ -15,6 +15,18 @@
 
 ---
 
+## 2026-07-19 — Input ablation: grounding confirmed, but it is static pose
+- **What:** Added `scripts/input_ablation.py` (re-decodes a checkpoint with the keypoint stream corrupted: `mismatch` / `frame_shuffle` / `noise` / `zero` / `none`), `docs/logs/INPUT_ABLATION.md`, and `docs/logs/SIGNIFICANCE_INPUT_ABLATION.md`. Ran it on `b0a590ea3317` (TConv+CTC, random-v1).
+- **Why:** The ST-GCN full run (`2dfdcbdf4e2d`) came in below the trivial floors on chrF++ after 42.8 h, raising the question of whether any of these models use the video at all, or whether the decoder's Bengali prior produces the output.
+- **Impact:** **The encoder is genuinely used** — deranging only the video↔text pairing costs −4.71 chrF++ (10.91 → 6.20) and 13.7× BLEU-4, with the input distribution held exactly constant. This is a stricter control than the trivial floors and is now the strongest grounding evidence in the project. **But the grounding is static pose, not motion:** shuffling frame order within clips costs only −0.88 chrF++ (92% retained) while BLEU-4 retains 11%. Also: Gaussian-noise input scores 9.08 chrF++ vs a 9.20 retrieval floor, so "clears the retrieval floor by +1.71" is a much lower bar than it reads — claims should be anchored to the `mismatch` control (dynamic range 6.20 → 10.91). Gives WS-E a concrete target (close the `frame_shuffle` gap) and makes the ST-GCN negative result coherent rather than anomalous.
+- **Commit:** (this commit)
+
+## 2026-07-19 — Shared model builder; fixed CTC checkpoint reload
+- **What:** Added `bornil/models/build.py` as the single source of truth for reconstructing a model from a run `config.json`, with `tests/models/test_build.py` (11 tests). Repointed `scripts/train_sample.py`, `scripts/eval_checkpoint_decode.py`, and `scripts/input_ablation.py` at it.
+- **Why:** `eval_checkpoint_decode.py` had a drifted copy of the construction logic that never passed `use_ctc`, so **every CTC checkpoint failed to load** (`Unexpected key(s) in state_dict: "ctc_head.weight"`); it also hardcoded `SignTransformer`, so BiLSTM and ST-GCN runs could not be evaluated at all. Found while building the input ablation.
+- **Impact:** All three architectures now load and decode from saved checkpoints (verified on `b0a590ea3317`, `2dfdcbdf4e2d`, `07709687f916`); decode ablations are usable on CTC runs for the first time. Two deliberate behaviour changes: an unknown `model.arch` now raises instead of silently falling back to a transformer, and `arch=bilstm` with `ctc_head=true` now raises instead of silently ignoring the head.
+- **Commit:** (this commit)
+
 ## 2026-07-16 — Trivial floors + claims reconciled with the CTC model
 - **What:** Rewrote `docs/logs/RESULTS_OVERVIEW.md` Table 4 (trivial floors now compare retrieval vs vanilla vs TConv+CTC across BLEU-4/chrF++/ROUGE-L), added Table 5 (output diversity & length calibration), and corrected "Main Claims To Write".
 - **Why:** Table 4 still compared only the vanilla model and claimed "retrieval chrF++ exceeds model chrF++" — stale now that CTC is the best model. The CTC chrF++ gain also needed a control against the "chrF++ rewards generic output" explanation.

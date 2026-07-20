@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-20 — WS-E A2: CTC forced-alignment extraction (with per-label confidence)
+- **What:** Added `scripts/align_checkpoint.py` (`span_confidences` / `spans_to_rows` / `align_split`, 8 tests) and `docs/logs/WSE_A2_ALIGNMENT.md`. Ran it over all three CTC checkpoints; wrote `data_full/runs/<id>/alignments.csv` (gitignored, regenerable).
+- **Why:** Task A2 of WS-E — produce the frame→subword alignments Phase B validates against motion changepoints.
+- **Impact:** **0% infeasible on all three splits** (random/signerindep/unseen-sentence), so the 512-frame ceiling never truncates a target — the plan's >5% investigation gate is clear. Added a `peak_conf` column (amendment prompted by A0): confidence is sharply bimodal (90th pct 0.07, 95th pct 0.94), so conf≥0.5 cleanly separates ~0.85 real anchors/clip from ~11 tie-break placements; ~65% of clips have ≥1 anchor; spans are ~1 frame (point events). `row` is the recording id, a real Phase-B join key. These findings redefine Phase B: weight/filter by peak_conf, compare points to changepoints (not intervals), effective N is anchored clips (~1150 on random-v1). signerindep is weakest (0.78 anchors/clip, 63% coverage), same ordering as chrF++.
+- **Commit:** (this commit)
+
 ## 2026-07-19 — WS-E A0: CTC posterior sanity check passes (gate for Phase B)
 - **What:** Added `bornil/align/posterior.py` (pure per-clip CTC posterior statistics, 10 tests) and `scripts/ctc_posterior_stats.py` (A0 CLI over a checkpoint, with a frame-shuffle contrast), plus `docs/logs/WSE_A0_POSTERIOR.md`. A0 was inserted ahead of A2 as a Phase-B gate after the input ablation.
 - **Why:** Forced alignment only yields an interpretable segmentation if the CTC head emits real per-frame label evidence; a degenerate head (all-blank / one constant label) would make Phase B's agreement-vs-chance meaningless. Check this cheaply before building Phase B.

@@ -304,6 +304,17 @@ git commit -m "feat(align): CTC forced alignment via Viterbi (WS-E 9.2.1)"
 
 ### Task A2: Alignment extraction script over a trained checkpoint
 
+**Result (2026-07-20): DONE, 0% infeasible on all three CTC runs.** Amended per
+A0: added a `peak_conf` column (per-label peak posterior over the assigned span)
+and made `row` the recording id (a real Phase-B join key) rather than an
+enumeration index. Confidence is sharply bimodal (90th pct 0.07, 95th pct 0.94),
+so conf≥0.5 is a clean anchor split: ~0.85 anchors/clip, ~65% of clips have one,
+spans are ~1 frame (point events). This directly shapes Phase B — weight/filter by
+`peak_conf`, compare points not intervals, effective N is anchored clips. Full
+analysis: `docs/logs/WSE_A2_ALIGNMENT.md`. Note: implemented by iterating the
+`LengthBucketBatchSampler` index batches directly (not a plain DataLoader) so each
+clip keeps its recording id.
+
 **Files:**
 - Create: `scripts/align_checkpoint.py`
 - Test: `tests/align/test_align_checkpoint.py` (create)

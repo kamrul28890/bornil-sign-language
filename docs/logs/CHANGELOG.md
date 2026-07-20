@@ -15,6 +15,18 @@
 
 ---
 
+## 2026-07-19 — WS-E A0: CTC posterior sanity check passes (gate for Phase B)
+- **What:** Added `bornil/align/posterior.py` (pure per-clip CTC posterior statistics, 10 tests) and `scripts/ctc_posterior_stats.py` (A0 CLI over a checkpoint, with a frame-shuffle contrast), plus `docs/logs/WSE_A0_POSTERIOR.md`. A0 was inserted ahead of A2 as a Phase-B gate after the input ablation.
+- **Why:** Forced alignment only yields an interpretable segmentation if the CTC head emits real per-frame label evidence; a degenerate head (all-blank / one constant label) would make Phase B's agreement-vs-chance meaningless. Check this cheaply before building Phase B.
+- **Impact:** **PASS, not degenerate** — on `b0a590ea3317` the head is confident (entropy 3.7% of the uniform ceiling) and emits 2.72 distinct non-blank labels/clip, and it is temporally responsive (distinct labels drop 56% under frame shuffle, reconciling with the −0.88 chrF++ / −89% BLEU-4 ablation split). Caveat carried into A2: the head is 97.4% blank and only ~2.7 of ~12.2 target subwords per clip have a confident spike, so forced alignment will produce a few well-anchored labels and many weak placements — A2 should emit a per-label confidence so B2 can weight boundaries. Mildly raises confidence in the "above-chance" half of the pre-registered Phase-B prediction.
+- **Commit:** (this commit)
+
+## 2026-07-19 — WS-E A1: CTC forced alignment (Viterbi)
+- **What:** Added `bornil/align/ctc_forced.py` (`forced_align` / `path_to_spans` / `align_clip`) and `tests/align/test_ctc_forced.py` (16 tests). Recorded plan amendments and a pre-registered Phase-B prediction in the WS-E plan.
+- **Why:** Task A1 of WS-E — the frame→subword alignment primitive Phase A2/B build on.
+- **Impact:** Vectorized Viterbi (12.6 ms/clip at T=512 vs 0.63 s for the plan's Python double loop, ~50x; matters because Phase B re-aligns under many randomized permutations). Tests exercise the DP itself, including a brute-force max-likelihood check — the plan's original cases would have passed a greedy stand-in.
+- **Commit:** (this commit)
+
 ## 2026-07-19 — Input ablation: grounding confirmed, but it is static pose
 - **What:** Added `scripts/input_ablation.py` (re-decodes a checkpoint with the keypoint stream corrupted: `mismatch` / `frame_shuffle` / `noise` / `zero` / `none`), `docs/logs/INPUT_ABLATION.md`, and `docs/logs/SIGNIFICANCE_INPUT_ABLATION.md`. Ran it on `b0a590ea3317` (TConv+CTC, random-v1).
 - **Why:** The ST-GCN full run (`2dfdcbdf4e2d`) came in below the trivial floors on chrF++ after 42.8 h, raising the question of whether any of these models use the video at all, or whether the decoder's Bengali prior produces the output.

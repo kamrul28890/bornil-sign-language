@@ -79,6 +79,15 @@ Report, over the test split of `b0a590ea3317`:
 and log to `docs/logs/FAILURES.md` — Phase B cannot produce an interpretable result
 and the WS-E→WS-F bridge needs rethinking. Otherwise continue to B.
 
+**Result (2026-07-19, run `b0a590ea3317`): PASS with a caveat.** blank_rate 0.974,
+distinct non-blank labels 2.72/clip, entropy 3.7% of the uniform ceiling — not
+degenerate. Temporally responsive (distinct labels drop 56% under frame shuffle).
+But sparse: only ~2.7 of ~12.2 target subwords per clip have a confident head
+spike, so A2 must expect a few well-anchored labels and many weak placements, and
+should emit a per-label confidence so B2 can weight them. Full analysis:
+`docs/logs/WSE_A0_POSTERIOR.md`. Implemented in `scripts/ctc_posterior_stats.py`
++ `bornil/align/posterior.py` (pure stats, tested).
+
 ### Task A1: Viterbi forced-alignment algorithm
 
 **Files:**

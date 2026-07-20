@@ -565,6 +565,19 @@ git commit -m "feat(align): boundary agreement F1 + randomized chance baseline"
 
 ### Task B3: Alignment validation report
 
+**Result (2026-07-20): AT CHANCE on all three CTC runs — negative result, Phase C
+NOT unlocked.** CTC subword placements do not beat the circular-shift null against
+velocity minima (ratio 0.86–0.96×), replicated on random/signerindep/unseen.
+Two amendments made during execution: (a) B1's changepoint detector was saturating
+the reference (36.9 cps/clip ≈ tiling under ±2 tolerance) — added velocity smoothing
++ deepest-quantile minima filtering, bringing it to a defensible 11.3/clip, which
+did not change the verdict; (b) added a velocity-maxima diagnostic, which found a
+strong reproducible *avoidance* of motion peaks by anchors (0.28–0.30×), confirming
+the metric has power. This does NOT overturn grounding (input ablation + A0 stand);
+it means subword spikes don't localize to sign-rest boundaries. Logged FAIL-004.
+Full analysis: `docs/logs/ALIGNMENT_VALIDATION.md`. **Phase C is gated on Phase B
+beating chance; it did not, so Phase C is not started.**
+
 **Files:**
 - Create: `scripts/alignment_report.py`
 - Create (output): `docs/logs/ALIGNMENT_VALIDATION.md`

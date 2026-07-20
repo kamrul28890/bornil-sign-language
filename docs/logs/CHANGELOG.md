@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-20 — WS-E Phase B: alignment validation is AT CHANCE (negative result)
+- **What:** Added `bornil/align/motion.py` (B1: velocity, smoothing, salient changepoints), `bornil/align/agreement.py` (B2: boundary_f1 + uniform and circular-shift nulls), `scripts/alignment_report.py` (B3), and `docs/logs/ALIGNMENT_VALIDATION.md`. 34 new tests. Ran B3 over all three CTC checkpoints. Logged FAIL-004.
+- **Why:** Phase B tests the pre-registered prediction — do CTC forced-alignment placements coincide with an independent motion signal above chance? This is the WS-E go/no-go gate for Phase C and the WS-F bridge.
+- **Impact:** **At chance on all three splits.** CTC subword placements do not beat the circular-shift null against velocity minima (ratio_shift 0.86–0.96×), replicated on random-v1/signerindep-v1/unseen-sentence-v1. The metric has power — confident anchors show a strong, reproducible *avoidance* of velocity maxima (0.28–0.30×) — so this is a genuine null, not a dead measurement. **Phase C is NOT unlocked** (plan gate). Crucially this does NOT overturn grounding: the input ablation (mismatch −4.71 chrF++) and A0 (temporally-responsive head) stand; the negative result is narrower — subword spikes don't localize to sign-boundary motion rests, likely a subword≠sign granularity/phase issue (anchors sit mid-articulation, avoiding both motion extrema). Two in-flight fixes: B1's detector was saturating the reference (36.9→11.3 changepoints/clip via smoothing + deepest-quantile filtering; verdict unchanged), and a velocity-maxima diagnostic was added beyond the plan.
+- **Commit:** (this commit)
+
 ## 2026-07-20 — WS-E A2: CTC forced-alignment extraction (with per-label confidence)
 - **What:** Added `scripts/align_checkpoint.py` (`span_confidences` / `spans_to_rows` / `align_split`, 8 tests) and `docs/logs/WSE_A2_ALIGNMENT.md`. Ran it over all three CTC checkpoints; wrote `data_full/runs/<id>/alignments.csv` (gitignored, regenerable).
 - **Why:** Task A2 of WS-E — produce the frame→subword alignments Phase B validates against motion changepoints.

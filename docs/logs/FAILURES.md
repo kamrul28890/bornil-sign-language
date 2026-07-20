@@ -22,6 +22,14 @@
 
 <!-- Log entries below, newest first -->
 
+### FAIL-004  (2026-07-20)  [WS-E Phase B / alignment validation]
+- **Expected:** CTC forced-alignment placements would agree with keypoint-motion changepoints above chance (pre-registered prediction: "weak but above chance"), validating the alignments as temporal grounding.
+- **Observed:** at chance on all three CTC runs. `ratio_shift` (mean F1 / circular-shift null) = 0.94/0.89/0.96 for confident anchors vs velocity minima and 0.86–0.94 for all labels; identical picture against velocity maxima except that anchors *avoid* peaks strongly and reproducibly (0.28/0.30/0.30×). A first run looked even lower but was confounded by a saturated reference (36.9 changepoints/clip with ±2 tolerance ≈ tiling); fixing the changepoint detector (smoothing + keep only deepest-quantile minima → 11.3/clip) did not lift agreement above chance.
+- **Root cause:** hypothesis. The forced alignment does not localize CTC subword spikes to sign-boundary motion rests. Not attributable to a dead metric — the same metric detects a strong negative association with velocity peaks, so it has power. Leading explanations, unseparated by this test: (1) subword≠sign granularity; (2) anchors sit mid-articulation (they avoid both extrema of motion), so velocity minima are the wrong target; (3) the head's temporal responsiveness (A0) is about *which* labels fire, not *when*.
+- **Fix / next step:** do not proceed to Phase C or pseudo-glosses on this signal (plan gate). Grounding itself is NOT refuted — the input ablation (mismatch −4.71 chrF++) and A0 (56% distinct-label drop under frame shuffle) stand. Any further temporal-grounding work should target sign-level segmentation with an onset/edge reference rather than subword-vs-rest. Full analysis: `docs/logs/ALIGNMENT_VALIDATION.md`.
+- **Status:** wontfix (negative result; publishable as a Limitations / negative-results note)
+- **Links:** EXP b0a590ea3317 / 40cffb9e62bb / a5a9060499a4; `docs/logs/ALIGNMENT_VALIDATION.md`, `docs/logs/WSE_A0_POSTERIOR.md`, `docs/logs/INPUT_ABLATION.md`
+
 ### FAIL-003  (2026-07-13)  [trial / extraction, Windows]
 - **Expected:** `import mediapipe` to work so keypoint extraction runs.
 - **Observed:** intermittent `ImportError: DLL load failed while importing _pywrap_tensorflow_internal` → "Failed to load the native TensorFlow runtime", crashing the whole mediapipe import (0 features produced).

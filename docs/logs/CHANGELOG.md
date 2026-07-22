@@ -15,6 +15,42 @@
 
 ---
 
+## 2026-07-20 — WS-E Phase B: alignment validation is AT CHANCE (negative result)
+- **What:** Added `bornil/align/motion.py` (B1: velocity, smoothing, salient changepoints), `bornil/align/agreement.py` (B2: boundary_f1 + uniform and circular-shift nulls), `scripts/alignment_report.py` (B3), and `docs/logs/ALIGNMENT_VALIDATION.md`. 34 new tests. Ran B3 over all three CTC checkpoints. Logged FAIL-004.
+- **Why:** Phase B tests the pre-registered prediction — do CTC forced-alignment placements coincide with an independent motion signal above chance? This is the WS-E go/no-go gate for Phase C and the WS-F bridge.
+- **Impact:** **At chance on all three splits.** CTC subword placements do not beat the circular-shift null against velocity minima (ratio_shift 0.86–0.96×), replicated on random-v1/signerindep-v1/unseen-sentence-v1. The metric has power — confident anchors show a strong, reproducible *avoidance* of velocity maxima (0.28–0.30×) — so this is a genuine null, not a dead measurement. **Phase C is NOT unlocked** (plan gate). Crucially this does NOT overturn grounding: the input ablation (mismatch −4.71 chrF++) and A0 (temporally-responsive head) stand; the negative result is narrower — subword spikes don't localize to sign-boundary motion rests, likely a subword≠sign granularity/phase issue (anchors sit mid-articulation, avoiding both motion extrema). Two in-flight fixes: B1's detector was saturating the reference (36.9→11.3 changepoints/clip via smoothing + deepest-quantile filtering; verdict unchanged), and a velocity-maxima diagnostic was added beyond the plan.
+- **Commit:** (this commit)
+
+## 2026-07-20 — WS-E A2: CTC forced-alignment extraction (with per-label confidence)
+- **What:** Added `scripts/align_checkpoint.py` (`span_confidences` / `spans_to_rows` / `align_split`, 8 tests) and `docs/logs/WSE_A2_ALIGNMENT.md`. Ran it over all three CTC checkpoints; wrote `data_full/runs/<id>/alignments.csv` (gitignored, regenerable).
+- **Why:** Task A2 of WS-E — produce the frame→subword alignments Phase B validates against motion changepoints.
+- **Impact:** **0% infeasible on all three splits** (random/signerindep/unseen-sentence), so the 512-frame ceiling never truncates a target — the plan's >5% investigation gate is clear. Added a `peak_conf` column (amendment prompted by A0): confidence is sharply bimodal (90th pct 0.07, 95th pct 0.94), so conf≥0.5 cleanly separates ~0.85 real anchors/clip from ~11 tie-break placements; ~65% of clips have ≥1 anchor; spans are ~1 frame (point events). `row` is the recording id, a real Phase-B join key. These findings redefine Phase B: weight/filter by peak_conf, compare points to changepoints (not intervals), effective N is anchored clips (~1150 on random-v1). signerindep is weakest (0.78 anchors/clip, 63% coverage), same ordering as chrF++.
+- **Commit:** (this commit)
+
+## 2026-07-19 — WS-E A0: CTC posterior sanity check passes (gate for Phase B)
+- **What:** Added `bornil/align/posterior.py` (pure per-clip CTC posterior statistics, 10 tests) and `scripts/ctc_posterior_stats.py` (A0 CLI over a checkpoint, with a frame-shuffle contrast), plus `docs/logs/WSE_A0_POSTERIOR.md`. A0 was inserted ahead of A2 as a Phase-B gate after the input ablation.
+- **Why:** Forced alignment only yields an interpretable segmentation if the CTC head emits real per-frame label evidence; a degenerate head (all-blank / one constant label) would make Phase B's agreement-vs-chance meaningless. Check this cheaply before building Phase B.
+- **Impact:** **PASS, not degenerate** — on `b0a590ea3317` the head is confident (entropy 3.7% of the uniform ceiling) and emits 2.72 distinct non-blank labels/clip, and it is temporally responsive (distinct labels drop 56% under frame shuffle, reconciling with the −0.88 chrF++ / −89% BLEU-4 ablation split). Caveat carried into A2: the head is 97.4% blank and only ~2.7 of ~12.2 target subwords per clip have a confident spike, so forced alignment will produce a few well-anchored labels and many weak placements — A2 should emit a per-label confidence so B2 can weight boundaries. Mildly raises confidence in the "above-chance" half of the pre-registered Phase-B prediction.
+- **Commit:** (this commit)
+
+## 2026-07-19 — WS-E A1: CTC forced alignment (Viterbi)
+- **What:** Added `bornil/align/ctc_forced.py` (`forced_align` / `path_to_spans` / `align_clip`) and `tests/align/test_ctc_forced.py` (16 tests). Recorded plan amendments and a pre-registered Phase-B prediction in the WS-E plan.
+- **Why:** Task A1 of WS-E — the frame→subword alignment primitive Phase A2/B build on.
+- **Impact:** Vectorized Viterbi (12.6 ms/clip at T=512 vs 0.63 s for the plan's Python double loop, ~50x; matters because Phase B re-aligns under many randomized permutations). Tests exercise the DP itself, including a brute-force max-likelihood check — the plan's original cases would have passed a greedy stand-in.
+- **Commit:** (this commit)
+
+## 2026-07-19 — Input ablation: grounding confirmed, but it is static pose
+- **What:** Added `scripts/input_ablation.py` (re-decodes a checkpoint with the keypoint stream corrupted: `mismatch` / `frame_shuffle` / `noise` / `zero` / `none`), `docs/logs/INPUT_ABLATION.md`, and `docs/logs/SIGNIFICANCE_INPUT_ABLATION.md`. Ran it on `b0a590ea3317` (TConv+CTC, random-v1).
+- **Why:** The ST-GCN full run (`2dfdcbdf4e2d`) came in below the trivial floors on chrF++ after 42.8 h, raising the question of whether any of these models use the video at all, or whether the decoder's Bengali prior produces the output.
+- **Impact:** **The encoder is genuinely used** — deranging only the video↔text pairing costs −4.71 chrF++ (10.91 → 6.20) and 13.7× BLEU-4, with the input distribution held exactly constant. This is a stricter control than the trivial floors and is now the strongest grounding evidence in the project. **But the grounding is static pose, not motion:** shuffling frame order within clips costs only −0.88 chrF++ (92% retained) while BLEU-4 retains 11%. Also: Gaussian-noise input scores 9.08 chrF++ vs a 9.20 retrieval floor, so "clears the retrieval floor by +1.71" is a much lower bar than it reads — claims should be anchored to the `mismatch` control (dynamic range 6.20 → 10.91). Gives WS-E a concrete target (close the `frame_shuffle` gap) and makes the ST-GCN negative result coherent rather than anomalous.
+- **Commit:** (this commit)
+
+## 2026-07-19 — Shared model builder; fixed CTC checkpoint reload
+- **What:** Added `bornil/models/build.py` as the single source of truth for reconstructing a model from a run `config.json`, with `tests/models/test_build.py` (11 tests). Repointed `scripts/train_sample.py`, `scripts/eval_checkpoint_decode.py`, and `scripts/input_ablation.py` at it.
+- **Why:** `eval_checkpoint_decode.py` had a drifted copy of the construction logic that never passed `use_ctc`, so **every CTC checkpoint failed to load** (`Unexpected key(s) in state_dict: "ctc_head.weight"`); it also hardcoded `SignTransformer`, so BiLSTM and ST-GCN runs could not be evaluated at all. Found while building the input ablation.
+- **Impact:** All three architectures now load and decode from saved checkpoints (verified on `b0a590ea3317`, `2dfdcbdf4e2d`, `07709687f916`); decode ablations are usable on CTC runs for the first time. Two deliberate behaviour changes: an unknown `model.arch` now raises instead of silently falling back to a transformer, and `arch=bilstm` with `ctc_head=true` now raises instead of silently ignoring the head.
+- **Commit:** (this commit)
+
 ## 2026-07-16 — Trivial floors + claims reconciled with the CTC model
 - **What:** Rewrote `docs/logs/RESULTS_OVERVIEW.md` Table 4 (trivial floors now compare retrieval vs vanilla vs TConv+CTC across BLEU-4/chrF++/ROUGE-L), added Table 5 (output diversity & length calibration), and corrected "Main Claims To Write".
 - **Why:** Table 4 still compared only the vanilla model and claimed "retrieval chrF++ exceeds model chrF++" — stale now that CTC is the best model. The CTC chrF++ gain also needed a control against the "chrF++ rewards generic output" explanation.

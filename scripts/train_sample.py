@@ -30,7 +30,7 @@ from bornil.data.dataset import SignDataset, make_collate_fn
 from bornil.data.sampler import LengthBucketBatchSampler
 from bornil.data.tokenizer import Tokenizer
 from bornil.data.transforms import feature_dim
-from bornil.models.transformer import SignTransformer
+from bornil.models.build import build_model
 from bornil.train.checkpoint import load_training_state, save_training_state
 from bornil.train.loop import train_epoch, evaluate
 from bornil.train.schedule import noam_lambda
@@ -164,39 +164,11 @@ def main():
           f"| vocab={tok.vocab_size}")
 
     # --- model ---
+    # Built through the shared builder so offline scripts rebuild this exact
+    # model from config.json (see bornil/models/build.py).
     m = cfg["model"]
     arch = m.get("arch", "transformer")
-    if arch == "bilstm":
-        from bornil.models.bilstm import SignBiLSTM
-        model = SignBiLSTM(
-            input_dim=feature_dim(cfg["data"]["upper_body"]), vocab_size=tok.vocab_size,
-            d_model=m["d_model"], enc_layers=int(m.get("enc_layers", 2)),
-            num_decoder_layers=m["num_decoder_layers"],
-            dim_feedforward=m["dim_feedforward"], nhead=m["nhead"],
-            dropout=m["dropout"], pad_id=tok.pad_id,
-        ).to(device)
-    elif arch == "stgcn":
-        from bornil.models.stgcn import SignSTGCN
-        model = SignSTGCN(
-            input_dim=feature_dim(cfg["data"]["upper_body"]), vocab_size=tok.vocab_size,
-            d_model=m["d_model"], nhead=m["nhead"],
-            stgcn_channels=int(m.get("stgcn_channels", 64)),
-            stgcn_layers=int(m.get("stgcn_layers", 3)),
-            temporal_kernel=int(m.get("temporal_kernel", 5)),
-            num_decoder_layers=m["num_decoder_layers"],
-            dim_feedforward=m["dim_feedforward"], dropout=m["dropout"],
-            pad_id=tok.pad_id, use_ctc=bool(m.get("ctc_head", False)),
-        ).to(device)
-    else:
-        model = SignTransformer(
-            input_dim=feature_dim(cfg["data"]["upper_body"]), vocab_size=tok.vocab_size,
-            d_model=m["d_model"], nhead=m["nhead"],
-            num_encoder_layers=m["num_encoder_layers"], num_decoder_layers=m["num_decoder_layers"],
-            dim_feedforward=m["dim_feedforward"], dropout=m["dropout"], pad_id=tok.pad_id,
-            temporal_conv_layers=int(m.get("temporal_conv_layers", 0)),
-            temporal_conv_kernel=int(m.get("temporal_conv_kernel", 5)),
-            use_ctc=bool(m.get("ctc_head", False)),
-        ).to(device)
+    model = build_model(cfg, vocab_size=tok.vocab_size, pad_id=tok.pad_id).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["train"]["lr"],
                             weight_decay=cfg["train"]["weight_decay"])
 

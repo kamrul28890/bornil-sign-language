@@ -462,7 +462,7 @@ git commit -m "refactor(models): split SignTransformer._project_src into project
   - `forward(self, src: Tensor (B,S,input_dim), src_lengths: Tensor (B,), generator: torch.Generator = None) -> tuple[Tensor (B,S,input_dim), BoolTensor (B,S)]` — returns `(reconstruction, mask)`.
   - `loss(self, src, src_lengths, generator=None) -> Tensor` — convenience: `forward` then `mkm_loss(pred, src, mask)` (the reconstruction target is the same `src` that was masked — MAE reconstructs its own input).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 # tests/pretrain/test_masked_encoder.py
@@ -512,7 +512,7 @@ def test_overfit_tiny():
     lengths = torch.tensor([20, 20])
     opt = torch.optim.Adam(enc.parameters(), lr=1e-2)
     first_loss = None
-    for step in range(200):
+    for step in range(600):
         opt.zero_grad()
         loss = enc.loss(src, lengths)
         if first_loss is None:
@@ -522,12 +522,12 @@ def test_overfit_tiny():
     assert loss.item() < first_loss * 0.1
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `.venv/Scripts/python -m pytest tests/pretrain/test_masked_encoder.py -v`
 Expected: FAIL — `ImportError: cannot import name 'MaskedSignEncoder'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Append to `bornil/pretrain/mkm.py` (keep the existing `MKMHead`/`mkm_loss` above this):
 
@@ -576,12 +576,16 @@ class MaskedSignEncoder(nn.Module):
         return mkm_loss(pred, src, mask)
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/pretrain/test_masked_encoder.py -v`
 Expected: 3 passed. If `test_overfit_tiny` is flaky (doesn't clear the 10% threshold), raise the step count or lr slightly — do not weaken the assertion threshold below 10% without first checking whether the mask is actually being applied (a common bug here is broadcasting the mask wrong and silently masking nothing).
 
-- [ ] **Step 5: Commit**
+Execution note (2026-07-25): the 200-step run reduced loss from 0.9556 to
+0.2562 but did not clear the 10% threshold. Per this step's instruction, the
+bound was raised to 600 steps; the threshold remains unchanged.
+
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/pretrain/mkm.py tests/pretrain/test_masked_encoder.py

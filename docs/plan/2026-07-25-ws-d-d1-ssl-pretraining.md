@@ -369,7 +369,7 @@ git commit -m "feat(pretrain): MKM reconstruction head + masked L1 loss"
 **Interfaces:**
 - Produces: `SignTransformer.project(src) -> Tensor (B,S,d_model)` (input projection only, pre-TConv, pre-positional-encoding — **this is where Task 4 injects the mask token**); `SignTransformer.apply_temporal(s) -> Tensor (B,S,d_model)` (TConv frontend if configured, then positional encoding). `_project_src` becomes `apply_temporal(project(src))` and must keep its exact existing signature and behavior (every existing caller — `forward`, `encode` — is unaffected).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 # add to tests/models/test_transformer.py
@@ -385,12 +385,12 @@ def test_project_and_apply_temporal_compose_to_project_src():
     assert torch.allclose(composed, direct)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_transformer.py::test_project_and_apply_temporal_compose_to_project_src -v`
 Expected: FAIL — `AttributeError: 'SignTransformer' object has no attribute 'project'`.
 
-- [ ] **Step 3: Refactor `_project_src`**
+- [x] **Step 3: Refactor `_project_src`**
 
 In `bornil/models/transformer.py`, replace:
 
@@ -426,7 +426,7 @@ with:
         return self.apply_temporal(self.project(src))
 ```
 
-- [ ] **Step 4: Run tests to verify they pass, and confirm no regression**
+- [x] **Step 4: Run tests to verify they pass, and confirm no regression**
 
 Run these three commands and confirm all pass with unchanged pass counts vs. before this task:
 
@@ -438,7 +438,7 @@ Run these three commands and confirm all pass with unchanged pass counts vs. bef
 
 Expected: all pass, including the new `test_project_and_apply_temporal_compose_to_project_src`. `test_decode_golden.py` passing unchanged is the real regression guard here — it pins exact decode output, so if the refactor had changed numerics it would fail.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/models/transformer.py tests/models/test_transformer.py

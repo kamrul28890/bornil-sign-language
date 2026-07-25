@@ -163,3 +163,15 @@ def test_padding_mask_from_lengths():
     # True == padded position (to be ignored by attention)
     assert mask[0].tolist() == [False, False, False, True, True]
     assert mask[1].tolist() == [False, False, False, False, False]
+
+
+def test_project_and_apply_temporal_compose_to_project_src():
+    model = SignTransformer(
+        input_dim=218, vocab_size=20, d_model=64, nhead=4,
+        num_encoder_layers=1, num_decoder_layers=1, dim_feedforward=128,
+        dropout=0.0, pad_id=0, temporal_conv_layers=2, temporal_conv_kernel=5,
+    )
+    src = torch.randn(2, 15, 218)
+    composed = model.apply_temporal(model.project(src))
+    direct = model._project_src(src)
+    assert torch.allclose(composed, direct)

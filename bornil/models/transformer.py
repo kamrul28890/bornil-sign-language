@@ -93,11 +93,25 @@ class SignTransformer(nn.Module):
             ])
         return nn.Sequential(*blocks)
 
-    def _project_src(self, src: torch.Tensor) -> torch.Tensor:
-        s = self.input_proj(src) * math.sqrt(self.d_model)
+    def project(self, src: torch.Tensor) -> torch.Tensor:
+        """Input projection only (pre-TConv, pre-positional-encoding).
+
+        This is the mask-token injection point for masked keypoint modeling
+        (bornil.pretrain.mkm.MaskedSignEncoder) — masking here, before the
+        TConv frontend, means the TConv itself only ever sees the
+        mask-substituted sequence, so a masked position's true value can't
+        leak into a neighboring unmasked position's TConv output.
+        """
+        return self.input_proj(src) * math.sqrt(self.d_model)
+
+    def apply_temporal(self, s: torch.Tensor) -> torch.Tensor:
+        """TConv frontend (if configured) + positional encoding."""
         if not isinstance(self.temporal_frontend, nn.Identity):
             s = self.temporal_frontend(s.transpose(1, 2)).transpose(1, 2)
         return self.pos(s)
+
+    def _project_src(self, src: torch.Tensor) -> torch.Tensor:
+        return self.apply_temporal(self.project(src))
 
     def src_padding_mask(self, src_lengths: torch.Tensor, seq_len: int) -> torch.Tensor:
         """(B, S) bool mask, True at padded frame positions."""

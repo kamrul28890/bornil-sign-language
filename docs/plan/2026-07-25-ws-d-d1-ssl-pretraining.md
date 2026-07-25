@@ -80,7 +80,7 @@ changes behavior for existing configs.
 **Interfaces:**
 - Produces: `sample_span_mask(seq_len: int, lengths: torch.Tensor, ratio: float, min_span: int = 3, max_span: int = 15, generator: torch.Generator = None) -> torch.BoolTensor` shaped `(B, S)` where `B = lengths.shape[0]`, `S = seq_len`. `True` = masked. Never masks position `>= lengths[b]`. Masked positions per row form contiguous spans (sampled greedily until the row's masked fraction reaches `ratio`, trimming the last span so it never crosses `lengths[b]`).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # tests/pretrain/test_masking.py
@@ -152,12 +152,12 @@ def test_zero_length_row_is_never_masked():
     assert not mask[0].any()
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `.venv/Scripts/python -m pytest tests/pretrain/test_masking.py -v`
 Expected: FAIL — `No module named 'bornil.pretrain'`.
 
-- [ ] **Step 3: Implement the module**
+- [x] **Step 3: Implement the module**
 
 ```python
 # bornil/pretrain/__init__.py
@@ -221,12 +221,17 @@ def sample_span_mask(seq_len: int, lengths: torch.Tensor, ratio: float,
     return mask
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/pretrain/test_masking.py -v`
 Expected: 6 passed.
 
-- [ ] **Step 5: Commit**
+Implementation note (2026-07-25): the supplied Step 3 code allowed adjacent
+sampled spans to merge, which failed Step 1's `r <= max_span` assertion.
+The implementation therefore prefers non-touching spans, with a bounded
+fallback so high requested ratios still terminate.
+
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/pretrain/__init__.py bornil/pretrain/masking.py tests/pretrain/test_masking.py

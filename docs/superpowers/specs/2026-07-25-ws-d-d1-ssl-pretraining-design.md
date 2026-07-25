@@ -161,26 +161,37 @@ from the real builder, per `docs/logs/FAILURES.md` context around
 
 1. Pretrain once on `splits/random-v1/train.txt` (14,390 clips, no labels
    used) → `data_full/runs/<pretrain-hash>/encoder_pretrain.pt`.
-2. Finetune comparison — **two arms, same architecture, same split, same
-   hyperparameters except init**:
-   - Arm A: `train_sample.py --config configs/full_ctc.yaml --init-encoder
-     data_full/runs/<pretrain-hash>/encoder_pretrain.pt` on `signerindep-v1`
-     (the hardest split — matches the plan's own validation criterion).
-   - Arm B: identical config, no `--init-encoder` (from-scratch baseline —
-     this is just `configs/full_ctc.yaml` on `signerindep-v1`, already run as
-     `40cffb9e62bb`; reuse it, don't rerun).
-3. Data-efficiency curve — filter `signerindep-v1` (or `random-v1`, pick one
-   split and use it for the whole curve for comparability — recommend
-   `random-v1` since it has the cleanest existing baseline coverage) train
-   split to 10/25/50/100% of labeled clips (stratified random subsample,
-   fixed seed, same frozen-split-then-filter approach already used for the
-   LTE12 diagnostic track — reuse that filtering mechanism, don't
-   reimplement it), and run both arms (pretrained-init, from-scratch) at
-   each fraction. 100% arm reuses existing runs where the config matches
-   exactly. This is ~6 new finetune runs (10/25/50% × 2 arms; 100% reuses
-   existing runs) plus the 1 pretrain run and the 2 `signerindep-v1` runs
-   above (1 new + 1 reused).
-4. All finetune runs go through the existing `results_significance.py` /
+2. **Core-claim comparison** — two arms, same architecture, same split, same
+   hyperparameters except init, on `signerindep-v1` (the hardest split —
+   matches the plan's own validation criterion):
+   - Arm A (new): `train_sample.py --config configs/full_ctc.yaml
+     --init-encoder data_full/runs/<pretrain-hash>/encoder_pretrain.pt
+     --split signerindep-v1`.
+   - Arm B (reused, not rerun): the existing from-scratch
+     `40cffb9e62bb` — already `configs/full_ctc.yaml` on 100%-label
+     `signerindep-v1`.
+3. **Data-efficiency curve** — filter `random-v1` (chosen over
+   `signerindep-v1` for comparability with the largest body of existing
+   baseline coverage) train split to 10/25/50/100% of labeled clips
+   (stratified random subsample, fixed seed, a new fraction-based filter —
+   see below), and run both arms (pretrained-init, from-scratch) at each
+   fraction. **Only the from-scratch 100% point reuses an existing run**
+   (`b0a590ea3317` is exactly `configs/full_ctc.yaml` on 100%-label
+   `random-v1` from scratch) — the pretrained-init arm has never been run
+   before at any fraction, including 100%, so all 4 of its points are new.
+   That is **7 new finetune runs** for the curve (pretrained ×
+   {10,25,50,100}%, scratch × {10,25,50}%) plus 1 reused point. The fraction
+   filter is new code (`filter_split_by_fraction`, alongside
+   `filter_split_by_recordings` in `bornil/benchmark/splits.py`): the
+   existing LTE12 mechanism filters by *target length*, not by *fraction of
+   clips*, so it is reused as a pattern (resolve the frozen split first,
+   then filter inside each partition) but is a different function with a
+   different selection rule. Unlike the LTE12 filter, only the **train**
+   partition is filtered — val/test stay at full size in every run so
+   evaluation stays comparable across the whole curve.
+4. **Total new training jobs for this spec: 1 pretrain run + 1 signerindep-v1
+   finetune run + 7 curve finetune runs = 9.**
+5. All finetune runs go through the existing `results_significance.py` /
    `RESULTS_OVERVIEW.md` / `CHANGELOG.md` pipeline unchanged — no new eval
    machinery.
 
@@ -252,6 +263,11 @@ epochs than the ~20–30 used for supervised finetuning here since there's no
 early-stopping-on-metric signal); budget a few hours on the RTX 3070 and
 confirm empirically rather than assuming. The finetune arms are each roughly
 TConv+CTC-scale (~45 min – a few hours depending on split size and
-`ctc_weight`/epoch count already used elsewhere). Total for this spec: 1
-pretrain run + ~7 finetune runs — plan for most of a working day of GPU time,
-not minutes.
+`ctc_weight`/epoch count already used elsewhere) — the fractional-label runs
+(10/25/50%) should be proportionally *faster* per epoch (fewer train batches)
+but may need more epochs to converge; don't assume linear scaling, measure
+the first one and extrapolate. Total for this spec: 1 pretrain run + 8
+finetune runs (9 training jobs total, §Data flow) — plan for a full working
+day of GPU time, not minutes. This workload is exactly why the implementation
+plan must be resumable per-task: expect this to span a multi-hour unattended
+session.

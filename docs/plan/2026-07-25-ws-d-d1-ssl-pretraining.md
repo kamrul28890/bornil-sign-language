@@ -252,7 +252,7 @@ git commit -m "feat(pretrain): span-masking primitive for masked keypoint modeli
   - `class MKMHead(nn.Module)` — `__init__(self, d_model: int, input_dim: int)`; `forward(memory: Tensor (B,S,d_model)) -> Tensor (B,S,input_dim)`.
   - `mkm_loss(pred: Tensor, target: Tensor, mask: torch.BoolTensor) -> Tensor` — scalar. Masked-positions-only mean L1 loss (`pred`, `target` both `(B,S,input_dim)`, `mask` `(B,S)`). Returns `torch.tensor(0.0)` (not NaN, not a Python float — keep it a tensor so `.backward()` still works, e.g. via `pred.sum() * 0.0`) when `mask` has zero True entries anywhere in the batch.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # tests/pretrain/test_mkm.py
@@ -307,12 +307,12 @@ def test_zero_masked_positions_returns_zero_tensor_not_nan():
     loss.backward()   # must not raise
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `.venv/Scripts/python -m pytest tests/pretrain/test_mkm.py -v`
 Expected: FAIL — `No module named 'bornil.pretrain.mkm'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```python
 # bornil/pretrain/mkm.py
@@ -344,12 +344,12 @@ def mkm_loss(pred: torch.Tensor, target: torch.Tensor,
     return per_frame[mask].mean()
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/pretrain/test_mkm.py -v`
 Expected: 5 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/pretrain/mkm.py tests/pretrain/test_mkm.py

@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-25 — WS-D D1 core claim is not statistically supported
+- **What:** Finetuned the joint TConv+CTC model from MKM checkpoint `7d9e40ec1343` on frozen `signerindep-v1` as run `5860b497604f`, ran paired bootstrap significance at n=1000 against scratch run `40cffb9e62bb`, and added output diagnostics.
+- **Why:** Task 10 is the pre-registered core test of whether masked-keypoint pretraining improves signer-independent translation without changing the supervised recipe.
+- **Impact:** **No supported win.** Pretraining raised chrF++ from 10.361 to 10.716 (+0.355), but the gap missed p<0.05 (p=0.064); BLEU-4 fell from 0.792 to 0.737 (p=0.748). Outputs remained diverse (96.6% unique) but under-generated (8.172 vs 9.397 reference tokens). Logged as FAIL-006; no pretraining hyperparameter was tuned against this split.
+- **Commit:** (this commit)
+
 ## 2026-07-25 — WS-D D1 MKM pretraining gate passes
 - **What:** Completed the 100-epoch masked-keypoint-modeling pretraining run `7d9e40ec1343` on the 14,390 frozen `random-v1` train clips and saved the encoder-only checkpoint at `data_full/runs/7d9e40ec1343/encoder_pretrain.pt`.
 - **Why:** Task 9 is the mandatory reconstruction-loss sanity gate before using the pretrained encoder in the signer-independent core comparison or data-efficiency curve.

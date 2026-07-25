@@ -22,6 +22,14 @@
 
 <!-- Log entries below, newest first -->
 
+### FAIL-006  (2026-07-25)  [WS-D D1 / MKM signer-independent core claim]
+- **Expected:** initializing the supervised TConv+CTC encoder from masked-keypoint pretraining would significantly improve chrF++ over the identical from-scratch recipe on frozen `signerindep-v1`.
+- **Observed:** pretrained run `5860b497604f` scored chrF++ 10.716 vs scratch run `40cffb9e62bb` at 10.361, a +0.355 point estimate that did not reach the pre-registered p<0.05 threshold (paired bootstrap n=1000, p=0.064). BLEU-4 was slightly lower, 0.737 vs 0.792 (p=0.748). Output diversity remained high (96.6% unique), but the model still under-generated (8.172 vs 9.397 reference tokens).
+- **Root cause:** hypothesis. MKM learned a useful but weak pose reconstruction prior (Task 9 gate passed), while the downstream benchmark is already dominated by static-pose signal and full supervision; the transferred representation therefore may add too little beyond supervised TConv+CTC initialization to overcome run variance. The near-threshold chrF++ result does not establish this mechanism.
+- **Fix / next step:** do not tune mask ratio, span length, or pretraining epochs against `signerindep-v1`. Complete the pre-registered `random-v1` label-fraction curve to test the distinct low-resource prediction; treat this core comparison as an honest negative unless an independently motivated future method is evaluated under a new pre-registration.
+- **Status:** wontfix (negative result under the fixed D1 protocol)
+- **Links:** EXP-data_full_ctc-5860b497604f; `docs/logs/SIGNIFICANCE_MKM_VS_SCRATCH_SIGNERINDEP.md`; pretrain run `7d9e40ec1343`
+
 ### FAIL-005  (2026-07-19, logged 2026-07-25)  [WS-C T1.1 / ST-GCN encoder]
 - **Expected:** a spatio-temporal graph encoder (explicit joint-graph structure + temporal convolution over it) would match or beat TConv+CTC (chrF++ 10.913), since it models motion more directly than a flat keypoint sequence.
 - **Observed:** ST-GCN+CTC scored chrF++ 8.265 on random-v1 — significantly below both vanilla (p=0.000) and TConv+CTC (p=0.000, `docs/logs/SIGNIFICANCE_STGCN_VS_VANILLA.md` / `SIGNIFICANCE_STGCN_VS_TCONV_CTC.md`), below both trivial floors on chrF++, after 42.8h training (~57x TConv+CTC's 44.8min for a worse result). BLEU-4 not significant vs either. Diversity is not collapsed (93.3% unique hyps, in line with vanilla) but 11.3% of rows are runaway repeated-token hypotheses — a failure mode not seen in the other full runs.

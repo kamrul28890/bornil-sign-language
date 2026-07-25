@@ -85,6 +85,26 @@ same split, with two-sided paired bootstrap (n=1000).
 
 Source: `docs/logs/SIGNIFICANCE_CTC_HARDSPLITS.md`.
 
+## Table 2c: WS-D D1 MKM Core Claim on Signerindep-v1
+
+Same frozen split, supervised recipe, seed, and 1,500 test rows; the only
+experimental change is initializing the encoder from the Task 9 masked-keypoint
+checkpoint. Significance is two-sided paired bootstrap (n=1000).
+
+| Initialization | Run | Test rows | BLEU-4 | chrF++ | ROUGE-L | p (BLEU-4) | p (chrF++) | Interpretation |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| Scratch | `40cffb9e62bb` | 1500 | 0.792 | 10.361 | 0.072 | — | — | fixed reference |
+| MKM pretrained | `5860b497604f` | 1500 | 0.737 | 10.716 | 0.060 | 0.748 | 0.064 | **no supported win** — chrF++ +0.355, but p≥0.05; BLEU-4 slightly lower and n.s. |
+
+Verdict: **D1 does not support the signer-independent core claim under the
+pre-registered threshold.** The point estimate moves in the hoped-for
+direction on chrF++, but p=0.064 is not statistically significant. No
+pretraining hyperparameter is tuned against this result. The separate
+label-fraction curve tests whether MKM helps specifically when supervision is
+scarce.
+
+Source: `docs/logs/SIGNIFICANCE_MKM_VS_SCRATCH_SIGNERINDEP.md`.
+
 ## Table 3: Filtered LTE12 Diagnostic Track
 
 Use this as a separate diagnostic table, not as the official benchmark table.
@@ -173,6 +193,7 @@ gain — namely that chrF++ merely rewards generic, high-frequency Bengali.
 | TConv+CTC | unseen-sentence-v1 | 1799 | 1770 | **98.4%** | 7.25 | 7.62 | 0.2% |
 | Vanilla | signerindep-v1 | 1500 | 1365 | 91.0% | 6.85 | 9.40 | 0.9% |
 | TConv+CTC | signerindep-v1 | 1500 | 1485 | **99.0%** | 7.43 | 9.40 | 0.4% |
+| TConv+CTC + MKM init | signerindep-v1 | 1500 | 1449 | 96.6% | 8.17 | 9.40 | 0.4% |
 | ST-GCN+CTC | random-v1 | 1799 | 1678 | 93.3% | 6.63 | 7.50 | 0.7% |
 
 Interpretation:
@@ -191,6 +212,11 @@ Interpretation:
 - **Honest caveat:** signerindep-v1 still under-generates (7.43 vs 9.40 reference
   length). Signer/session generalization remains genuinely unsolved and motivates
   the next model-side work.
+- **MKM initialization does not collapse output diversity.** Its signerindep-v1
+  run produces 1,449 unique hypotheses (96.6%), zero empty hypotheses, and a
+  0.4% top-1 share. It improves mean output length to 8.17 tokens, but still
+  under-generates relative to 9.40 reference tokens; 5.9% of rows use a
+  hypothesis that appears more than once.
 - **ST-GCN+CTC is not a diversity failure** (93.3% unique, comparable to vanilla)
   — its chrF++ regression is a genuine modeling failure, not mode collapse. It
   does show a distinct pathology TConv+CTC and vanilla don't: 11.3% of rows are

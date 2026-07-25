@@ -1329,7 +1329,7 @@ pretrain checkpoint that failed its own sanity gate.)
 
 **Files:** none (runs code).
 
-- [ ] **Step 1: ⏱ Finetune with pretrained-init on `signerindep-v1`**
+- [x] **Step 1: ⏱ Finetune with pretrained-init on `signerindep-v1`**
 
 ```bash
 .venv/Scripts/python scripts/train_sample.py --config configs/full_ctc.yaml --split signerindep-v1 --init-encoder data_full/runs/<pretrain-hash>/encoder_pretrain.pt --device cuda
@@ -1342,13 +1342,13 @@ something in that neighborhood). Confirm on completion:
 `docs/logs/EXPERIMENTS.md` has a new row, and note its config hash — call it
 `<arm-a-hash>`.
 
-- [ ] **Step 2: Significance test vs. the existing from-scratch run**
+- [x] **Step 2: Significance test vs. the existing from-scratch run**
 
 ```bash
 .venv/Scripts/python scripts/results_significance.py --run "scratch=data_full/runs/40cffb9e62bb" --run "pretrained=data_full/runs/<arm-a-hash>" --baseline scratch --metrics bleu4 chrf++ --n 1000 --out docs/logs/SIGNIFICANCE_MKM_VS_SCRATCH_SIGNERINDEP.md
 ```
 
-- [ ] **Step 3: Diagnostics**
+- [x] **Step 3: Diagnostics**
 
 ```bash
 .venv/Scripts/python scripts/prediction_diagnostics.py --pred data_full/runs/<arm-a-hash>/predictions.csv --out-json data_full/runs/<arm-a-hash>/diagnostics.json
@@ -1358,7 +1358,7 @@ Read the resulting `diagnostics.json` (unique-hypothesis rate, mean
 hyp/ref length, repeated-hypothesis rate) — same fields used for every other
 model's Table 5 entry in `docs/logs/RESULTS_OVERVIEW.md`.
 
-- [ ] **Step 4: Record the verdict — do not skip this regardless of outcome**
+- [x] **Step 4: Record the verdict — do not skip this regardless of outcome**
 
 Whether chrF++ significantly beats scratch or not, this is a real result.
 Add it to `docs/logs/RESULTS_OVERVIEW.md` (a new row in Table 2, or a new
@@ -1371,7 +1371,7 @@ retroactively tune the mask ratio or any other pretraining hyperparameter
 against this eval split to try to force a win; that invalidates the
 significance test).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/logs/EXPERIMENTS.md docs/logs/RESULTS_OVERVIEW.md docs/logs/CHANGELOG.md docs/logs/SIGNIFICANCE_MKM_VS_SCRATCH_SIGNERINDEP.md

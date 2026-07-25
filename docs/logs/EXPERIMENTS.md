@@ -270,3 +270,14 @@
 - **Pretrain extras:** mask_ratio=0.6 min_span=3 max_span=15
 - **Recon loss:** first=0.1840 last=0.0801
 - **Checkpoint:** data_full/runs/7d9e40ec1343/encoder_pretrain.pt
+
+### EXP-data_full_ctc-5860b497604f  (2026-07-25)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc signerindep-v1 (train 14500 / test 1500); source=frozen:splits/signerindep-v1
+- **Representation:** kp-218   **Config hash:** 5860b497604f   **Seed:** 42
+- **Compute:** cuda   **Train time:** 49.5 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3 init_encoder=data_full/runs/7d9e40ec1343/encoder_pretrain.pt label_fraction=1.0
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.74 chrF=13.17 chrF++=10.72 ROUGE-L=0.060 (BLEU-1/2/3=10.5/3.4/1.5)
+- **Checkpoint:** data_full/runs/5860b497604f/best.pt

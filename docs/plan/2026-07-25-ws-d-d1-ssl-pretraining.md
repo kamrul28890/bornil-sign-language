@@ -1144,7 +1144,7 @@ re-testing the same function through a heavier path (full config load, full
 "I'll cover it here instead" — this task deliberately relies on it already
 existing.
 
-- [ ] **Step 1: Add `--init-encoder`**
+- [x] **Step 1: Add `--init-encoder`**
 
 In `scripts/train_sample.py`, add the import:
 
@@ -1186,7 +1186,7 @@ provenance is visible in `EXPERIMENTS.md` without opening `config.json`:
 (replace the existing single-line f-string for "Training extras" with this
 one — same key, longer value.)
 
-- [ ] **Step 2: Add `--label-fraction`**
+- [x] **Step 2: Add `--label-fraction`**
 
 Add the CLI arg:
 
@@ -1213,7 +1213,7 @@ Right after the existing `sp, split_source = _apply_target_length_filter(cfg, ma
         print(f"label_fraction={args.label_fraction} -> train clips={len(sp['train'])}", flush=True)
 ```
 
-- [ ] **Step 3: Verify existing tests still pass**
+- [x] **Step 3: Verify existing tests still pass**
 
 Run: `.venv/Scripts/python -m pytest -q`
 Expected: same pass count as before this task plus no failures — this task
@@ -1222,7 +1222,12 @@ count (confirm by comparing against the previous task's test run output; if
 you didn't capture it, run the full suite now and treat this number as the
 new baseline for the rest of the plan).
 
-- [ ] **Step 4: Smoke-test both flags on real data at low epoch count**
+Execution note (2026-07-25): the first full-suite collection failed because
+the new `tests/pretrain/test_checkpoint.py` basename collided with the existing
+`tests/train/test_checkpoint.py`. Added `tests/pretrain/__init__.py` so pytest
+imports the pretraining tests as a package without renaming the specified test.
+
+- [x] **Step 4: Smoke-test both flags on real data at low epoch count**
 
 ```bash
 .venv/Scripts/python scripts/train_sample.py --config configs/pretrain_mkm.yaml --epochs 1 --device cuda
@@ -1253,7 +1258,7 @@ rows after confirming both work** (`git checkout -- docs/logs/EXPERIMENTS.md`
 again if either smoke run appended to it) — these are throwaway
 verification runs, not real results.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git checkout -- docs/logs/EXPERIMENTS.md

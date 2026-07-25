@@ -25,12 +25,17 @@ import torch
 from torch.utils.data import DataLoader
 
 from bornil.config import load_config, config_hash
-from bornil.benchmark.splits import filter_split_by_recordings, resolve_split
+from bornil.benchmark.splits import (
+    filter_split_by_fraction,
+    filter_split_by_recordings,
+    resolve_split,
+)
 from bornil.data.dataset import SignDataset, make_collate_fn
 from bornil.data.sampler import LengthBucketBatchSampler
 from bornil.data.tokenizer import Tokenizer
 from bornil.data.transforms import feature_dim
 from bornil.models.build import build_model
+from bornil.pretrain.checkpoint import load_encoder_checkpoint
 from bornil.train.checkpoint import load_training_state, save_training_state
 from bornil.train.loop import train_epoch, evaluate
 from bornil.train.schedule import noam_lambda
@@ -103,6 +108,13 @@ def main():
                     help=("resume from <run_dir>/last.pt when present. Execution-only; "
                           "does not enter the config hash. Batch-sampler RNG state is "
                           "not restored, so resumed epochs may use a different batch order."))
+    ap.add_argument("--init-encoder", default=None,
+                    help="path to an encoder_pretrain.pt from pretrain_mkm.py; "
+                         "warm-starts input_proj/temporal_frontend/transformer.encoder")
+    ap.add_argument("--label-fraction", type=float, default=None,
+                    help="subsample the train split to this fraction of clips "
+                         "(data-efficiency curve; val/test unaffected)")
+    ap.add_argument("--label-fraction-seed", type=int, default=42)
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -140,6 +152,11 @@ def main():
         prefer_frozen=not args.no_frozen_splits,
     )
     sp, split_source = _apply_target_length_filter(cfg, man, sp, split_source)
+    if args.label_fraction is not None:
+        sp = filter_split_by_fraction(sp, args.label_fraction, seed=args.label_fraction_seed)
+        split_source = f"{split_source}|label_fraction={args.label_fraction}"
+        cfg.setdefault("split", {})["label_fraction"] = args.label_fraction
+        print(f"label_fraction={args.label_fraction} -> train clips={len(sp['train'])}", flush=True)
     cfg["split"]["source"] = split_source
     collate = make_collate_fn(tok.pad_id)
 
@@ -169,6 +186,10 @@ def main():
     m = cfg["model"]
     arch = m.get("arch", "transformer")
     model = build_model(cfg, vocab_size=tok.vocab_size, pad_id=tok.pad_id).to(device)
+    if args.init_encoder:
+        loaded = load_encoder_checkpoint(model, args.init_encoder, device)
+        print(f"init_encoder: loaded {len(loaded)} tensors from {args.init_encoder}", flush=True)
+        cfg.setdefault("train", {})["init_encoder"] = args.init_encoder
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["train"]["lr"],
                             weight_decay=cfg["train"]["weight_decay"])
 
@@ -295,7 +316,9 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
         f"- **Decode:** {cfg['train'].get('decode_mode', 'unknown')} "
         f"(beam_size={cfg['train'].get('beam_size', 1)})\n"
         f"- **Training extras:** early_eos_penalty={cfg['train'].get('early_eos_penalty', 0.0)} "
-        f"ctc_weight={cfg['train'].get('ctc_weight', 0.0)}\n"
+        f"ctc_weight={cfg['train'].get('ctc_weight', 0.0)} "
+        f"init_encoder={cfg['train'].get('init_encoder', 'none')} "
+        f"label_fraction={cfg.get('split', {}).get('label_fraction', 1.0)}\n"
         f"- **Decode extras:** decode_repetition_stop={cfg['train'].get('decode_repetition_stop', 0)}\n"
         f"- **Metrics (test):** BLEU-4={tm['bleu4']:.2f} chrF={tm['chrf']:.2f} "
         f"chrF++={tm['chrf++']:.2f} ROUGE-L={tm['rougeL']:.3f} "

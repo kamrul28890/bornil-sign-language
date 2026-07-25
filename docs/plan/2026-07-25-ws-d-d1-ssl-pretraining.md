@@ -886,7 +886,7 @@ repo's existing convention (`train_sample.py` itself has no direct unit
 test either — see `tests/train/`, which tests `train_epoch`/`evaluate`, not
 the CLI).
 
-- [ ] **Step 1: Write the config**
+- [x] **Step 1: Write the config**
 
 ```yaml
 # configs/pretrain_mkm.yaml
@@ -934,7 +934,7 @@ clarity). `d_model`/`nhead`/layer counts/TConv settings must stay identical
 to `configs/full_ctc.yaml` so `encoder_pretrain.pt` is shape-compatible with
 a `--init-encoder` finetune run built from that config.
 
-- [ ] **Step 2: Implement the script**
+- [x] **Step 2: Implement the script**
 
 ```python
 # scripts/pretrain_mkm.py
@@ -1092,7 +1092,7 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 3: Smoke-test on real data at low epoch count**
+- [x] **Step 3: Smoke-test on real data at low epoch count**
 
 ```bash
 .venv/Scripts/python scripts/pretrain_mkm.py --config configs/pretrain_mkm.yaml --epochs 2 --device cuda
@@ -1112,7 +1112,7 @@ revert it with `git checkout -- docs/logs/EXPERIMENTS.md` after confirming
 the smoke test worked, since the real Task 9 run will append the row that
 actually belongs in history.
 
-- [ ] **Step 4: Commit the script and config**
+- [x] **Step 4: Commit the script and config**
 
 ```bash
 git checkout -- docs/logs/EXPERIMENTS.md

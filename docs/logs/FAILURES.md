@@ -22,6 +22,14 @@
 
 <!-- Log entries below, newest first -->
 
+### FAIL-005  (2026-07-19, logged 2026-07-25)  [WS-C T1.1 / ST-GCN encoder]
+- **Expected:** a spatio-temporal graph encoder (explicit joint-graph structure + temporal convolution over it) would match or beat TConv+CTC (chrF++ 10.913), since it models motion more directly than a flat keypoint sequence.
+- **Observed:** ST-GCN+CTC scored chrF++ 8.265 on random-v1 — significantly below both vanilla (p=0.000) and TConv+CTC (p=0.000, `docs/logs/SIGNIFICANCE_STGCN_VS_VANILLA.md` / `SIGNIFICANCE_STGCN_VS_TCONV_CTC.md`), below both trivial floors on chrF++, after 42.8h training (~57x TConv+CTC's 44.8min for a worse result). BLEU-4 not significant vs either. Diversity is not collapsed (93.3% unique hyps, in line with vanilla) but 11.3% of rows are runaway repeated-token hypotheses — a failure mode not seen in the other full runs.
+- **Root cause:** hypothesis. `docs/logs/INPUT_ABLATION.md` shows the exploitable signal on this benchmark is largely static pose (frame-order shuffling costs the CTC model only −0.88 chrF++). A spatio-temporal graph encoder's entire value proposition is modeling motion structure over the joint graph, so it has little to win on here relative to a simpler encoder that happens to already capture per-frame pose well.
+- **Fix / next step:** do not tune ST-GCN further; closes WS-C T1.1 as a negative result. If motion-sensitive architectures are revisited, they should be motivated by a benchmark/training change that first makes motion informative (e.g. sign-level segmentation targets), not applied to the current static-pose-dominated setup.
+- **Status:** wontfix (negative result; publishable as a Limitations / negative-results note alongside FAIL-004)
+- **Links:** EXP-data_full_stgcn-2dfdcbdf4e2d; `docs/logs/SIGNIFICANCE_STGCN_VS_VANILLA.md`, `docs/logs/SIGNIFICANCE_STGCN_VS_TCONV_CTC.md`, `docs/logs/INPUT_ABLATION.md`
+
 ### FAIL-004  (2026-07-20)  [WS-E Phase B / alignment validation]
 - **Expected:** CTC forced-alignment placements would agree with keypoint-motion changepoints above chance (pre-registered prediction: "weak but above chance"), validating the alignments as temporal grounding.
 - **Observed:** at chance on all three CTC runs. `ratio_shift` (mean F1 / circular-shift null) = 0.94/0.89/0.96 for confident anchors vs velocity minima and 0.86–0.94 for all labels; identical picture against velocity maxima except that anchors *avoid* peaks strongly and reproducibly (0.28/0.30/0.30×). A first run looked even lower but was confounded by a saturated reference (36.9 changepoints/clip with ±2 tolerance ≈ tiling); fixing the changepoint detector (smoothing + keep only deepest-quantile minima → 11.3/clip) did not lift agreement above chance.

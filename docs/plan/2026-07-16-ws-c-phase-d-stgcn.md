@@ -82,27 +82,27 @@
 ## Task D5 - Full ST-GCN+CTC Random-v1 Run
 
 **Command:**
-- [ ] `.venv/Scripts/python scripts/train_sample.py --config configs/full_stgcn.yaml --device cuda`
+- [x] `.venv/Scripts/python scripts/train_sample.py --config configs/full_stgcn.yaml --device cuda`
 
 **Expected artifacts:**
-- [ ] New run folder under `data_full/runs/<hash>/`.
-- [ ] New `EXP-data_full_stgcn-<hash>` row in `docs/logs/EXPERIMENTS.md`.
-- [ ] `metrics.json`, `predictions.csv`, `config.json`, `best.pt`.
+- [x] New run folder under `data_full/runs/<hash>/`. (`data_full/runs/2dfdcbdf4e2d/`)
+- [x] New `EXP-data_full_stgcn-<hash>` row in `docs/logs/EXPERIMENTS.md`.
+- [x] `metrics.json`, `predictions.csv`, `config.json`, `best.pt`.
 
 **Read correctly:**
-- [ ] Judge model on chrF++ first.
-- [ ] Compare against retrieval floor chrF++ 9.20 and TConv+CTC chrF++ 10.913.
-- [ ] Compute output diversity, top-1 share, mean hypothesis length, and mean reference length.
+- [x] Judge model on chrF++ first.
+- [x] Compare against retrieval floor chrF++ 9.20 and TConv+CTC chrF++ 10.913. (8.265 — below both.)
+- [x] Compute output diversity, top-1 share, mean hypothesis length, and mean reference length.
 
 ## Task D6 - Significance and Diagnostics
 
 **Commands:**
-- [ ] `.venv/Scripts/python scripts/results_significance.py --run "vanilla=data_full/runs/c19d0ea08824" --run "stgcn=data_full/runs/<hash>" --baseline vanilla --metrics bleu4 chrf++ --n 1000 --out docs/logs/SIGNIFICANCE_STGCN_VS_VANILLA.md`
-- [ ] `.venv/Scripts/python scripts/results_significance.py --run "tconv_ctc=data_full/runs/b0a590ea3317" --run "stgcn=data_full/runs/<hash>" --baseline tconv_ctc --metrics bleu4 chrf++ --n 1000 --out docs/logs/SIGNIFICANCE_STGCN_VS_TCONV_CTC.md`
+- [x] `.venv/Scripts/python scripts/results_significance.py --run "vanilla=data_full/runs/c19d0ea08824" --run "stgcn=data_full/runs/2dfdcbdf4e2d" --baseline vanilla --metrics bleu4 chrf++ --n 1000 --out docs/logs/SIGNIFICANCE_STGCN_VS_VANILLA.md`
+- [x] `.venv/Scripts/python scripts/results_significance.py --run "tconv_ctc=data_full/runs/b0a590ea3317" --run "stgcn=data_full/runs/2dfdcbdf4e2d" --baseline tconv_ctc --metrics bleu4 chrf++ --n 1000 --out docs/logs/SIGNIFICANCE_STGCN_VS_TCONV_CTC.md`
 
 **Diagnostics:**
-- [ ] Generate diversity/length stats from `predictions.csv`.
-- [ ] Record whether ST-GCN clears the retrieval floor and whether it beats TConv+CTC on chrF++ at p<0.05.
+- [x] Generate diversity/length stats from `predictions.csv`.
+- [x] Record whether ST-GCN clears the retrieval floor and whether it beats TConv+CTC on chrF++ at p<0.05. (Neither — significantly below both, p=0.000.)
 
 ## Task D7 - Logs, Overview, and Commit
 
@@ -112,11 +112,11 @@
 - Modify only if needed: `docs/logs/FAILURES.md`
 
 **Updates:**
-- [ ] Add ST-GCN+CTC to the random-v1 ablation table.
-- [ ] Add or extend the diversity/length table with ST-GCN diagnostics.
-- [ ] Add pointers to ST-GCN significance reports.
-- [ ] Add newest CHANGELOG entry with run hash, chrF++, p-values, and diversity/length summary.
-- [ ] Log any collapse, NaN, under-generation surprise, or failure in `FAILURES.md`.
+- [x] Add ST-GCN+CTC to the random-v1 ablation table.
+- [x] Add or extend the diversity/length table with ST-GCN diagnostics.
+- [x] Add pointers to ST-GCN significance reports.
+- [x] Add newest CHANGELOG entry with run hash, chrF++, p-values, and diversity/length summary.
+- [x] Log any collapse, NaN, under-generation surprise, or failure in `FAILURES.md`. (FAIL-005)
 
 **Verify and commit:**
 - [ ] `.venv/Scripts/python -m pytest -q`
@@ -126,10 +126,10 @@
 ## Final Report
 
 Report:
-- [ ] ST-GCN EXPERIMENTS row and run hash.
-- [ ] chrF++ vs vanilla and vs TConv+CTC with p-values at n=1000.
-- [ ] Retrieval-floor result.
-- [ ] Diversity/length numbers: unique hypotheses, unique %, top-1 share, mean hypothesis length, mean reference length.
-- [ ] Any `FAILURES.md` entries.
+- [x] ST-GCN EXPERIMENTS row and run hash. (`EXP-data_full_stgcn-2dfdcbdf4e2d`)
+- [x] chrF++ vs vanilla and vs TConv+CTC with p-values at n=1000. (8.265 vs 9.646, p=0.000; vs 10.913, p=0.000)
+- [x] Retrieval-floor result. (Falls below the 9.20 retrieval floor on chrF++.)
+- [x] Diversity/length numbers: unique hypotheses, unique %, top-1 share, mean hypothesis length, mean reference length. (1678/1799, 93.3%, 0.7%, 6.63, 7.50)
+- [x] Any `FAILURES.md` entries. (FAIL-005)
 - [ ] Commit list.
 - [ ] Full suite status.

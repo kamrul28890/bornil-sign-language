@@ -51,6 +51,7 @@ metric** — read the interpretation column off chrF++, not BLEU-4.
 | TConv2k5 + joint CTC | `b0a590ea3317` | 1799 | 0.684 | 10.913 | 0.067 | — | **best so far** — chrF++ significantly > vanilla and > TConv (both p=0.000); BLEU-4 n.s. |
 | BiLSTM d256 (T0.1) | `07709687f916` | 1799 | 0.621 | 8.990 | 0.064 | — | chrF++ significantly **below** vanilla (p=0.000); BLEU-4 n.s. → Transformer preferred |
 | TConv2k5 + EOS penalty 0.2 | `a459d1148d0c` | 1799 | 0.113 | 7.262 | 0.031 | 0.857 | failed; significant regression, output diversity collapsed |
+| ST-GCN d256 L3+4 + joint CTC (T1.1) | `2dfdcbdf4e2d` | 1799 | 0.356 | 8.265 | 0.040 | — | **failed** — chrF++ significantly **below** vanilla (p=0.000) and below TConv+CTC (p=0.000); BLEU-4 n.s. vs either. 42.8h compute (~57× TConv+CTC) for a worse result; falls below both trivial floors on chrF++ |
 
 Decision: **TConv alone is not a supported model-side win** (BLEU-4 gain not
 significant, chrF++ unchanged) — do not claim it. **Joint CTC/attention is the
@@ -62,7 +63,12 @@ hard official splits: signerindep-v1 improves from 8.382 to 10.361 (p=0.000)
 and unseen-sentence-v1 improves from 9.187 to 10.943 (p=0.000), using n=1000
 paired bootstrap. The firmed-up random-v1 CTC comparisons at n=1000 keep
 chrF++ significant vs vanilla and vs TConv (both p=0.000), while BLEU-4 remains
-not significant on random-v1 (p=0.462 vs vanilla; p=0.894 vs TConv).
+not significant on random-v1 (p=0.462 vs vanilla; p=0.894 vs TConv). ST-GCN
+(T1.1) closes out negatively: chrF++ is significantly below both vanilla and
+TConv+CTC. Consistent with the input ablation (`docs/logs/INPUT_ABLATION.md`):
+the exploitable signal on this benchmark is largely static pose, and a
+spatio-temporal graph encoder's value proposition is motion structure, so
+there is little for it to win on here — do not tune further.
 
 ## Table 2b: Joint CTC Hard-Split Generalization
 
@@ -167,6 +173,7 @@ gain — namely that chrF++ merely rewards generic, high-frequency Bengali.
 | TConv+CTC | unseen-sentence-v1 | 1799 | 1770 | **98.4%** | 7.25 | 7.62 | 0.2% |
 | Vanilla | signerindep-v1 | 1500 | 1365 | 91.0% | 6.85 | 9.40 | 0.9% |
 | TConv+CTC | signerindep-v1 | 1500 | 1485 | **99.0%** | 7.43 | 9.40 | 0.4% |
+| ST-GCN+CTC | random-v1 | 1799 | 1678 | 93.3% | 6.63 | 7.50 | 0.7% |
 
 Interpretation:
 
@@ -184,6 +191,11 @@ Interpretation:
 - **Honest caveat:** signerindep-v1 still under-generates (7.43 vs 9.40 reference
   length). Signer/session generalization remains genuinely unsolved and motivates
   the next model-side work.
+- **ST-GCN+CTC is not a diversity failure** (93.3% unique, comparable to vanilla)
+  — its chrF++ regression is a genuine modeling failure, not mode collapse. It
+  does show a distinct pathology TConv+CTC and vanilla don't: 11.3% of rows are
+  runaway repeated-token hypotheses (e.g. a single subword repeated 100+ times),
+  vs near-zero for the other two full runs.
 
 ## Decode Decision
 

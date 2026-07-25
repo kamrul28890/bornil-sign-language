@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-25 — WS-C T1.1 close-out: ST-GCN significance + diagnostics
+- **What:** Ran `scripts/results_significance.py` for `stgcn` (`2dfdcbdf4e2d`) vs `vanilla` (`c19d0ea08824`) and vs `tconv_ctc` (`b0a590ea3317`) at n=1000, writing `docs/logs/SIGNIFICANCE_STGCN_VS_VANILLA.md` and `docs/logs/SIGNIFICANCE_STGCN_VS_TCONV_CTC.md`. Ran `scripts/prediction_diagnostics.py` on its predictions. Added the run to `docs/logs/RESULTS_OVERVIEW.md` Tables 2 and 5, and checked off the remaining boxes in `docs/plan/2026-07-16-ws-c-phase-d-stgcn.md`.
+- **Why:** The full ST-GCN run finished on 2026-07-19 (EXPERIMENTS.md already carried its "negative result, closes WS-C T1.1" verdict from raw metrics), but the plan's D6 (significance) and D7 (results-overview/changelog write-up) tasks were never completed — a loose end found while auditing what's next after the WS-E merge.
+- **Impact:** Confirms the raw-metric read statistically: ST-GCN chrF++ (8.265) is significantly **below** both vanilla (p=0.000) and TConv+CTC (p=0.000); BLEU-4 is not significant vs either (p=0.484, p=0.092). Diversity diagnostics show this is not mode collapse (93.3% unique hyps, in line with vanilla) but it does have a distinct failure mode the other full runs don't: 11.3% of rows are runaway repeated-token hypotheses. WS-C T1.1 is now fully closed with the documentation the other model rows have.
+- **Commit:** (this commit)
+
 ## 2026-07-20 — WS-E Phase B: alignment validation is AT CHANCE (negative result)
 - **What:** Added `bornil/align/motion.py` (B1: velocity, smoothing, salient changepoints), `bornil/align/agreement.py` (B2: boundary_f1 + uniform and circular-shift nulls), `scripts/alignment_report.py` (B3), and `docs/logs/ALIGNMENT_VALIDATION.md`. 34 new tests. Ran B3 over all three CTC checkpoints. Logged FAIL-004.
 - **Why:** Phase B tests the pre-registered prediction — do CTC forced-alignment placements coincide with an independent motion signal above chance? This is the WS-E go/no-go gate for Phase C and the WS-F bridge.

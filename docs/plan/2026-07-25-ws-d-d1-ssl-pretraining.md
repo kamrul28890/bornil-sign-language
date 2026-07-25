@@ -1272,7 +1272,7 @@ git commit -m "feat(train): --init-encoder and --label-fraction flags"
 
 **Files:** none (this task runs code, doesn't write it).
 
-- [ ] **Step 1: ⏱ Run real pretraining**
+- [x] **Step 1: ⏱ Run real pretraining**
 
 ```bash
 .venv/Scripts/python scripts/pretrain_mkm.py --config configs/pretrain_mkm.yaml --device cuda
@@ -1282,7 +1282,7 @@ This trains 100 epochs over 14,390 clips — expect on the order of an hour or
 more (measure the smoke test's per-epoch time from Task 7 Step 3 and
 extrapolate; do not assume). Let it run to completion.
 
-- [ ] **Step 2: Check the gate — reconstruction loss decreased and is finite**
+- [x] **Step 2: Check the gate — reconstruction loss decreased and is finite**
 
 Read `data_full/runs/<pretrain-hash>/pretrain_metrics.json`. Compare
 `recon_loss_by_epoch[0]` (or an early-epoch value, e.g. index 4, since epoch
@@ -1302,7 +1302,7 @@ Read `data_full/runs/<pretrain-hash>/pretrain_metrics.json`. Compare
   plan by appending a note under this task's checkboxes documenting what
   happened.
 
-- [ ] **Step 3: Log the pretraining run**
+- [x] **Step 3: Log the pretraining run**
 
 Add a `docs/logs/CHANGELOG.md` entry (newest-first, matching the file's
 existing format exactly — copy the header/What/Why/Impact/Commit structure
@@ -1310,7 +1310,7 @@ from any recent entry) summarizing: config hash, epoch count, first vs. last
 reconstruction loss, wall-clock time, and the checkpoint path. State plainly
 whether the gate passed.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docs/logs/EXPERIMENTS.md docs/logs/CHANGELOG.md

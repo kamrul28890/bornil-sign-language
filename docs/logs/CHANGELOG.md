@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-25 — WS-D D1 MKM pretraining gate passes
+- **What:** Completed the 100-epoch masked-keypoint-modeling pretraining run `7d9e40ec1343` on the 14,390 frozen `random-v1` train clips and saved the encoder-only checkpoint at `data_full/runs/7d9e40ec1343/encoder_pretrain.pt`.
+- **Why:** Task 9 is the mandatory reconstruction-loss sanity gate before using the pretrained encoder in the signer-independent core comparison or data-efficiency curve.
+- **Impact:** **PASS.** All 100 recorded reconstruction losses are finite. Loss decreased from 0.184002 at epoch 1 (0.098804 at epoch 5) to 0.080074 at epoch 100 — a 56.48% first-to-last decrease and 18.96% epoch-5-to-last decrease. Training took 89.3 minutes on CUDA, so the checkpoint is valid input to Tasks 10–11.
+- **Commit:** (this commit)
+
 ## 2026-07-25 — WS-C T1.1 close-out: ST-GCN significance + diagnostics
 - **What:** Ran `scripts/results_significance.py` for `stgcn` (`2dfdcbdf4e2d`) vs `vanilla` (`c19d0ea08824`) and vs `tconv_ctc` (`b0a590ea3317`) at n=1000, writing `docs/logs/SIGNIFICANCE_STGCN_VS_VANILLA.md` and `docs/logs/SIGNIFICANCE_STGCN_VS_TCONV_CTC.md`. Ran `scripts/prediction_diagnostics.py` on its predictions. Added the run to `docs/logs/RESULTS_OVERVIEW.md` Tables 2 and 5, and checked off the remaining boxes in `docs/plan/2026-07-16-ws-c-phase-d-stgcn.md`.
 - **Why:** The full ST-GCN run finished on 2026-07-19 (EXPERIMENTS.md already carried its "negative result, closes WS-C T1.1" verdict from raw metrics), but the plan's D6 (significance) and D7 (results-overview/changelog write-up) tasks were never completed — a loose end found while auditing what's next after the WS-E merge.

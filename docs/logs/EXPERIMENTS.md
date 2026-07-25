@@ -261,3 +261,12 @@
 - **Decode extras:** decode_repetition_stop=0
 - **Metrics (test):** BLEU-4=0.20 chrF=1.53 chrF++=1.15 ROUGE-L=0.000 (BLEU-1/2/3=0.6/0.4/0.3)
 - **Checkpoint:** trial_2pct/runs/745ef396baa4/best.pt
+
+### EXP-data_full_pretrain_mkm-7d9e40ec1343  (2026-07-25)
+- **Model:** MKM pretrain (encoder-only) d256 L4   **Phase/Task:** data_full_pretrain_mkm (WS-D D1)
+- **Data/Split:** data_full_pretrain_mkm random-v1 train-only (train 14390); source=frozen:splits/random-v1
+- **Config hash:** 7d9e40ec1343   **Seed:** 42
+- **Compute:** cuda   **Train time:** 89.3 min
+- **Pretrain extras:** mask_ratio=0.6 min_span=3 max_span=15
+- **Recon loss:** first=0.1840 last=0.0801
+- **Checkpoint:** data_full/runs/7d9e40ec1343/encoder_pretrain.pt

@@ -142,6 +142,29 @@ def filter_split_by_recordings(split: Split, allowed_recordings) -> Split:
     }
 
 
+def filter_split_by_fraction(split: Split, fraction: float, seed: int = 42) -> Split:
+    """Randomly subsample the train partition to `fraction` of its clips.
+
+    val/test are returned unchanged (as new lists, same contents) so every
+    point on a data-efficiency curve evaluates against the same held-out
+    data. Unlike `filter_split_by_recordings`, this filters by a random
+    fraction, not by a predicate on the manifest.
+    """
+    if not (0.0 < fraction <= 1.0):
+        raise ValueError(f"fraction must be in (0, 1], got {fraction}")
+    train = list(split.get("train", []))
+    if fraction < 1.0:
+        rng = np.random.default_rng(seed)
+        n = max(1, int(round(fraction * len(train))))
+        keep_idx = sorted(rng.permutation(len(train))[:n].tolist())
+        train = [train[i] for i in keep_idx]
+    return {
+        "train": train,
+        "val": list(split.get("val", [])),
+        "test": list(split.get("test", [])),
+    }
+
+
 def resolve_split(df: pd.DataFrame, kind: str, seed: int = 42,
                   fracs: Sequence[float] = (0.8, 0.1, 0.1),
                   split_root="splits",

@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 
 from bornil.benchmark import splits
+from bornil.benchmark.splits import filter_split_by_fraction
 
 
 def _toy_manifest():
@@ -184,3 +185,42 @@ def test_filter_split_by_recordings_preserves_partition_membership():
         "val": ["d.webm"],
         "test": ["g.webm"],
     }
+
+
+def test_filter_by_fraction_shrinks_train_only():
+    split = {"train": [f"r{i}" for i in range(100)], "val": ["v0", "v1"], "test": ["t0"]}
+    out = filter_split_by_fraction(split, fraction=0.1, seed=0)
+    assert len(out["train"]) == 10
+    assert out["val"] == split["val"]
+    assert out["test"] == split["test"]
+    assert set(out["train"]) <= set(split["train"])
+
+
+def test_filter_by_fraction_one_returns_full_train():
+    split = {"train": [f"r{i}" for i in range(20)], "val": [], "test": []}
+    out = filter_split_by_fraction(split, fraction=1.0, seed=0)
+    assert set(out["train"]) == set(split["train"])
+    assert len(out["train"]) == 20
+
+
+def test_filter_by_fraction_is_deterministic():
+    split = {"train": [f"r{i}" for i in range(50)], "val": [], "test": []}
+    a = filter_split_by_fraction(split, fraction=0.3, seed=5)
+    b = filter_split_by_fraction(split, fraction=0.3, seed=5)
+    assert a["train"] == b["train"]
+
+
+def test_filter_by_fraction_rejects_out_of_range():
+    split = {"train": ["a"], "val": [], "test": []}
+    for bad in (0.0, -0.1, 1.1):
+        try:
+            filter_split_by_fraction(split, fraction=bad)
+            assert False, f"expected ValueError for fraction={bad}"
+        except ValueError:
+            pass
+
+
+def test_filter_by_fraction_never_returns_empty_train():
+    split = {"train": ["only-one"], "val": [], "test": []}
+    out = filter_split_by_fraction(split, fraction=0.01, seed=0)
+    assert len(out["train"]) == 1

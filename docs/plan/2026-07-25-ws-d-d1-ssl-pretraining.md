@@ -769,7 +769,7 @@ partitions) via `filter_split_by_recordings`'s existing style, not its logic.
 **Interfaces:**
 - Produces: `filter_split_by_fraction(split: Split, fraction: float, seed: int = 42) -> Split` — returns a new dict; `train` is a fixed-seed random subsample of `round(fraction * len(train))` (minimum 1) recordings, `val`/`test` are copied unchanged. `fraction == 1.0` returns train unchanged (same members, not necessarily same list object). Raises `ValueError` if `fraction` is not in `(0, 1]`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # add to tests/benchmark/test_splits.py
@@ -815,12 +815,12 @@ def test_filter_by_fraction_never_returns_empty_train():
     assert len(out["train"]) == 1
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `.venv/Scripts/python -m pytest tests/benchmark/test_splits.py -k fraction -v`
 Expected: FAIL — `ImportError: cannot import name 'filter_split_by_fraction'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Add to `bornil/benchmark/splits.py`, near `filter_split_by_recordings`:
 
@@ -848,12 +848,12 @@ def filter_split_by_fraction(split: Split, fraction: float, seed: int = 42) -> S
     }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/benchmark/test_splits.py -v`
 Expected: all pass (existing tests unaffected + 5 new ones).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/benchmark/splits.py tests/benchmark/test_splits.py

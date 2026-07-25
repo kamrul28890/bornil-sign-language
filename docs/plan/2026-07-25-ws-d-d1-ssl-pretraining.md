@@ -614,7 +614,7 @@ a freshly-initialized finetune decoder with garbage if loaded).
   - `save_encoder_checkpoint(path, model) -> None`.
   - `load_encoder_checkpoint(model, path, device) -> set[str]` — loads via `load_state_dict(sd, strict=False)`, returns the set of keys actually loaded, and **raises `ValueError` if that set is empty** (silent no-op on a full key mismatch is exactly the class of bug `bornil/models/build.py` was written to prevent for the main checkpoint path — do not reintroduce it here).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # tests/pretrain/test_checkpoint.py
@@ -690,12 +690,12 @@ def test_decoder_and_heads_unaffected_by_load(tmp_path):
     assert torch.equal(out_before, dst_model.out.weight)
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `.venv/Scripts/python -m pytest tests/pretrain/test_checkpoint.py -v`
 Expected: FAIL — `No module named 'bornil.pretrain.checkpoint'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```python
 # bornil/pretrain/checkpoint.py
@@ -735,14 +735,14 @@ def load_encoder_checkpoint(model, path, device) -> Set[str]:
     return loaded
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/pretrain/test_checkpoint.py -v`
 Expected: 4 passed. (This file's `test_decoder_and_heads_unaffected_by_load`
 is what makes a dedicated test unnecessary in Task 8 — see that task's
 note.)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/pretrain/checkpoint.py tests/pretrain/test_checkpoint.py

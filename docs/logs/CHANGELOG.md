@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-25 — WS-D D1 data-efficiency curve is a negative result
+- **What:** Completed the seven missing fixed-epoch `random-v1` runs for scratch vs MKM initialization at 10%, 25%, 50%, and 100% labels (reusing scratch 100% run `b0a590ea3317`), then ran paired bootstrap significance at n=1000 for every fraction.
+- **Why:** Task 11 tests the distinct D1 prediction that self-supervised pretraining should help more as labeled data becomes scarce.
+- **Impact:** **Prediction refuted.** MKM initialization reduced chrF++ at every fraction: 6.737 vs 7.237 (10%), 4.539 vs 8.790 (25%), 7.673 vs 8.965 (50%), and 9.798 vs 10.913 (100%); every regression is significant (all p=0.000). BLEU-4 is significantly worse only at 10% (p=0.004). The gap is always negative and does not widen positively at low labels. Logged as FAIL-007; the fixed 60-epoch policy was retained despite still-declining losses.
+- **Commit:** (this commit)
+
 ## 2026-07-25 — WS-D D1 core claim is not statistically supported
 - **What:** Finetuned the joint TConv+CTC model from MKM checkpoint `7d9e40ec1343` on frozen `signerindep-v1` as run `5860b497604f`, ran paired bootstrap significance at n=1000 against scratch run `40cffb9e62bb`, and added output diagnostics.
 - **Why:** Task 10 is the pre-registered core test of whether masked-keypoint pretraining improves signer-independent translation without changing the supervised recipe.

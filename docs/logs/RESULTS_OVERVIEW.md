@@ -223,6 +223,43 @@ Interpretation:
   runaway repeated-token hypotheses (e.g. a single subword repeated 100+ times),
   vs near-zero for the other two full runs.
 
+## Table 6: Data-Efficiency Curve (WS-D D1)
+
+Frozen `random-v1`, identical supervised recipe and seed, 60 epochs for every
+new run. The scratch 100% point reuses the existing full-data run. Paired
+p-values are two-sided bootstrap with n=1000; each p-value compares the
+pretrained row with scratch at the same fraction.
+
+| Label fraction | Arm | Run | Train / test rows | BLEU-4 | chrF++ | p (BLEU-4 / chrF++) |
+|---:|---|---|---:|---:|---:|---:|
+| 10% | Scratch | `f2d3a83c9ba2` | 1439 / 1799 | 0.110 | 7.237 | — |
+| 10% | MKM pretrained | `e848ac7a736e` | 1439 / 1799 | 0.053 | 6.737 | 0.004 / 0.000 |
+| 25% | Scratch | `a2027b69137a` | 3598 / 1799 | 0.142 | 8.790 | — |
+| 25% | MKM pretrained | `0319ebbea825` | 3598 / 1799 | 0.136 | 4.539 | 0.810 / 0.000 |
+| 50% | Scratch | `e519c8960e05` | 7195 / 1799 | 0.220 | 8.965 | — |
+| 50% | MKM pretrained | `d42ff45dd94a` | 7195 / 1799 | 0.135 | 7.673 | 0.192 / 0.000 |
+| 100% | Scratch | `b0a590ea3317` | 14390 / 1799 | 0.684 | 10.913 | — |
+| 100% | MKM pretrained | `bbc56ea042ad` | 14390 / 1799 | 0.456 | 9.798 | 0.332 / 0.000 |
+
+Verdict: **the low-resource SSL prediction is refuted.** The
+pretrained-minus-scratch chrF++ gap is negative at all four fractions:
+−0.501, −4.251, −1.292, and −1.115 points from 10% through 100%,
+respectively, and every regression is significant. There is no positive gap
+to widen as labels shrink; the magnitude is also irregular, with a pronounced
+25% collapse. BLEU-4 is significantly worse only at 10%.
+
+All smaller-fraction runs trained faster than full data, as expected. Loss was
+still decreasing at epoch 60, particularly at the smaller fractions, so the
+fixed epoch policy may leave both arms undertrained in optimizer-step terms.
+It was retained exactly to avoid confounding the registered curve; because
+both arms use the same policy at each fraction, it does not rescue the D1
+claim. No mask or finetuning hyperparameter was changed after seeing these
+results.
+
+Sources: `docs/logs/SIGNIFICANCE_MKM_CURVE_010.md`,
+`SIGNIFICANCE_MKM_CURVE_025.md`, `SIGNIFICANCE_MKM_CURVE_050.md`, and
+`SIGNIFICANCE_MKM_CURVE_100.md`.
+
 ## Decode Decision
 
 Official numbers should keep the original greedy decode policy. The opt-in

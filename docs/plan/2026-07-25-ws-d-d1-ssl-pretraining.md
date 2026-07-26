@@ -1395,7 +1395,7 @@ already have a row before rerunning any of them (rerunning is wasted GPU
 time, not incorrect — `config_hash` makes each fraction+arm combination a
 distinct run_dir, so accidental reruns don't collide, but avoid them anyway).
 
-- [ ] **Step 1: ⏱ Pretrained-init runs at 10%, 25%, 50%, 100% labels**
+- [x] **Step 1: ⏱ Pretrained-init runs at 10%, 25%, 50%, 100% labels**
 
 ```bash
 .venv/Scripts/python scripts/train_sample.py --config configs/full_ctc.yaml --split random-v1 --label-fraction 0.10 --init-encoder data_full/runs/<pretrain-hash>/encoder_pretrain.pt --device cuda
@@ -1413,7 +1413,7 @@ mid-curve (changing epochs per-fraction would confound the comparison — if
 you do decide it's necessary, apply the same epoch policy to both arms at
 that fraction, and say so explicitly in the write-up).
 
-- [ ] **Step 2: ⏱ From-scratch runs at 10%, 25%, 50% labels (100% is `b0a590ea3317`, already done)**
+- [x] **Step 2: ⏱ From-scratch runs at 10%, 25%, 50% labels (100% is `b0a590ea3317`, already done)**
 
 ```bash
 .venv/Scripts/python scripts/train_sample.py --config configs/full_ctc.yaml --split random-v1 --label-fraction 0.10 --device cuda
@@ -1421,20 +1421,20 @@ that fraction, and say so explicitly in the write-up).
 .venv/Scripts/python scripts/train_sample.py --config configs/full_ctc.yaml --split random-v1 --label-fraction 0.50 --device cuda
 ```
 
-- [ ] **Step 3: Collect all 8 curve points into one table**
+- [x] **Step 3: Collect all 8 curve points into one table**
 
 You now have 8 (fraction, arm) → chrF++/BLEU-4 points: pretrained ×
 {10,25,50,100}% (4 new runs from Step 1) and scratch × {10,25,50,100}% (3
 new runs from Step 2 plus the existing `b0a590ea3317` at 100%). Read each
 run's `metrics.json` and tabulate.
 
-- [ ] **Step 4: Significance per fraction (optional but recommended)**
+- [x] **Step 4: Significance per fraction (optional but recommended)**
 
 For each fraction, run `results_significance.py` pretrained vs. scratch at
 that fraction (same pattern as Task 10 Step 2, 4 invocations). This tells
 you not just the curve shape but whether each individual gap is real.
 
-- [ ] **Step 5: Write up the curve**
+- [x] **Step 5: Write up the curve**
 
 Add a new table to `docs/logs/RESULTS_OVERVIEW.md` (e.g. "Table 6:
 Data-Efficiency Curve (WS-D D1)") with columns `Label fraction | Arm | Run |
@@ -1448,7 +1448,7 @@ whole curve in one entry (not one per run — that would be 7 near-duplicate
 entries; the design doc's own compute-budget section anticipated this as
 one deliverable).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add docs/logs/EXPERIMENTS.md docs/logs/RESULTS_OVERVIEW.md docs/logs/CHANGELOG.md docs/logs/SIGNIFICANCE_MKM_CURVE_*.md

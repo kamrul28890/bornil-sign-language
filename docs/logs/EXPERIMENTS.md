@@ -281,3 +281,80 @@
 - **Decode extras:** decode_repetition_stop=0
 - **Metrics (test):** BLEU-4=0.74 chrF=13.17 chrF++=10.72 ROUGE-L=0.060 (BLEU-1/2/3=10.5/3.4/1.5)
 - **Checkpoint:** data_full/runs/5860b497604f/best.pt
+
+### EXP-data_full_ctc-e848ac7a736e  (2026-07-25)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc random-v1 (train 1439 / test 1799); source=frozen:splits/random-v1|label_fraction=0.1
+- **Representation:** kp-218   **Config hash:** e848ac7a736e   **Seed:** 42
+- **Compute:** cuda   **Train time:** 5.6 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3 init_encoder=data_full/runs/7d9e40ec1343/encoder_pretrain.pt label_fraction=0.1
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.05 chrF=8.58 chrF++=6.74 ROUGE-L=0.020 (BLEU-1/2/3=8.8/0.8/0.1)
+- **Checkpoint:** data_full/runs/e848ac7a736e/best.pt
+
+### EXP-data_full_ctc-0319ebbea825  (2026-07-25)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc random-v1 (train 3598 / test 1799); source=frozen:splits/random-v1|label_fraction=0.25
+- **Representation:** kp-218   **Config hash:** 0319ebbea825   **Seed:** 42
+- **Compute:** cuda   **Train time:** 12.2 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3 init_encoder=data_full/runs/7d9e40ec1343/encoder_pretrain.pt label_fraction=0.25
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.14 chrF=5.51 chrF++=4.54 ROUGE-L=0.018 (BLEU-1/2/3=9.4/1.8/0.4)
+- **Checkpoint:** data_full/runs/0319ebbea825/best.pt
+
+### EXP-data_full_ctc-d42ff45dd94a  (2026-07-25)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc random-v1 (train 7195 / test 1799); source=frozen:splits/random-v1|label_fraction=0.5
+- **Representation:** kp-218   **Config hash:** d42ff45dd94a   **Seed:** 42
+- **Compute:** cuda   **Train time:** 22.8 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3 init_encoder=data_full/runs/7d9e40ec1343/encoder_pretrain.pt label_fraction=0.5
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.14 chrF=9.75 chrF++=7.67 ROUGE-L=0.025 (BLEU-1/2/3=7.3/1.0/0.3)
+- **Checkpoint:** data_full/runs/d42ff45dd94a/best.pt
+
+### EXP-data_full_ctc-bbc56ea042ad  (2026-07-25)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc random-v1 (train 14390 / test 1799); source=frozen:splits/random-v1|label_fraction=1.0
+- **Representation:** kp-218   **Config hash:** bbc56ea042ad   **Seed:** 42
+- **Compute:** cuda   **Train time:** 98.8 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3 init_encoder=data_full/runs/7d9e40ec1343/encoder_pretrain.pt label_fraction=1.0
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.46 chrF=12.01 chrF++=9.80 ROUGE-L=0.055 (BLEU-1/2/3=12.4/3.2/1.0)
+- **Checkpoint:** data_full/runs/bbc56ea042ad/best.pt
+
+### EXP-data_full_ctc-f2d3a83c9ba2  (2026-07-25)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc random-v1 (train 1439 / test 1799); source=frozen:splits/random-v1|label_fraction=0.1
+- **Representation:** kp-218   **Config hash:** f2d3a83c9ba2   **Seed:** 42
+- **Compute:** cuda   **Train time:** 8.5 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3 init_encoder=none label_fraction=0.1
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.11 chrF=9.23 chrF++=7.24 ROUGE-L=0.015 (BLEU-1/2/3=9.3/1.4/0.3)
+- **Checkpoint:** data_full/runs/f2d3a83c9ba2/best.pt
+
+### EXP-data_full_ctc-a2027b69137a  (2026-07-25)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc random-v1 (train 3598 / test 1799); source=frozen:splits/random-v1|label_fraction=0.25
+- **Representation:** kp-218   **Config hash:** a2027b69137a   **Seed:** 42
+- **Compute:** cuda   **Train time:** 13.4 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3 init_encoder=none label_fraction=0.25
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.14 chrF=11.24 chrF++=8.79 ROUGE-L=0.024 (BLEU-1/2/3=8.3/1.5/0.4)
+- **Checkpoint:** data_full/runs/a2027b69137a/best.pt
+
+### EXP-data_full_ctc-e519c8960e05  (2026-07-25)
+- **Model:** SignTransformer + TConv2k5 d256 L4+4   **Phase/Task:** data_full_ctc (WS-C T0.2)
+- **Data/Split:** data_full_ctc random-v1 (train 7195 / test 1799); source=frozen:splits/random-v1|label_fraction=0.5
+- **Representation:** kp-218   **Config hash:** e519c8960e05   **Seed:** 42
+- **Compute:** cuda   **Train time:** 25.4 min
+- **Decode:** greedy (beam_size=1)
+- **Training extras:** early_eos_penalty=0.0 ctc_weight=0.3 init_encoder=none label_fraction=0.5
+- **Decode extras:** decode_repetition_stop=0
+- **Metrics (test):** BLEU-4=0.22 chrF=11.12 chrF++=8.96 ROUGE-L=0.041 (BLEU-1/2/3=11.0/2.7/0.8)
+- **Checkpoint:** data_full/runs/e519c8960e05/best.pt

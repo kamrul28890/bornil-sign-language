@@ -22,6 +22,14 @@
 
 <!-- Log entries below, newest first -->
 
+### FAIL-007  (2026-07-25)  [WS-D D1 / MKM data-efficiency curve]
+- **Expected:** MKM initialization would improve supervised translation most at 10–25% labels, producing a positive pretrained-minus-scratch chrF++ gap that widens as labeled data shrinks.
+- **Observed:** the pretrained gap is negative at every point: −0.501 chrF++ at 10% (6.737 vs 7.237), −4.251 at 25% (4.539 vs 8.790), −1.292 at 50% (7.673 vs 8.965), and −1.115 at 100% (9.798 vs 10.913). All four chrF++ regressions are significant under paired bootstrap n=1000 (p=0.000). BLEU-4 is also significantly worse at 10% (0.053 vs 0.110, p=0.004) and not significantly different at the other fractions. The fixed 60-epoch losses were still decreasing, especially on smaller fractions, but the same epoch policy was applied to both arms at each fraction.
+- **Root cause:** hypothesis. The MKM objective transfers pose-reconstruction features that are not aligned with the translation objective and may bias optimization away from the supervised solution. A second contributor may be update-budget mismatch: fixed epochs give fewer optimizer steps at low fractions, leaving less time to overwrite an unhelpful initialization. This curve does not separate those mechanisms, and the irregular 25% collapse cautions against a stronger causal claim.
+- **Fix / next step:** do not tune D1 against these test results. Treat D1 as a closed negative under the pre-registered protocol and compare it head-to-head with independently specified D2/D3 methods. Any future revisit should pre-register a translation-aligned SSL objective and an equal-update-budget design before evaluating frozen test splits.
+- **Status:** wontfix (negative result under the fixed D1 protocol)
+- **Links:** EXP runs `e848ac7a736e`, `0319ebbea825`, `d42ff45dd94a`, `bbc56ea042ad`, `f2d3a83c9ba2`, `a2027b69137a`, `e519c8960e05`; `docs/logs/SIGNIFICANCE_MKM_CURVE_010.md`, `SIGNIFICANCE_MKM_CURVE_025.md`, `SIGNIFICANCE_MKM_CURVE_050.md`, `SIGNIFICANCE_MKM_CURVE_100.md`
+
 ### FAIL-006  (2026-07-25)  [WS-D D1 / MKM signer-independent core claim]
 - **Expected:** initializing the supervised TConv+CTC encoder from masked-keypoint pretraining would significantly improve chrF++ over the identical from-scratch recipe on frozen `signerindep-v1`.
 - **Observed:** pretrained run `5860b497604f` scored chrF++ 10.716 vs scratch run `40cffb9e62bb` at 10.361, a +0.355 point estimate that did not reach the pre-registered p<0.05 threshold (paired bootstrap n=1000, p=0.064). BLEU-4 was slightly lower, 0.737 vs 0.792 (p=0.748). Output diversity remained high (96.6% unique), but the model still under-generated (8.172 vs 9.397 reference tokens).

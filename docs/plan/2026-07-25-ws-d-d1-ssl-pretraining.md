@@ -1461,7 +1461,7 @@ git commit -m "feat(pretrain): MKM data-efficiency curve on random-v1"
 
 **Files:** none.
 
-- [ ] **Step 1: Full test suite**
+- [x] **Step 1: Full test suite**
 
 ```bash
 .venv/Scripts/python -m pytest -q
@@ -1470,7 +1470,7 @@ git commit -m "feat(pretrain): MKM data-efficiency curve on random-v1"
 Expected: all pass, exit 0. If anything fails, fix it before declaring this
 plan complete — do not report success with a failing suite.
 
-- [ ] **Step 2: Confirm every real run in this plan has an `EXPERIMENTS.md` row**
+- [x] **Step 2: Confirm every real run in this plan has an `EXPERIMENTS.md` row**
 
 Count: 1 pretrain run (Task 9) + 1 signerindep-v1 comparison run (Task 10) +
 7 curve runs (Task 11) = 9 new rows total, plus whatever smoke-test rows
@@ -1478,7 +1478,7 @@ you correctly reverted in Tasks 7–8 (confirm those did **not** end up
 committed — `git log --oneline -- docs/logs/EXPERIMENTS.md` should show
 clean, real-run-only commits).
 
-- [ ] **Step 3: Final report**
+- [x] **Step 3: Final report**
 
 Produce a short summary (this is the one deliverable meant for a human to
 read without opening every file) covering:

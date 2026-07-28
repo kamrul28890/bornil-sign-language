@@ -262,7 +262,7 @@ git commit -m "feat(models): pure-PyTorch selective-SSM scan (WS-D D2)"
   - `__init__(self, d_model: int, d_state: int = 16, expand: int = 2, conv_kernel: int = 4)`
   - `forward(self, x: Tensor(B,T,d_model), pad_mask: Tensor(B,T) bool = None) -> Tensor(B,T,d_model)` — `pad_mask` True at padded positions; residual-added internally (caller passes the block's input, gets the post-residual output back).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # tests/models/test_mamba_block.py
@@ -317,12 +317,12 @@ def test_residual_present():
     assert torch.allclose(out, x, atol=1e-5)
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_mamba_block.py -v`
 Expected: FAIL — `ImportError: cannot import name 'MambaBlock'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Append to `bornil/models/mamba.py`:
 
@@ -379,12 +379,12 @@ class MambaBlock(nn.Module):
         return residual + out
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_mamba_block.py -v`
 Expected: 3 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/models/mamba.py tests/models/test_mamba_block.py

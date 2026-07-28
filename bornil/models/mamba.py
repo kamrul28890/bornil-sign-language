@@ -44,3 +44,59 @@ def selective_scan(x: torch.Tensor, delta: torch.Tensor, A: torch.Tensor,
         )
         ys.append(y_t)
     return torch.stack(ys, dim=1)
+
+
+class MambaBlock(nn.Module):
+    """One gated selective-SSM block with an internal residual connection."""
+
+    def __init__(self, d_model: int, d_state: int = 16, expand: int = 2,
+                 conv_kernel: int = 4):
+        super().__init__()
+        d_inner = expand * d_model
+        self.d_inner = d_inner
+        self.d_state = d_state
+        self.conv_kernel = conv_kernel
+        self.norm = nn.RMSNorm(d_model)
+        self.in_proj = nn.Linear(d_model, 2 * d_inner)
+        self.conv = nn.Conv1d(
+            d_inner,
+            d_inner,
+            kernel_size=conv_kernel,
+            groups=d_inner,
+            padding=conv_kernel - 1,
+        )
+        self.delta_proj = nn.Linear(d_inner, d_inner)
+        self.B_proj = nn.Linear(d_inner, d_state)
+        self.C_proj = nn.Linear(d_inner, d_state)
+        A_init = (
+            torch.arange(1, d_state + 1, dtype=torch.float32)
+            .unsqueeze(0)
+            .repeat(d_inner, 1)
+        )
+        self.A_log = nn.Parameter(torch.log(A_init))
+        self.D = nn.Parameter(torch.ones(d_inner))
+        self.out_proj = nn.Linear(d_inner, d_model)
+
+    def forward(self, x: torch.Tensor,
+                pad_mask: torch.Tensor = None) -> torch.Tensor:
+        residual = x
+        h = self.norm(x)
+        xz = self.in_proj(h)
+        x_in, z = xz.chunk(2, dim=-1)
+        x_conv = (
+            self.conv(x_in.transpose(1, 2))[..., :x_in.size(1)]
+            .transpose(1, 2)
+        )
+        x_conv = torch.nn.functional.silu(x_conv)
+
+        delta = torch.nn.functional.softplus(self.delta_proj(x_conv))
+        if pad_mask is not None:
+            delta = delta.masked_fill(pad_mask.unsqueeze(-1), 0.0)
+        Bt = self.B_proj(x_conv)
+        Ct = self.C_proj(x_conv)
+        A = -torch.exp(self.A_log)
+
+        y = selective_scan(x_conv, delta, A, Bt, Ct, self.D)
+        y = y * torch.nn.functional.silu(z)
+        out = self.out_proj(y)
+        return residual + out

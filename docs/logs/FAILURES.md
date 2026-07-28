@@ -22,6 +22,14 @@
 
 <!-- Log entries below, newest first -->
 
+### FAIL-008  (2026-07-28)  [WS-D D2 / pure-PyTorch Mamba runtime gate]
+- **Expected:** the mandatory two-epoch real-data smoke would finish in a few minutes per epoch, or at least establish a runtime short enough to justify the fixed 60-epoch `random-v1` comparison on the local RTX 3070.
+- **Observed:** smoke run `837d88591d17` did not complete even its first epoch before the command reached its one-hour timeout. This is a conservative lower bound of **>60 min/epoch** and therefore **>60 hours (>2.5 days)** for 60 epochs, before allowing for end-of-run decoding. TConv+CTC completed all 60 epochs in 44.8 minutes; even ST-GCN's previously observed slow path averaged 42.8 min/epoch.
+- **Root cause:** hypothesis. The pure-PyTorch selective scan launches sequential tensor work for every timestep in each of four Mamba blocks, producing the kernel-launch-bound behavior pre-registered as the design's main compute risk. The gate confirms that this implementation/hardware combination is computationally impractical, though no low-level profiler was run because optimization or a parallel scan is outside this plan.
+- **Fix / next step:** do not reduce epochs, dataset size, or tune the fixed Mamba hyperparameters to route around the gate. D2 is blocked pending either a parallel-scan implementation or a cloud environment suitable for the full comparison; both require a new approved spec. No Task 7 real run, significance analysis, or length-stratified comparison is valid without that training run.
+- **Status:** open (WS-D D2 blocked by the pre-registered runtime gate)
+- **Links:** `configs/full_mamba.yaml`; `docs/superpowers/specs/2026-07-28-ws-d-d2-mamba-ssm-design.md`; `docs/plan/2026-07-28-ws-d-d2-mamba-ssm.md`; attempted smoke run `data_full/runs/837d88591d17/`
+
 ### FAIL-007  (2026-07-25)  [WS-D D1 / MKM data-efficiency curve]
 - **Expected:** MKM initialization would improve supervised translation most at 10–25% labels, producing a positive pretrained-minus-scratch chrF++ gap that widens as labeled data shrinks.
 - **Observed:** the pretrained gap is negative at every point: −0.501 chrF++ at 10% (6.737 vs 7.237), −4.251 at 25% (4.539 vs 8.790), −1.292 at 50% (7.673 vs 8.965), and −1.115 at 100% (9.798 vs 10.913). All four chrF++ regressions are significant under paired bootstrap n=1000 (p=0.000). BLEU-4 is also significantly worse at 10% (0.053 vs 0.110, p=0.004) and not significantly different at the other fractions. The fixed 60-epoch losses were still decreasing, especially on smaller fractions, but the same epoch policy was applied to both arms at each fraction.

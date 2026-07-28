@@ -858,7 +858,7 @@ runs on this machine span a 57× range (TConv+CTC: 0.75 min/epoch; ST-GCN:
 42.8 min/epoch, unexplained) that doesn't predict a Python-loop-based
 architecture's cost either way.
 
-- [ ] **Step 1: Run a short timed smoke test**
+- [x] **Step 1: Run a short timed smoke test**
 
 ```bash
 .venv/Scripts/python scripts/train_sample.py --config configs/full_mamba.yaml --epochs 2 --device cuda
@@ -880,7 +880,7 @@ path works end-to-end on real data, not just the tiny synthetic tests), and
 prints a per-epoch line with elapsed time (`train_sample.py`'s existing
 epoch-loop logging). Record the **per-epoch minutes** from this run.
 
-- [ ] **Step 2: Extrapolate and decide**
+- [x] **Step 2: Extrapolate and decide**
 
 Multiply the measured per-epoch time by 60 (the real run's epoch count in
 `configs/full_mamba.yaml`). Compare against TConv+CTC's 44.8 min total (for
@@ -903,7 +903,7 @@ plan budgeted a full working day for ~9 runs; ST-GCN's single run took
   environment (both explicitly out of scope for this plan — do not attempt
   either without a new spec).
 
-- [ ] **Step 3: Clean up the smoke run**
+- [x] **Step 3: Clean up the smoke run**
 
 ```bash
 git checkout -- docs/logs/EXPERIMENTS.md
@@ -916,7 +916,7 @@ folder is a normal `data_full/runs/<smoke-hash>/`, already covered by this
 repo's existing gitignore for run output — no separate cleanup needed
 beyond reverting the `EXPERIMENTS.md` row above.)
 
-- [ ] **Step 4: Commit the timing finding**
+- [x] **Step 4: Commit the timing finding**
 
 ```bash
 git add docs/logs/CHANGELOG.md

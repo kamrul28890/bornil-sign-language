@@ -15,6 +15,12 @@
 
 ---
 
+## 2026-07-28 — WS-D D2 pure-PyTorch Mamba blocked by runtime gate
+- **What:** Implemented and unit-tested the pure-PyTorch selective scan, gated `MambaBlock`, full `SignMamba` encoder-decoder, model-builder dispatch, fixed 60-epoch config, and experiment labeling. Ran the mandatory real-data CUDA smoke timing gate on the RTX 3070.
+- **Why:** WS-D D2 tests a selective-SSM encoder against TConv+CTC, but its sequential per-timestep scan had a pre-registered runtime risk that had to be measured before launching the full comparison.
+- **Impact:** The smoke did not complete its first epoch within one hour, establishing **>60 min/epoch** and **>60 hours (>2.5 days)** for 60 epochs before final decoding. This triggers the plan's multiple-day hard stop: Task 7 was not launched, D2 has no valid metric/significance verdict, and the workstream is blocked pending a separately specified parallel scan or cloud run. Logged as FAIL-008.
+- **Commit:** (this commit)
+
 ## 2026-07-25 — WS-D D1 data-efficiency curve is a negative result
 - **What:** Completed the seven missing fixed-epoch `random-v1` runs for scratch vs MKM initialization at 10%, 25%, 50%, and 100% labels (reusing scratch 100% run `b0a590ea3317`), then ran paired bootstrap significance at n=1000 for every fraction.
 - **Why:** Task 11 tests the distinct D1 prediction that self-supervised pretraining should help more as labeled data becomes scarce.

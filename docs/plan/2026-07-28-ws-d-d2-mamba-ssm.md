@@ -94,7 +94,7 @@ mistaken for an exact reproduction of the paper's math.
 **Interfaces:**
 - Produces: `selective_scan(x: Tensor(B,T,d_inner), delta: Tensor(B,T,d_inner), A: Tensor(d_inner,d_state), B: Tensor(B,T,d_state), C: Tensor(B,T,d_state), D: Tensor(d_inner,)) -> Tensor(B,T,d_inner)` — pure function, sequential Python loop over `T` internally, fully differentiable (plain tensor ops, no `.item()`/no-grad inside the loop).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # tests/models/test_selective_scan.py
@@ -186,12 +186,12 @@ def test_gradients_are_finite():
         assert torch.isfinite(t.grad).all()
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_selective_scan.py -v`
 Expected: FAIL — `No module named 'bornil.models.mamba'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```python
 # bornil/models/mamba.py
@@ -236,12 +236,12 @@ def selective_scan(x: torch.Tensor, delta: torch.Tensor, A: torch.Tensor,
     return torch.stack(ys, dim=1)
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_selective_scan.py -v`
 Expected: 3 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/models/mamba.py tests/models/test_selective_scan.py

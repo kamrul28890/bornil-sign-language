@@ -861,8 +861,19 @@ architecture's cost either way.
 - [ ] **Step 1: Run a short timed smoke test**
 
 ```bash
-.venv/Scripts/python scripts/train_sample.py --config configs/full_mamba.yaml --epochs 2 --out-dir smoke_mamba_timing --device cuda
+.venv/Scripts/python scripts/train_sample.py --config configs/full_mamba.yaml --epochs 2 --device cuda
 ```
+
+**Do not add `--out-dir`.** (Corrected in place after a real run hit this:
+`train_sample.py`'s `--out-dir` overwrites `cfg["trial"]["out_dir"]`, which
+is the *same* directory the packed dataset — `sample_manifest.csv`,
+`packed.npy`, `lengths.npy` — is read from, not a separate sandbox for run
+output. Pointing it at a fresh directory like `smoke_mamba_timing` breaks
+the dataset load with `FileNotFoundError` before training even starts.
+`--epochs 2` alone is sufficient to isolate the smoke run: `config_hash(cfg)`
+includes `epochs`, so this lands in its own `data_full/runs/<smoke-hash>/`,
+distinct from the eventual real 60-epoch run's folder, without needing
+`--out-dir` at all.)
 
 Expected: completes without error (confirms the whole encoder→decoder→CTC
 path works end-to-end on real data, not just the tiny synthetic tests), and
@@ -900,15 +911,10 @@ git checkout -- docs/logs/EXPERIMENTS.md
 
 (The smoke test's `EXPERIMENTS.md` row is throwaway, same convention as
 D1's Task 7/8 smoke tests — the real run in Task 7 produces the row that
-belongs in history. `smoke_mamba_timing/` itself lives under `data_full/`'s
-gitignored run-output convention if `--out-dir` still lands there — check:
-this repo's configs always use `out_dir: data_full`, and `--out-dir` here
-overrides `trial.out_dir`, not the run's location on disk in a way that
-escapes `data_full/` — the run folder is `data_full/runs/<hash>/` regardless
-of `trial.name`/`out_dir` override in this script's current design **only
-if** `out_dir` itself isn't repointed elsewhere; confirm by checking where
-`smoke_mamba_timing`'s run folder actually landed on disk before assuming
-it's gitignored, and delete it manually if it isn't.)
+belongs in history. Since Step 1 no longer uses `--out-dir`, the smoke run's
+folder is a normal `data_full/runs/<smoke-hash>/`, already covered by this
+repo's existing gitignore for run output — no separate cleanup needed
+beyond reverting the `EXPERIMENTS.md` row above.)
 
 - [ ] **Step 4: Commit the timing finding**
 

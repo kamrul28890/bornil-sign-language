@@ -752,7 +752,7 @@ falls through to `"SignTransformer"` for anything else — a Mamba run would
 silently be mislabeled `"SignTransformer"` in `EXPERIMENTS.md` without this
 change.
 
-- [ ] **Step 1: Write the config**
+- [x] **Step 1: Write the config**
 
 ```yaml
 # configs/full_mamba.yaml - pure-PyTorch selective-SSM encoder + joint CTC/attention on random-v1.
@@ -798,7 +798,7 @@ train:
 (Matches `configs/full_ctc.yaml`'s `data`/`split`/`train` blocks exactly —
 only `model.*` differs, per the design doc.)
 
-- [ ] **Step 2: Update `_append_experiment_row`**
+- [x] **Step 2: Update `_append_experiment_row`**
 
 In `scripts/train_sample.py`, find:
 
@@ -832,13 +832,13 @@ Add a `mamba` branch before the `else`:
     else:
 ```
 
-- [ ] **Step 3: Verify no regression**
+- [x] **Step 3: Verify no regression**
 
 Run: `.venv/Scripts/python -m pytest -q`
 Expected: same pass count as after Task 4 (this task adds no new tests —
 it's config + a labeling branch, validated by Task 6's smoke test).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add configs/full_mamba.yaml scripts/train_sample.py

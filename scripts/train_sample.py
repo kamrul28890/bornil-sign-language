@@ -299,6 +299,10 @@ def _append_experiment_row(cfg, h, tm, device, mins, n_train, n_test):
         model_name = "ST-GCN"
         enc_layers = cfg["model"].get("stgcn_layers", "?")
         phase_task = "WS-C T1.1"
+    elif arch == "mamba":
+        model_name = "SignMamba"
+        enc_layers = cfg["model"].get("num_mamba_layers", "?")
+        phase_task = "WS-D D2"
     else:
         model_name = "SignTransformer"
         enc_layers = cfg["model"].get("num_encoder_layers", "?")

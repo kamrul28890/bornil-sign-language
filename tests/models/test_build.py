@@ -67,7 +67,31 @@ def test_bilstm_rejects_ctc_head():
 
 def test_unknown_arch_raises():
     with pytest.raises(ValueError, match="unknown model.arch"):
-        build_model(cfg_for("mamba"), VOCAB, PAD)
+        build_model(cfg_for("not_a_real_arch"), VOCAB, PAD)
+
+
+def test_build_model_mamba():
+    from bornil.models.mamba import SignMamba
+
+    cfg = {
+        "model": {
+            "arch": "mamba",
+            "d_model": 16,
+            "nhead": 2,
+            "num_mamba_layers": 2,
+            "d_state": 4,
+            "expand": 2,
+            "conv_kernel": 4,
+            "num_decoder_layers": 1,
+            "dim_feedforward": 32,
+            "dropout": 0.0,
+            "ctc_head": True,
+        },
+        "data": {"upper_body": True},
+    }
+    model = build_model(cfg, vocab_size=10, pad_id=0)
+    assert isinstance(model, SignMamba)
+    assert model.use_ctc is True
 
 
 def test_forward_shape_after_rebuild():

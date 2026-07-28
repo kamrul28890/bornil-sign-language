@@ -13,7 +13,7 @@ import torch.nn as nn
 
 from bornil.data.transforms import feature_dim
 
-SUPPORTED_ARCHS = ("transformer", "bilstm", "stgcn")
+SUPPORTED_ARCHS = ("transformer", "bilstm", "stgcn", "mamba")
 
 
 def build_model(cfg: dict, vocab_size: int, pad_id: int) -> nn.Module:
@@ -45,6 +45,20 @@ def build_model(cfg: dict, vocab_size: int, pad_id: int) -> nn.Module:
             stgcn_channels=int(m.get("stgcn_channels", 64)),
             stgcn_layers=int(m.get("stgcn_layers", 3)),
             temporal_kernel=int(m.get("temporal_kernel", 5)),
+            num_decoder_layers=m["num_decoder_layers"],
+            dim_feedforward=m["dim_feedforward"], dropout=m["dropout"],
+            pad_id=pad_id, use_ctc=use_ctc,
+        )
+
+    if arch == "mamba":
+        from bornil.models.mamba import SignMamba
+        return SignMamba(
+            input_dim=input_dim, vocab_size=vocab_size,
+            d_model=m["d_model"], nhead=m["nhead"],
+            num_mamba_layers=int(m.get("num_mamba_layers", 4)),
+            d_state=int(m.get("d_state", 16)),
+            expand=int(m.get("expand", 2)),
+            conv_kernel=int(m.get("conv_kernel", 4)),
             num_decoder_layers=m["num_decoder_layers"],
             dim_feedforward=m["dim_feedforward"], dropout=m["dropout"],
             pad_id=pad_id, use_ctc=use_ctc,

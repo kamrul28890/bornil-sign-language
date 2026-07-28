@@ -675,7 +675,7 @@ branches exactly in style.
 - Produces: `build_model(cfg, vocab_size, pad_id)` now also accepts
   `cfg["model"]["arch"] == "mamba"`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 # add to tests/models/test_build.py
@@ -695,12 +695,12 @@ def test_build_model_mamba():
     assert model.use_ctc is True
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_build.py::test_build_model_mamba -v`
 Expected: FAIL — `ValueError: unknown model.arch 'mamba'; ...`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `bornil/models/build.py`, update `SUPPORTED_ARCHS` and add the branch
 (placed before the final `raise ValueError`, alongside the `"stgcn"`
@@ -726,12 +726,12 @@ SUPPORTED_ARCHS = ("transformer", "bilstm", "stgcn", "mamba")
         )
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_build.py -v`
 Expected: all pass (existing tests + 1 new).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/models/build.py tests/models/test_build.py

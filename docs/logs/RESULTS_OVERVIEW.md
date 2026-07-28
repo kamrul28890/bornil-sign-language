@@ -70,6 +70,20 @@ the exploitable signal on this benchmark is largely static pose, and a
 spatio-temporal graph encoder's value proposition is motion structure, so
 there is little for it to win on here — do not tune further.
 
+**WS-D D2 (pure-PyTorch selective-SSM/Mamba encoder) has no row here — it
+never produced a trained model.** The official `mamba-ssm` package cannot
+build on this Windows machine (no wheels, no local CUDA Toolkit/MSVC), so a
+pure-PyTorch sequential-scan reimplementation was built instead
+(`bornil/models/mamba.py`); its mandatory smoke-test timing gate did not
+complete even one epoch within an hour, projecting **>60 hours** for the
+planned 60-epoch run — slower than ST-GCN's already-bad 42.8h. This is a
+**compute-infeasibility result, not a chrF++ negative** — no comparison was
+ever run. Logged as FAIL-008 (open, not closed) and left as a candidate for
+a future parallel-scan reimplementation or a cloud environment, neither of
+which was pursued; WS-D effort moved to D3 instead. See
+`docs/logs/FAILURES.md` FAIL-008 and
+`docs/superpowers/specs/2026-07-28-ws-d-d2-mamba-ssm-design.md`.
+
 ## Table 2b: Joint CTC Hard-Split Generalization
 
 Use this to decide whether the random-v1 joint-CTC chrF++ gain transfers to the

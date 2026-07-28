@@ -171,6 +171,16 @@ branch reading `m["num_mamba_layers"]`, `m.get("d_state", 16)`,
 same discipline as D1's mask ratio: pick once, record it, don't grid-search
 before the core comparison is confirmed).
 
+New `scripts/length_stratified_report.py` — rebuilds a run's model from its
+own `config.json` (same `build_model` pattern as `eval_checkpoint_decode.py`),
+re-resolves its test split, re-decodes it while collecting `(hypothesis,
+reference, true_frame_length)` per example in one pass, then reports
+`corpus_metrics` separately for the `>= threshold` and `< threshold` frame-
+length groups. CLI: `--run <run_dir> --threshold 256 --out <json path>`.
+This is read-only analysis over an existing checkpoint — no training, no
+change to `predictions.csv`'s existing format or any other script that
+consumes it.
+
 `configs/full_mamba.yaml` mirrors `configs/full_ctc.yaml`'s `data`/`split`/
 `train` blocks exactly (same 60 epochs, batch 32, lr, `ctc_weight: 0.3`,
 etc. — only `model.*` differs: `arch: mamba`, `num_mamba_layers: 4`,
@@ -183,13 +193,28 @@ etc. — only `model.*` differs: `arch: mamba`, `num_mamba_layers: 4`,
    vanilla (`c19d0ea08824`) and vs TConv+CTC (`b0a590ea3317`), two-sided
    paired bootstrap n=1000 — same protocol as every Table 2 entry in
    `docs/logs/RESULTS_OVERVIEW.md`.
-2. **Length-stratified cut:** using the same run's `predictions.csv` joined
-   back to test-clip frame lengths (`data_full/lengths.npy` indexed by the
-   test split's `pack_idx` — same join key pattern already used elsewhere in
-   this repo), compute chrF++ separately for clips `>= 256` frames (~17% of
-   clips, the top stratum) vs `< 256` frames, for both `SignMamba` and
-   `b0a590ea3317`'s existing predictions. Report whether any SSM advantage
-   (or disadvantage) concentrates in the long-clip stratum.
+2. **Length-stratified cut.** **Correction found during interface-checking
+   (this design originally assumed a join key that doesn't exist — recorded
+   here so the mistake doesn't get repeated):** `predictions.csv` has no
+   recording id or length column, and `LengthBucketBatchSampler` reorders
+   rows by length within each 640-row megabatch *even with `shuffle=False`*
+   (it always sorts each megabatch by length before batching — see
+   `bornil/data/sampler.py`), so a saved `predictions.csv`'s row order is
+   **not** a stable, externally-reconstructible function of the split file
+   or the manifest. There is no existing join-key pattern to reuse here.
+   The correct approach is a **new script that re-decodes the test split
+   itself** while capturing each example's true frame length in the same
+   loop that produces its hypothesis (so length and hypothesis are paired
+   by construction, not by a fragile post-hoc join) — see `Components`
+   below (`scripts/length_stratified_report.py`). It reports **corpus-level**
+   chrF++ (via `bornil.benchmark.metrics.corpus_metrics`, the locked
+   protocol) separately for clips `>= 256` frames (~17% of clips) vs
+   `< 256` frames — not an average of per-sentence scores, which is not how
+   chrF++ is defined and isn't comparable to every other chrF++ number in
+   this repo. Run it against both the new `SignMamba` run and the existing
+   `b0a590ea3317` (rebuilding its model from its own `config.json`, same as
+   any other checkpoint in this repo) so both get an identical split of the
+   same underlying test clips.
 3. **Retrieval floor + diversity/length diagnostics** — `prediction_diagnostics.py`
    on the new run, same as every other model row (Table 4/5 convention).
 4. Every run gets a normal `EXPERIMENTS.md` row.

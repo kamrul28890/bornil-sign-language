@@ -415,7 +415,7 @@ including this one, have the same six methods with the same bodies, only
   - `encode(self, src, src_key_padding_mask=None) -> Tensor(B,S,d_model)`
   - `src_padding_mask`, `_decode_memory`, `forward`, `ctc_logits`, `forward_with_ctc`, `generate`, `beam_search` — identical contract to `SignSTGCN`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # tests/models/test_mamba.py
@@ -498,12 +498,12 @@ def test_overfit_tiny():
     assert loss.item() < first_loss * 0.1
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_mamba.py -v`
 Expected: FAIL — `ImportError: cannot import name 'SignMamba'`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Append to `bornil/models/mamba.py`. Add these imports at the top of the
 file alongside the existing ones:
@@ -641,7 +641,7 @@ class SignMamba(nn.Module):
         return results
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `.venv/Scripts/python -m pytest tests/models/test_mamba.py -v`
 Expected: 6 passed. If `test_overfit_tiny` doesn't clear the threshold,
@@ -651,7 +651,7 @@ bug class here is an accidental `.detach()` or a `torch.no_grad()` context
 leaking from `generate`/`beam_search` into `encode`, which those methods
 must never do since `forward`/`ctc_logits` need gradients).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add bornil/models/mamba.py tests/models/test_mamba.py

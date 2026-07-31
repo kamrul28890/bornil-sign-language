@@ -1,285 +1,308 @@
-# Project Report — Writing Plan (DRAFT for review)
+# Project Report — Writing Plan (DRAFT for review, v3)
 
 > **Status: awaiting your review/edits.** Nothing below is the report itself
 > — this is the blueprint. Edit anything (section order, what to include/cut,
 > tone, length), then tell me to proceed and I'll write the actual report
 > from this plan.
 
+> **v3 changes:** scope is now a **full, comprehensive report — target
+> ~20 pages, acceptable up to ~50 — compiled to a single PDF, "everything
+> in it, however long."** This is no longer a brief; it's an exhaustive
+> technical report. Expanded outline accordingly: a dedicated subsection per
+> experiment/architecture (not just a summary table row), a Limitations
+> section, an Ethical Considerations section, a Reproducibility section, a
+> fuller appendix with complete tables. Added a PDF-compilation plan.
+
 ## 1. Purpose & audience
 
 **Who reads this:** someone with **zero background** in sign language
-research, machine learning, or this project specifically. Could be a
-supervisor, a sponsor, a family member, a new team member — anyone who needs
-to understand *what this project is, what was built, whether it works, and
-what's next* without being taught ML first.
+research, machine learning, or this project specifically — but who wants
+the **complete picture**, exhaustively, not a summary. A thorough
+report/paper-style document a total beginner could follow end to end
+(every concept explained on first use) while still covering everything a
+technical reader would expect from a full project report: background, data
+analysis, methodology, every experiment run, full results, limitations,
+ethics, and reproducibility.
 
-**What "success" looks like for this document:** a reader finishes it able
-to explain, in their own words, to a friend: what problem this solves, how
-the system works at a sketch level, whether it currently works well, and
-what's happening next. They should never hit a term they can't understand
-from context.
+**What "success" looks like:** a reader finishes it able to explain, in
+detail: what problem this solves and why it's hard, exactly what the data
+looks like (with real distributions, not just headline counts), exactly how
+the system works stage by stage, how every model variant was built and why,
+what every experiment found — including the ones that didn't work and why
+that's still useful — what the real numbers say with the tables/charts that
+back them, what the limitations and open risks are, and what's next.
 
-**What this is NOT:** not the NeurIPS paper (that's a separate, technical
-artifact this project is also building toward — this report can *feed*
-that, but shouldn't try to *be* it). Not a code walkthrough. Not exhaustive
-— depth is available by linking out to the technical docs already in the
-repo, not by cramming everything in here.
+**What this is NOT:** not literally the NeurIPS submission (a separate,
+more formally-structured academic artifact), but should read as a complete
+standalone technical report thorough enough to serve as its backbone or an
+appendix to it. No code snippets — describe what components do and why, not
+implementation-line detail (that's what the linked repo docs are for).
 
 ## 2. Tone & style rules (apply to every section)
 
 - **Define every technical term the first time it appears, in plain words,
-  with a one-line analogy if it helps.** Examples: "chrF++ (a score from 0
-  to 100 that measures how much of the correct sentence's *spelling* shows
-  up in the model's answer, character by character — not just whole words)."
-  "CTC (a training trick that lets the model align a long video to a short
-  sentence without anyone manually marking which frame matches which word)."
-- **No unexplained acronyms.** BLEU, chrF++, ROUGE-L, CTC, SSM, LoRA, VRAM,
-  GPU, checkpoint, epoch, encoder/decoder, gloss-free, keypoint — every one
-  gets a plain-language definition on first use, then can be used freely.
-- **Concrete before abstract.** Every claim about what the system does
-  should be followed (not preceded) by a real example — an actual Bangla
-  sentence, an actual model output, an actual number from a real run. This
-  project has real examples for everything (see §4's source map) — use
-  them instead of describing things in the abstract.
-- **Short paragraphs, active voice, no hedging jargon.** "The model got this
-  wrong" beats "suboptimal performance was observed in this instance."
-- **Honesty about what didn't work is a feature, not an embarrassment.**
-  This project has several genuine negative results (see §4.4) — the report
-  should present them the way the project's own internal logs do: "we
-  expected X, we tried it, it didn't help, here's our best guess why, and
-  here's what we're doing instead." A lay reader trusts a report more, not
-  less, when it admits what didn't pan out.
-- **Visuals over description wherever possible.** This project already has
-  real pipeline figures (see §3) — use them instead of prose where a picture
-  says it faster.
+  with a one-line analogy if it helps.**
+- **No unexplained acronyms** — BLEU, chrF++, ROUGE-L, CTC, SSM, LoRA, VRAM,
+  GPU, checkpoint, epoch, encoder/decoder, gloss-free, keypoint, etc., all
+  defined on first use.
+- **Show, don't just tell — a table or chart wherever a claim can be
+  visualized**, not only in a results section. See §4's per-section
+  chart/table list; this report should feel visually rich, not a wall of
+  text.
+- **Concrete before abstract** — every claim followed by a real example:
+  an actual Bangla sentence, an actual model output, an actual number from
+  a real run. Nothing invented.
+- **Short paragraphs, active voice, no hedging jargon.**
+- **Comprehensive over concise** — given the length target, prefer fully
+  explaining a topic (with its own dedicated subsection where it earns one)
+  over compressing several topics into one paragraph. It's fine, expected
+  even, for individual experiments to each get real space.
+- **Honesty about what didn't work is a feature, not an embarrassment** —
+  presented as: a real hypothesis, a real test, a real result (sometimes
+  negative), the best-guess reason why, and what it ruled out.
 
 ## 3. Available source material (so nothing gets invented)
 
-Every number, example, and claim in the final report must trace back to one
-of these already-real files — no invented statistics, no rounded-for-effect
-claims. Pulled together here so the writing pass doesn't have to go
-hunting:
+Every number, example, chart, and claim traces back to a real file.
+
+**Written docs:**
 
 | Need | Source |
 |---|---|
-| Dataset stats, real example sentences, task framing in accessible prose | `docs/PIPELINE_WALKTHROUGH.md` (already written in a fairly accessible style — good raw material to simplify further, not start from scratch) |
-| Pipeline figures (already generated, ready to embed) | `docs/assets/pipeline/01_frame_strip.png` … `06_landmark_selection.png` |
-| Headline results, comparison tables, significance | `docs/logs/RESULTS_OVERVIEW.md` |
-| Real (reference, hypothesis) example translations — good and bad | `docs/logs/QUALITATIVE_EXAMPLES.md` |
-| Full run history / every model tried | `docs/logs/EXPERIMENTS.md` |
-| What changed and why, chronologically | `docs/logs/CHANGELOG.md` |
+| Dataset stats, real example sentences, task framing | `docs/PIPELINE_WALKTHROUGH.md` |
+| Pipeline figures (already generated) | `docs/assets/pipeline/01_frame_strip.png` … `06_landmark_selection.png` |
+| Headline results, comparison tables, significance | `docs/logs/RESULTS_OVERVIEW.md` (Tables 1–6) |
+| Real (reference, hypothesis) example translations | `docs/logs/QUALITATIVE_EXAMPLES.md` |
+| Full run history / every model ever trained | `docs/logs/EXPERIMENTS.md` |
+| Chronological narrative of what changed and why | `docs/logs/CHANGELOG.md` |
 | Every negative result with root-cause reasoning | `docs/logs/FAILURES.md` (FAIL-001 through FAIL-008 as of this writing) |
-| Grounding/limitation findings in paper-style prose | `docs/paper/GROUNDING_ANALYSIS.md` |
-| The overall research plan and what's still ahead | `docs/plan/2026-07-13-bornil-implementation-plan.md`, plus the WS-D sub-plans/specs for D1/D2/D3 |
-| Repo orientation, current state | `README.md`, `docs/DATA_AND_OUTPUTS.md` |
+| Grounding/limitation findings, paper-style prose | `docs/paper/GROUNDING_ANALYSIS.md` |
+| Sentence-length distribution (already computed) | `docs/logs/TARGET_LENGTH_AUDIT.md` |
+| Split composition / per-split stats | `docs/logs/BASELINE_TABLE.md`, `splits/*/meta.json` |
+| Per-model significance tests (one file per comparison) | `docs/logs/SIGNIFICANCE_*.md` |
+| Decode-stability / repetition-guard findings | `docs/logs/DECODE_REPETITION_GUARD.md`, `DECODE_ABLATIONS.md` |
+| WS-E alignment methodology + negative result | `docs/plan/2026-07-16-ws-e-alignment.md`, `docs/logs/ALIGNMENT_VALIDATION.md` |
+| WS-D D1/D2/D3 designs, plans, and outcomes | `docs/superpowers/specs/2026-07-2{5,8}-ws-d-*.md`, `docs/plan/2026-07-2{5,8}-ws-d-*.md`, `docs/logs/FAILURES.md` FAIL-006/007/008 |
+| Overall research plan, what's still ahead | `docs/plan/2026-07-13-bornil-implementation-plan.md` |
+| Repo orientation, current state, data-exclusion notes | `README.md`, `docs/DATA_AND_OUTPUTS.md` |
 
-## 4. Full outline
+**Raw data (for generating new EDA charts):**
+
+| Need | Source |
+|---|---|
+| Per-clip sentence text, frame count, chunk/session, metadata | `video_data.csv` |
+| Per-clip true frame length (post-extraction) | `data_full/lengths.npy` + `data_full/sample_manifest.csv` |
+| Split membership (train/val/test per split kind) | `splits/random-v1/`, `splits/signerindep-v1/`, `splits/unseen-sentence-v1/` |
+| Subword vocabulary | `bsl_sp.vocab` |
+
+New charts generated from these via a small script (mirroring this
+project's existing `scripts/make_pipeline_figures.py` pattern), styled per
+this repo's established `dataviz` visualization conventions — not
+hand-estimated.
+
+## 4. Full outline (target ~20 pages, up to ~50 acceptable)
 
 ### 4.1 Introduction
-- **What is this about.** Plain statement: Bangla Sign Language (BdSL) has
-  no widely available automatic translation to text — this project is
-  building one. One sentence on why that matters (accessibility — letting
-  Deaf BdSL signers communicate in text with people who don't sign).
-- **What we are doing.** One paragraph, no jargon: we collected thousands of
-  videos of people signing Bangla sentences, and we're teaching a computer
-  program to watch a video and write out the sentence in Bangla, the same
-  way a human interpreter would — without any middle step through English
-  or through a fixed sign-by-sign dictionary.
-- **Quick numerical snapshot of the data** (pulled from
-  `docs/PIPELINE_WALKTHROUGH.md` / `README.md`, presented as a short
-  labeled list, not a table full of jargon):
-  - 17,988 video clips
-  - Almost 18,000 *different* sentences (so the system has to genuinely
-    understand sentences, not just memorize a fixed list)
-  - Real topics: news, sports, everyday conversation
-  - Clips range from a couple of seconds to about half a minute
-  - ~180 GB of video in total
-- Close the section with one sentence bridging to §4.2: "Here's specifically
-  what we set out to build, and how far we've gotten."
+Problem statement, why it matters, what this project does, brief numerical
+teaser (full EDA in §4.3), roadmap of the report itself (what each section
+covers, since this is now long enough to warrant one).
 
-### 4.2 What our target is / the end product
-- High-level, no architecture talk yet: the target is a system that takes a
-  video of BdSL signing and outputs a Bangla sentence.
-- Two honest framings, both true, both worth stating: (1) a real assistive
-  tool people could eventually use, and (2) a research contribution — a
-  reusable public benchmark and a documented set of experiments other
-  researchers can build on (this project is aiming at a NeurIPS Datasets &
-  Benchmarks submission — explain in one plain sentence what that means:
-  "a major AI research venue where new, well-documented datasets and
-  benchmarks get published and reviewed like scientific papers").
-- Set expectations honestly right here, in plain terms, so nothing later
-  feels like a reveal: the system works and clearly beats naive baselines,
-  but it isn't production-ready yet, and the report will explain exactly
-  where it's strong and where it still struggles.
+### 4.2 Background & related context
+- Sign language translation as a task; why it differs fundamentally from
+  spoken-language translation.
+- Gloss-based vs. gloss-free approaches, explained plainly (reuse/expand
+  `PIPELINE_WALKTHROUGH.md` §2).
+- Why Bangla Sign Language specifically is under-resourced, and what a
+  dedicated open benchmark contributes.
+- This project's specific contributions, stated explicitly as a list: the
+  dataset, the frozen benchmark (three generalization splits), the metric
+  protocol, the baseline suite, the novel-method comparison, the alignment/
+  interpretability study, and the negative-results record.
 
-### 4.3 How the system works (architecture, labeled, plain language)
-- One simple labeled diagram (can be an ASCII/markdown box diagram, doesn't
-  need to be fancy) walking left to right:
-  `Video of someone signing → "skeleton tracking" of hands/body → a pattern
-  the computer can read → an AI model that reads that pattern → a Bangla
-  sentence`
-- Each arrow/box gets 2-4 plain-language sentences, e.g.:
-  - **"Skeleton tracking"** — a widely-used computer vision tool
-    (MediaPipe) watches the video and, frame by frame, marks the exact
-    position of the signer's hands, fingers, arms, and upper body — like
-    the motion-capture dots used in movies and video games, except no
-    special suit or markers needed, it works directly on regular video.
-  - **The "pattern"** — those position numbers, frame after frame, become a
-    long sequence of numbers describing exactly how the body moved over
-    time. This is what the AI model actually reads — not the pixels of the
-    video itself.
-  - **The AI model** — an "encoder" reads the whole movement sequence and
-    builds an internal understanding of it; a "decoder" then writes out a
-    Bangla sentence, one word-piece at a time, guided by that
-    understanding. (Analogy: like a human interpreter who watches an
-    entire sentence being signed before starting to speak, rather than
-    guessing word by word as they go.)
-  - **Bangla sentence out** — the final output, compared against what a
-    human labeled that clip as, to measure how well the system did.
-- Explicitly name (in plain terms) that no English and no fixed
-  sign-dictionary is involved anywhere — the system learns the mapping
-  directly from examples, which is both what makes this hard and what makes
-  it a genuine research contribution.
+### 4.3 The dataset & exploratory data analysis
+Full EDA, each with a real chart and/or table:
+1. Dataset overview (counts, domains, real example sentences, clip↔label
+   relationship).
+2. Sentence length distribution (token-count histogram + the real bucketed
+   table from `TARGET_LENGTH_AUDIT.md`).
+3. Clip duration / frame-count distribution (histogram; ties to the
+   512-frame processing ceiling and how rarely it's actually hit).
+4. Vocabulary analysis (word-frequency/Zipf-style chart; the 58%-appear-once
+   statistic and what it implies for tokenization).
+5. Session/signer diversity (bar chart of clips per recording session; ties
+   directly to the `signerindep-v1` split's purpose).
+6. Data quality notes (the real landmark-visibility numbers behind the
+   upper-body-only feature decision).
+7. Split composition table (all three splits, train/val/test counts, and
+   what generalization question each answers).
+8. A short EDA summary paragraph tying the above findings to modeling
+   decisions made later in the report (signals the reader that this wasn't
+   decorative — every EDA finding fed a real decision).
 
-### 4.4 What we did (the detailed walkthrough)
+### 4.4 System architecture
+The labeled, plain-language pipeline walkthrough (video → keypoints →
+model → text), with the analogy-driven explanations from the v2 plan,
+expanded with a slightly more detailed breakdown of the encoder/decoder
+split and why a sequence model is the right fit for this data shape.
 
-This is the longest section — split into clearly labeled sub-sections so a
-reader can skim to what they care about.
+### 4.5 Methodology
 
-**4.4.1 Data preprocessing — what, why, with examples**
-- Simplify `docs/PIPELINE_WALKTHROUGH.md` §3 into plain language, keep its
-  real examples (the three example sentences with frame counts/durations
-  are great as-is — genuinely concrete).
-- Embed the pipeline figures (`docs/assets/pipeline/*.png`) with plain
-  captions explaining what each stage's picture shows.
-- Cover, each in a short plain paragraph with a "why": frame sampling (why
-  we don't need every single frame), skeleton/keypoint extraction (the
-  MediaPipe step), normalization (why we adjust for where the person stands
-  / how close the camera is, with a one-line analogy — "like scaling a
-  photo so someone's height doesn't depend on how far the camera was"), and
-  turning sentences into "sub-word pieces" for the model to output (why
-  whole-word prediction doesn't work here — most words are too rare, cite
-  the real 58%-appear-once statistic already documented).
+**4.5.1 Data preprocessing** — full plain-language walkthrough (frame
+sampling, keypoint extraction, normalization, landmark selection,
+tokenization), each with its real "why," embedding the existing pipeline
+figures.
 
-**4.4.2 Building the model(s)**
-- Explain, in plain terms, that this wasn't "build one model" but "try
-  several different designs and see which works" — a research process, not
-  a single build.
-- List what was tried, each in 1-3 plain sentences (no need to explain the
-  internal math of each — just what idea it tested and whether it helped):
-  - A baseline "read the movement, write the sentence" model.
-  - Adding a component that helps the model notice short bursts of motion.
-  - Adding a second training signal that helps the model line up parts of
-    the video with parts of the sentence as it learns (this is the one
-    that ended up mattering most — call out plainly that this became the
-    best-performing version).
-  - Two alternative "reading" designs tested for comparison (one inspired
-    by how graph/skeleton structure could be modeled directly; one using a
-    newer, more efficient sequence-modeling idea) — both explained as
-    genuine experiments, not failures to be embarrassed about (see 4.4.4).
-  - A version that tries giving the model a head start by having it
-    practice on the videos alone (without sentences) before the real
-    training — also an honest experiment, see 4.4.4.
-  - Currently in progress: giving the "writing" half of the model a head
-    start by starting from an AI system that already knows how to write
-    fluent Bangla, then teaching it to read the sign-language patterns.
+**4.5.2 Model architectures — one dedicated subsection per approach**, not
+compressed into a single table (though a summary comparison table opens
+this subsection for orientation):
+- 4.5.2.1 Baseline sequence-to-sequence model
+- 4.5.2.2 Adding a short-range motion component (temporal convolution)
+- 4.5.2.3 Adding a second training signal for video/sentence alignment
+  (CTC) — the best-performing variant; explain plainly why it helped
+  (fixes under-generation, improves output diversity — real numbers from
+  `RESULTS_OVERVIEW.md` Table 5)
+- 4.5.2.4 Alternative reading design: graph/skeleton-structured encoder —
+  what it tested, why it was a reasonable idea, and its real (negative)
+  outcome
+- 4.5.2.5 Alternative reading design: a newer, more efficient
+  sequence-modeling approach — what it tested, and the real hardware/speed
+  wall it hit before completion
+- 4.5.2.6 Self-supervised pre-training variant — what head start it tried
+  to give the model, and its real (negative) outcome, including the
+  data-efficiency curve finding
+- 4.5.2.7 In progress: a pretrained-Bangla-language-model decoder — what
+  question it's asking, current status
 
-**4.4.3 Training & running**
-- Plain explanation of: what "training" means (showing the model thousands
-  of labeled examples, adjusting it a little after each mistake, repeating
-  many times); what a "split" is and why it matters (some clips are set
-  aside and never shown during training, specifically so the final test is
-  fair, not an open-book exam); the three different ways clips were split
-  aside (random, by person, by whether the sentence itself was ever seen
-  before) — explain simply why testing three different ways matters (it
-  answers three different questions: does it work in general, does it work
-  on a *new person's* signing style, does it work on a sentence it's
-  *never encountered*).
-- One or two plain sentences on real-world compute: what hardware was used,
-  roughly how long training takes (a range, not false precision).
+**4.5.3 Training & evaluation protocol**
+- Frozen splits, why three of them, what each tests (ties to §4.3.7).
+- Metric protocol — chrF++, BLEU, ROUGE-L, BERTScore — each explained
+  plainly with what it measures and why chrF++ is the one this project
+  leans on most.
+- Significance testing methodology (paired bootstrap, explained plainly:
+  "resampling the test set many times to check whether one model's edge
+  over another is real or could be luck").
+- Compute/hardware notes, honestly scoped (ranges, not false precision).
 
-**4.4.4 Results — what the numbers mean, and how well it's doing**
-- Explain the scoring method in plain terms *before* showing any numbers:
-  "we compare the computer's sentence to the correct one and score how
-  close they are, from 0 (nothing matches) toward 100 (perfect match) —
-  the same kind of scoring used to grade machine translation systems in
-  general, not something invented for this project."
-- Show the headline comparison as a simple table: best system vs. simplest
-  possible baselines vs. a "just copy the most common answer" baseline —
-  making concrete *why* beating those baselines is meaningful (a naive
-  system can look deceptively okay on this score without understanding
-  anything at all — explain this plainly, it's a genuinely important,
-  hard-won finding from this project, see `RESULTS_OVERVIEW.md`'s
-  Table 4/4b framing).
-- Show 3-4 real example translations pulled directly from
-  `QUALITATIVE_EXAMPLES.md`: one where it got the sentence exactly right,
-  one "typical" (partially right) example, and one clear failure — with a
-  plain explanation of what went wrong in the failure case (e.g. the model
-  got stuck repeating one word).
-- **Honest assessment, in plain language, of what this proves and doesn't
-  prove yet:**
-  - Plain-language version of the grounding finding: we ran a test where we
-    deliberately showed the model a mismatched video and sentence pair, and
-    its accuracy dropped a lot — proof it's actually using the video, not
-    just guessing likely-sounding Bangla sentences from habit.
-  - Plain-language version of the "static pose, not motion" caveat: when we
-    scrambled the order of the video frames, accuracy barely changed —
-    meaning the system is currently reading *body poses* much more than it
-    is reading *movement*, which is a real, named limitation, not a hidden
-    one.
-  - Plain-language summary of the experiments that **didn't** pan out (the
-    pre-training head-start idea, and one of the two alternative "reading"
-    designs) — framed exactly as the project's own internal logs frame
-    them: a real hypothesis, a real test, a real (negative) result, and
-    what that ruled out for future work. Emphasize: this is normal,
-    expected research process, not a setback to downplay.
+### 4.6 Results
 
-### 4.5 What's next
-- The in-progress experiment (giving the "writing" half of the model a
-  head start from an AI that already knows fluent Bangla) — plainly stated
-  as not yet finished, with what question it's trying to answer.
-- The next open question after that: picking the best-performing approach
-  as the project's flagship method.
-- The remaining interpretability work: trying to figure out *which part of
-  the video* corresponds to *which word* after the fact (useful both for
-  understanding the model and for a possible future avatar/sign-generation
-  system) — plainly note this has so far come back inconclusive, and why
-  that's still a useful thing to know.
-- The eventual goal: publishing this dataset, benchmark, and findings as a
-  research contribution, and continuing to close the gap on the
-  static-pose/motion limitation named above.
+- Full headline comparison table (every model, every split it was run on,
+  every metric) — the comprehensive version of `RESULTS_OVERVIEW.md`
+  Tables 1–2b.
+- Bar chart(s) of chrF++ across models.
+- Trivial-floor comparison (retrieval baseline, most-frequent-sentence
+  baseline) with the real, important caveat already documented (a
+  noise-input control scores close to the retrieval floor, so "beating
+  retrieval" alone is a weak claim — explain why the video↔text mismatch
+  control is the stronger evidence).
+- The grounding evidence in full: the input-ablation results table
+  (mismatch / frame-shuffle / noise / zero conditions), explained plainly,
+  chart of chrF++ across conditions.
+- The "static pose, not motion" finding, explained plainly with the real
+  numbers.
+- Real example translations (exact match, typical, failure) from
+  `QUALITATIVE_EXAMPLES.md`, across at least two splits.
+- Data-efficiency curve chart (from the pre-training experiment).
+- Length-stratified results, if available by the time of writing (from the
+  in-progress D3 work) — otherwise noted as forthcoming.
+- Per-model diversity/length diagnostics (unique-hypothesis rate, output
+  length calibration) — real numbers from `RESULTS_OVERVIEW.md` Table 5,
+  including the runaway-repetition failure mode found in one model.
 
-### 4.6 (Optional) Glossary
-- A short reference list at the end collecting every plain-language
-  definition used inline throughout, alphabetized, for skimming/lookup —
-  useful if the report is shared onward to someone who starts partway
-  through rather than reading start to end.
+### 4.7 Discussion
 
-### 4.7 (Optional) Appendix / "go deeper"
-- One short paragraph pointing at `README.md` and `docs/logs/` for anyone
-  who wants the full technical detail, so the main report doesn't need to
-  compromise on accessibility to also satisfy a technical reader.
+- What the results collectively say about the state of the system.
+- Direct synthesis of every negative result (FAIL-004 through FAIL-008) into
+  one coherent narrative: what was tried, what was ruled out, what remains
+  open — not just a list, but the throughline connecting them (e.g. the
+  static-pose finding predicts and explains why a motion-focused
+  architecture and an alignment-to-motion-changepoints study both came back
+  negative).
 
-## 5. Open questions for you to decide during review
+### 4.8 Limitations
+*(new, dedicated section)*
+- Static-pose-dominant grounding (the main named technical limitation).
+- Signer/session diversity (36 sessions; the `signerindep-v1` generalization
+  gap that remains).
+- Long-sentence performance (tie to §4.3.2's length distribution).
+- Compute constraints encountered (the Mamba/SSM compute wall) and what
+  they mean for what could/couldn't be tested on available hardware.
+- Benchmark-level limitations (single dataset, one sign language, BLEU-4 at
+  noise floor for this benchmark).
 
-1. **Length target?** I'd suggest aiming for something a non-expert can
-   read in about 15-20 minutes (roughly 2,000-3,000 words plus the
-   figures) — long enough to be complete, short enough that §4.4's detail
-   doesn't overwhelm the plain-language goal. Tell me if you want it
-   shorter/longer, or want a specific section to get more/less weight.
-2. **Format?** Markdown (matches everything else in `docs/`, renders
-   cleanly on GitHub) is my default assumption — say if you want a
-   different deliverable format instead/also (e.g. a slide-style doc, a
-   PDF-oriented layout).
-3. **Where does this live?** Proposing `docs/report/PROJECT_REPORT.md` —
-   say if you want a different location, or want it to also become (say) a
-   published Artifact page rather than (or in addition to) a repo doc.
-4. **Should the "what's next" section name a rough timeline?** I'd lean no
-   (this is a research project with genuinely uncertain timelines, and a
-   wrong date undermines trust more than an honest "in progress, no fixed
-   date" does) — but this is your call.
-5. **Any audience-specific framing I should add or remove?** E.g. if this
-   is going to a funder, a school, a specific stakeholder — the plan above
-   is written for a generic "smart non-expert," but a known specific
-   audience might shift emphasis (e.g. more on real-world accessibility
-   impact vs. more on the research-contribution angle).
+### 4.9 Ethical considerations & broader impact
+*(new, dedicated section)*
+- Accessibility framing — who benefits and how, stated concretely.
+- Signer consent/privacy considerations for the underlying dataset (state
+  plainly what's known/assumed; flag if this needs a follow-up from the
+  team rather than inventing a claim).
+- Responsible-use notes (e.g., a translation system with real error rates
+  should not be presented as more reliable than it is in any deployed
+  context).
+
+### 4.10 Reproducibility
+*(new, dedicated section)*
+- What's openly available (code, frozen splits, tokenizer, configs) vs. what
+  isn't (raw video, packed features, checkpoints) and why — summarizing
+  `docs/DATA_AND_OUTPUTS.md` for a report audience.
+- How someone could reproduce any single result in this report exactly
+  (config file → script → the same `EXPERIMENTS.md` row).
+
+### 4.11 Conclusion & future work
+- Restate the contribution.
+- The in-progress and next-decided work (from v2's "what's next" content).
+- Longer-horizon direction (publication target, closing the grounding gap).
+
+### 4.12 Glossary
+Every plain-language definition used inline, alphabetized.
+
+### 4.13 Appendix
+- Complete run ledger (condensed `EXPERIMENTS.md` table).
+- Complete significance-test summary (one row per comparison, pointing at
+  the source `SIGNIFICANCE_*.md` file).
+- Full split-composition and dataset-statistics tables (the detailed
+  versions behind §4.3's charts).
+
+## 5. PDF compilation plan
+
+- **Source of truth:** write the report in Markdown at
+  `docs/report/PROJECT_REPORT.md` (git-friendly, diffable, matches this
+  repo's convention, easy for you to review/edit directly) plus generated
+  chart images under `docs/report/assets/`.
+- **Compiling to PDF:** this machine already has a working LaTeX
+  installation (MiKTeX's `pdflatex`), which is the hard part. It's missing
+  `pandoc`, the standard tool that converts Markdown → PDF using that LaTeX
+  engine automatically (tables, figures, headings all handled). **Needs one
+  confirmation from you: OK to install `pandoc`** (a widely-used, standard
+  document-conversion tool — not a research dependency, just a build tool
+  for this one output step)? Once installed, the whole report compiles with
+  one command (`pandoc docs/report/PROJECT_REPORT.md -o
+  docs/report/PROJECT_REPORT.pdf --pdf-engine=pdflatex ...`, with a few
+  formatting flags for a clean title page/table of contents/numbered
+  sections given the length).
+- If you'd rather not install anything new, the fallback is writing the
+  report directly in LaTeX instead of Markdown — fully compilable with the
+  `pdflatex` already installed, no new tools — at the cost of being harder
+  for you to review/edit directly compared to Markdown. My recommendation
+  is the `pandoc` route.
+
+## 6. Open questions for you to decide during review
+
+1. **Confirm the ~20-(up to ~50)-page, "everything in it" scope** — the
+   outline in §4 is already built to that scope; flag anything you'd want
+   cut rather than included at that length.
+2. **OK to install `pandoc`** for the PDF compile step (§5)? If not, I'll
+   write directly in LaTeX instead.
+3. **Chart generation** — confirm you're fine with me generating new image
+   files under `docs/report/assets/` from real project data (§3's raw-data
+   table), matching this repo's existing visualization conventions.
+4. **Ethics/consent section (§4.9)** — I don't currently have a documented
+   answer for signer consent/data-release terms in this repo. Do you have
+   that information to give me, or should this subsection explicitly flag
+   it as "to be confirmed with the data-collection team" rather than
+   assert something unverified?
+5. **Should "what's next"/"future work" name a rough timeline?** Still
+   leaning no (a wrong date undermines trust more than an honest "in
+   progress, no fixed date") — your call.
+6. **Any specific audience** (funder, school, particular stakeholder) that
+   should shift emphasis beyond the generic "thorough, no prior background
+   assumed" framing?

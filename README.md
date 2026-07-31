@@ -1,13 +1,19 @@
-# BSL — Bangla Sign Language → Text
+# Bornil — Bangla Sign Language → Text
 
-A keypoint-based pipeline for translating **Bangla Sign Language (BSL)** videos
-into Bangla text. Sign clips are converted into MediaPipe pose/hand keypoint
-sequences, paired with sentence labels, and turned into model-ready batches for
-a sequence-to-sequence recognition/translation model.
+A gloss-free, keypoint-based research pipeline for translating **Bangla Sign
+Language (BdSL)** video into Bangla text. Sign clips are converted into
+MediaPipe pose/hand keypoint sequences, paired with open-vocabulary sentence
+labels, and used to train and benchmark sequence-to-sequence translation
+models — with an accompanying frozen benchmark, baseline suite, novel-method
+program, and alignment/interpretability workstream aimed at a NeurIPS
+Datasets & Benchmarks submission.
 
-> **Status:** the full data pipeline (extraction → features → tokenized targets →
-> batches) is complete and verified on all **17,988** clips. The recognition
-> model is the next step.
+> **Status:** the data pipeline, frozen benchmark, and baseline model suite
+> (WS-A/B/C) are complete. The current best model — TConv + joint CTC/attention
+> — significantly beats the vanilla baseline and clears the retrieval floor on
+> every official split and metric. A novel-method comparison (WS-D) and an
+> alignment/interpretability workstream (WS-E) are in progress. Full plan:
+> [`docs/plan/2026-07-13-bornil-implementation-plan.md`](docs/plan/2026-07-13-bornil-implementation-plan.md).
 
 ---
 
@@ -15,7 +21,9 @@ a sequence-to-sequence recognition/translation model.
 
 - **17,988** short `.webm` clips — each a single signer performing **one Bangla
   sentence** (front view, mostly indoor).
-- **17,930** unique sentences, open-domain (news, sports, everyday speech).
+- **17,928** unique normalized sentences, open-domain (news, sports, everyday
+  speech) — near-total uniqueness confirms this is an open-vocabulary
+  translation task, not closed-set gloss recognition.
 - Labels and metadata live in [`video_data.csv`](video_data.csv):
 
   | column | description |
@@ -27,12 +35,51 @@ a sequence-to-sequence recognition/translation model.
   | `chunk_path` | folder holding the clip (`chunks/chunk_k`) |
 
 The label↔video link is **clip-level**: one clip ↔ one sentence, joined by the
-UUID. There is no frame-to-word alignment — the model is expected to learn it
-(via CTC or attention).
+UUID. There is no frame-to-word alignment — models learn it (via CTC or
+attention), and inducing it after the fact is its own workstream (WS-E, see
+below).
 
-> ⚠️ The videos (~180 GB) and the generated feature files are **not** in this
-> repo — only the pipeline code and the trained tokenizer are versioned. Point
-> the path constants at your local copy of the dataset.
+> ⚠️ The raw videos (~180 GB), extracted features, and every model's trained
+> outputs are **not** in this repo — only code, the trained tokenizer, and the
+> frozen split files are versioned. See
+> [`docs/DATA_AND_OUTPUTS.md`](docs/DATA_AND_OUTPUTS.md) for what's excluded,
+> why, and where to find results/examples without needing the heavy files.
+
+---
+
+## Benchmark & results
+
+Three frozen, leakage-checked splits (`splits/`) test different
+generalization axes:
+
+| Split | What it holds out |
+|---|---|
+| `random-v1` | nothing extra — random 80/10/10 |
+| `signerindep-v1` | whole signer sessions (`chunk_path`) |
+| `unseen-sentence-v1` | whole normalized-sentence groups (zero text overlap train/test) |
+
+Metrics (`bornil/benchmark/metrics.py`) are locked: SacreBLEU BLEU-1–4, chrF,
+chrF++, ROUGE-L, bootstrap CIs, optional BanglaBERT BERTScore. **chrF++ is the
+discriminating metric** here — BLEU-4 sits at the noise floor for this
+open-vocabulary benchmark.
+
+**Headline result:** TConv2k5 + joint CTC/attention (best model,
+chrF++ 10.913 on `random-v1`) significantly beats both the vanilla Transformer
+baseline and clears the retrieval floor on all three splits, every metric. The
+strongest grounding evidence is an input ablation: deranging only the
+video↔text pairing costs −4.71 chrF++ with the input distribution held exactly
+constant — but the grounding is measurably **static-pose, not motion**
+(shuffling frame order costs only −0.88 chrF++), which is the main open
+weakness the later workstreams (WS-D/WS-E) probe.
+
+Full tables, significance tests, and narrative:
+[`docs/logs/RESULTS_OVERVIEW.md`](docs/logs/RESULTS_OVERVIEW.md). Every run
+ever trained, with metrics and a checkpoint pointer:
+[`docs/logs/EXPERIMENTS.md`](docs/logs/EXPERIMENTS.md). Real sample
+predictions (exact matches, typical cases, failure modes):
+[`docs/logs/QUALITATIVE_EXAMPLES.md`](docs/logs/QUALITATIVE_EXAMPLES.md).
+Dead ends and negative results, with root-cause analysis (they're publishable,
+not hidden): [`docs/logs/FAILURES.md`](docs/logs/FAILURES.md).
 
 ---
 
@@ -43,18 +90,21 @@ load** — so normalization and landmark choices can change without re-running
 the expensive MediaPipe pass.
 
 ```
-Phase A — preprocessing   (bsl_preprocessing_clean.ipynb + bsl_extract.py)
+Phase A — extraction   (bsl_extract.py, run via scripts/extract_sample.py or run_extraction.py)
   video_data.csv + chunks/*.webm
-        │   MediaPipe Holistic; 128 frames uniformly sampled across each clip
+        │   MediaPipe Holistic, up to 512 frames/clip
         ▼
-  features_mediapipe_v2/<uuid>.npy        raw (T≤128, 258) float32
-        +  processed_manifest.csv         (text ↔ feature, per clip)
+  per-clip raw (T≤512, 258) float32 features + a manifest
 
-Phase B — modeling data   (bsl_modeling.ipynb + bsl_utils.py)
-  packed memmap (one file, via pack_features.py)
-        │   prepare_features: normalize (shoulder anchor) + upper-body select
+Phase B — packing + modeling data   (scripts/pack_sample.py, bornil/data/)
+  packed memmap (one file, low-overhead loading)
+        │   bornil.data.transforms.prepare_features:
+        │   shoulder-anchored normalize + upper-body select
         ▼   (T, 218)                      SentencePiece BPE targets (~4k)
-  DataLoaders  →  (B, 128, 218) inputs + subword-id targets  →  [model — TODO]
+  bornil.data.dataset.SignDataset  →  (B, T, 218) inputs + subword-id targets
+        │   bornil.benchmark.splits (frozen random-v1 / signerindep-v1 / unseen-sentence-v1)
+        ▼
+  scripts/train_sample.py  →  trained model + metrics + predictions
 ```
 
 ### Feature representation
@@ -67,17 +117,17 @@ Each frame is **258** raw values from MediaPipe Holistic:
 | left hand | 21 × (x, y, z) | 63 |
 | right hand | 21 × (x, y, z) | 63 |
 
-At **load time** (`bsl_utils.prepare_features`) these become the **218-dim**
-model input:
+At **load time** (`bornil.data.transforms.prepare_features`) these become the
+**218-dim** model input:
 
-- **normalized** — each frame is anchored to the shoulder midpoint and scaled by
-  shoulder width, making it invariant to where the signer stands and how large
-  they appear;
-- **upper-body only** — pose landmarks 23–32 (hips/legs/feet) are dropped; they
-  have ≤ 0.08 mean visibility and sit off-frame (extrapolated noise).
+- **normalized** — each frame is anchored to the shoulder midpoint and scaled
+  by shoulder width, making it invariant to where the signer stands and how
+  large they appear;
+- **upper-body only** — pose landmarks 23–32 (hips/legs/feet) are dropped;
+  they have ≤ 0.08 mean visibility and sit off-frame (extrapolated noise).
 
-The stored `.npy` files stay raw (258); the 258 → 218 selection and
-normalization happen at load, so they can be changed without re-extraction.
+The stored features stay raw (258); the 258 → 218 selection and normalization
+happen at load, so the scheme can change without re-extraction.
 
 ### Targets
 
@@ -90,77 +140,90 @@ reusable subword units are used instead.
 
 ## Repository
 
-| file | role |
+| path | role |
 |---|---|
-| [`bsl_preprocessing_clean.ipynb`](bsl_preprocessing_clean.ipynb) | Phase A — videos → keypoint features + manifest |
-| [`bsl_extract.py`](bsl_extract.py) | MediaPipe extraction (uniform 128-frame sampling, 258-dim) — shared source |
-| [`run_extraction.py`](run_extraction.py) | parallel, resumable full-dataset extraction |
-| [`pack_features.py`](pack_features.py) | consolidate per-clip features into one memmap file |
-| [`bsl_utils.py`](bsl_utils.py) | load-time normalization + upper-body landmark selection |
-| [`bsl_modeling.ipynb`](bsl_modeling.ipynb) | Phase B — packed features + BPE tokenizer + DataLoaders |
+| [`bornil/`](bornil/) | the project package — `data/` (dataset, transforms, tokenizer, splits), `models/` (SLT architectures), `train/` (training loop, checkpoints), `benchmark/` (locked splits + metrics), `align/` (WS-E forced alignment + motion agreement), `pretrain/` (WS-D self-supervised pretraining) |
+| [`scripts/`](scripts/) | CLI entry points: sampling/extraction/packing, training (`train_sample.py`), evaluation and ablations, significance testing, results reporting |
+| [`configs/`](configs/) | one YAML per experiment (official baselines, ablations, novel-method runs) |
+| [`splits/`](splits/) | frozen split files (`random-v1`, `signerindep-v1`, `unseen-sentence-v1`) — the released, reproducible benchmark partition |
+| [`tests/`](tests/) | full test suite (pytest) — mirrors `bornil/`'s structure |
+| [`docs/plan/`](docs/plan/) | the master research plan plus one detailed, checkbox-tracked implementation plan per workstream |
+| [`docs/logs/`](docs/logs/) | `RESULTS_OVERVIEW.md` (report-facing summary), `EXPERIMENTS.md` (every run), `CHANGELOG.md` (what changed and why), `FAILURES.md` (negative results, logged as data) |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/) | design specs (one per novel-method sub-project, written before implementation) |
+| [`docs/handoff/`](docs/handoff/) | self-contained prompts for handing a plan off to an autonomous coding agent |
+| [`bsl_extract.py`](bsl_extract.py) / [`bsl_utils.py`](bsl_utils.py) | shared MediaPipe extraction routine and a backward-compatibility re-export shim (canonical logic now lives in `bornil.data.transforms`) |
 | [`bsl_sp.model`](bsl_sp.model) / [`bsl_sp.vocab`](bsl_sp.vocab) | trained SentencePiece tokenizer |
 | [`video_data.csv`](video_data.csv) | master index of clips + labels |
+
+`bsl_preprocessing_clean.ipynb`, `bsl_modeling.ipynb`, `run_extraction.py`,
+and `pack_features.py` are the original full-dataset extraction/packing
+scripts from before the `bornil/` package existed; the full dataset has
+already been extracted and packed using them, and they're kept for
+provenance. New work uses the `scripts/*.py` + `bornil/` path above.
 
 ---
 
 ## Setup
 
-Python 3.10. Install dependencies:
+Python 3.10 (Windows dev environment; see `requirements.txt` for exact
+pins and the reasoning behind them — this project has hit real
+version-compatibility failures, documented in
+[`docs/logs/FAILURES.md`](docs/logs/FAILURES.md)).
 
 ```bash
-pip install numpy pandas opencv-python mediapipe torch sentencepiece tqdm
+pip install -r requirements.txt
+# torch: install a build matching your hardware, separately —
+#   GPU (NVIDIA, recommended): pip install torch --index-url https://download.pytorch.org/whl/cu124
+#   CPU only:                   pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
 
-Tested with: numpy 1.26, pandas 2.3, opencv 4.11, mediapipe 0.10.14,
-torch 2.11, sentencepiece 0.2.2.
+Tested with torch 2.6.0+cu124 (RTX 3070) and 2.11.0+cpu. On Windows, `import
+torch` must happen before `import pandas` in any entry point (see
+`bornil/runtime.py`) — a real DLL-load-order crash this project hit early on.
+
+Run the full test suite: `pytest` (or `.venv/Scripts/python -m pytest -q`).
 
 ---
 
 ## Usage
 
-Set the dataset and output paths in the config cell at the top of each notebook
-(and the matching constants in the scripts), then:
-
-1. **Extract features** — run `bsl_preprocessing_clean.ipynb` top to bottom, or
-   process the whole dataset in parallel:
+1. **Reproduce a trial run end-to-end** (sample → extract → pack → train, on
+   a small percentage of the dataset — the fast way to verify the whole
+   pipeline works in a new environment):
    ```bash
-   python run_extraction.py           # resumable — skips clips already done
+   python scripts/run_trial.py --percent 2 --device cuda
    ```
-   Produces per-clip `.npy` features and `processed_manifest.csv`.
-
-2. **Pack features** — consolidate the 17,988 files into one memmap file for
-   fast, low-overhead loading during training:
+2. **Train an official full-dataset config** (once the full packed dataset
+   exists locally — see [`docs/DATA_AND_OUTPUTS.md`](docs/DATA_AND_OUTPUTS.md)):
    ```bash
-   python pack_features.py            # adds a pack_idx column to the manifest
+   python scripts/train_sample.py --config configs/full_ctc.yaml --device cuda
    ```
-
-3. **Build batches / train** — run `bsl_modeling.ipynb`: it loads the packed
-   features, tokenizes text with SentencePiece, splits 80/10/10, and exposes
-   `train_loader` / `val_loader` / `test_loader` yielding `(B, 128, 218)` inputs
-   with subword-id targets. `INPUT_DIM = 218`, `VOCAB_SIZE = 4000`.
+   Every config in [`configs/`](configs/) is a real, reproducible experiment
+   that has an entry in [`docs/logs/EXPERIMENTS.md`](docs/logs/EXPERIMENTS.md).
+3. **Explore results without training anything** — start at
+   [`docs/logs/RESULTS_OVERVIEW.md`](docs/logs/RESULTS_OVERVIEW.md).
 
 ---
 
 ## Design notes
 
-- **Store raw, transform at load** — on-disk features are raw 258-dim; `bsl_utils`
-  applies normalization + landmark selection at load time, so the scheme can
-  change without a ~45-hour re-extraction.
-- **Uniform temporal sampling** — clips longer than 128 frames are sampled evenly
-  across the whole clip, not truncated to the first few seconds.
-- **Single source of truth** — extraction lives only in `bsl_extract.py`,
-  transforms only in `bsl_utils.py`; the model reads its input width from
-  `feature_dim()`, never a hard-coded literal.
+- **Store raw, transform at load** — on-disk features are raw 258-dim;
+  `bornil.data.transforms` applies normalization + landmark selection at load
+  time, so the scheme can change without a costly re-extraction.
+- **Frozen splits, locked metrics** — every claim in this project is scored
+  against versioned split files and a metric protocol that's never quietly
+  changed underneath a comparison.
+- **Single source of truth per concern** — e.g. the model contract lives in
+  `bornil/models/build.py`, never duplicated per-script; the model always
+  reads its input width from `feature_dim()`, never a hard-coded literal.
+  (A drifted duplicate of the model-construction logic once silently broke
+  every CTC checkpoint reload — see `docs/logs/FAILURES.md` — which is why
+  this rule is enforced structurally now, not just by convention.)
+- **Negative results are logged as data, not hidden** — every dead end,
+  failed gate, or result that didn't support its hypothesis gets a
+  `FAILURES.md` entry with root-cause analysis. Several already inform this
+  project's Limitations narrative.
 - **Weakly-aligned targets** — one keypoint sequence ↔ one sentence with no
-  per-frame labels, which suits a CTC or attention sequence model.
-
----
-
-## Roadmap
-
-- [x] Keypoint extraction over the full dataset
-- [x] Shoulder-anchored normalization + upper-body landmark selection
-- [x] SentencePiece subword tokenizer
-- [x] Packed features + DataLoaders
-- [ ] Baseline model (BiLSTM / Transformer encoder + CTC or attention decoder)
-- [ ] Training / evaluation loop with metrics (WER / BLEU)
+  per-frame labels; WS-E induces frame↔subword alignment post hoc via CTC
+  forced alignment, validated against an independent motion signal rather
+  than assumed correct.

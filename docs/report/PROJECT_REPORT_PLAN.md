@@ -229,17 +229,7 @@ this subsection for orientation):
 - Benchmark-level limitations (single dataset, one sign language, BLEU-4 at
   noise floor for this benchmark).
 
-### 4.9 Ethical considerations & broader impact
-*(new, dedicated section)*
-- Accessibility framing — who benefits and how, stated concretely.
-- Signer consent/privacy considerations for the underlying dataset (state
-  plainly what's known/assumed; flag if this needs a follow-up from the
-  team rather than inventing a claim).
-- Responsible-use notes (e.g., a translation system with real error rates
-  should not be presented as more reliable than it is in any deployed
-  context).
-
-### 4.10 Reproducibility
+### 4.9 Reproducibility
 *(new, dedicated section)*
 - What's openly available (code, frozen splits, tokenizer, configs) vs. what
   isn't (raw video, packed features, checkpoints) and why — summarizing
@@ -247,15 +237,15 @@ this subsection for orientation):
 - How someone could reproduce any single result in this report exactly
   (config file → script → the same `EXPERIMENTS.md` row).
 
-### 4.11 Conclusion & future work
+### 4.10 Conclusion & future work
 - Restate the contribution.
 - The in-progress and next-decided work (from v2's "what's next" content).
 - Longer-horizon direction (publication target, closing the grounding gap).
 
-### 4.12 Glossary
+### 4.11 Glossary
 Every plain-language definition used inline, alphabetized.
 
-### 4.13 Appendix
+### 4.12 Appendix
 - Complete run ledger (condensed `EXPERIMENTS.md` table).
 - Complete significance-test summary (one row per comparison, pointing at
   the source `SIGNIFICANCE_*.md` file).
